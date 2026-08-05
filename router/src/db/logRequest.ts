@@ -12,6 +12,7 @@ export interface LogRequestPayload {
   fallbackFromModel?: string;
   taskType?: string | null;
   routingReason?: string | null;
+  qualityScore?: number | null;
 }
 
 const pool = process.env.DATABASE_URL
@@ -38,7 +39,8 @@ async function ensureSchema() {
       was_fallback BOOLEAN DEFAULT FALSE,
       fallback_from_model TEXT,
       task_type TEXT,
-      routing_reason TEXT
+      routing_reason TEXT,
+      quality_score REAL
     )
   `);
 }
@@ -66,8 +68,9 @@ export async function logRequest(payload: LogRequestPayload) {
         was_fallback,
         fallback_from_model,
         task_type,
-        routing_reason
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id
+        routing_reason,
+        quality_score
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id
     `,
     [
       payload.prompt,
@@ -80,6 +83,7 @@ export async function logRequest(payload: LogRequestPayload) {
       payload.fallbackFromModel ?? null,
       payload.taskType ?? null,
       payload.routingReason ?? null,
+      payload.qualityScore ?? null,
     ]
   );
 

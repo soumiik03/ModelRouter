@@ -16,7 +16,7 @@ const DELAY_MS = 500; // stay under free-tier 20 req/min rate limit
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
-type Strategy = 'always-cheap' | 'always-expensive' | 'heuristic-router';
+type Strategy = 'always-cheap' | 'always-expensive' | 'heuristic-router' | 'learned-bandit';
 
 interface EvalResult {
   taskId: string;
@@ -37,11 +37,21 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function callRoute(prompt: string, forceModel?: string) {
+interface CallRouteOptions {
+  routingStrategy?: string;
+}
+
+async function callRoute(prompt: string, forceModel?: string, options?: CallRouteOptions) {
   const body = forceModel ? { prompt, model: forceModel } : { prompt };
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+
+  if (options?.routingStrategy) {
+    headers['x-routing-strategy'] = options.routingStrategy;
+  }
+
   const res = await fetch(`${BASE_URL}/v1/route`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error(`Request failed: ${res.status}`);
@@ -100,7 +110,7 @@ async function runEval() {
     }
     await sleep(DELAY_MS);
 
-    // ---- Router: let the system decide ----
+    // ---- Strategy C: heuristic router ----
     console.log(`  [ROUTER]    ${task.id}`);
     try {
       const routed = await callRoute(task.prompt);
@@ -119,6 +129,26 @@ async function runEval() {
       console.error(`  ✗ ROUTER failed for ${task.id}: ${message}`);
       results.push({
         taskId: task.id, category: task.category, strategy: 'heuristic-router',
+        modelUsed: null, response: null, costUsd: 0, latencyMs: 0,
+        error: message,
+      });
+    }
+    await sleep(DELAY_MS);
+
+    // ---- Strategy D: learned bandit router ----
+    console.log(`  [BANDIT]    ${task.id}`);
+    try {
+      const bandit = await callRoute(task.prompt, undefined, { routingStrategy: 'bandit' });
+      results.push({
+        taskId: task.id, category: task.category, strategy: 'learned-bandit',
+        modelUsed: bandit.modelUsed, response: bandit.text,
+        costUsd: bandit.costUsd, latencyMs: bandit.latencyMs,
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`  ✗ BANDIT failed for ${task.id}: ${message}`);
+      results.push({
+        taskId: task.id, category: task.category, strategy: 'learned-bandit',
         modelUsed: null, response: null, costUsd: 0, latencyMs: 0,
         error: message,
       });

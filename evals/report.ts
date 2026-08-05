@@ -48,7 +48,7 @@ function findMostFrequent(counts: Record<string, number>): string {
 
 function generateReport() {
   const raw: EvalResult[] = JSON.parse(readFileSync('evals/results/raw-run.json', 'utf-8'));
-  const strategies = ['always-cheap', 'always-expensive', 'heuristic-router'];
+  const strategies = ['always-cheap', 'always-expensive', 'heuristic-router', 'learned-bandit'];
 
   const summary: StrategySummary[] = strategies.map((strategy) => {
     const rows = raw.filter((r) => r.strategy === strategy);

@@ -6,26 +6,35 @@
     "modelUsed": "openai/gpt-oss-20b:free",
     "response": "```python\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef reverse_list(head: ListNode | None) -> ListNode | None:\n    \"\"\"Reverse a singly linked list and return the new head.\"\"\"\n    prev = None\n    curr = head\n    while curr:\n        nxt = curr.next\n        curr.next = prev\n        prev = curr\n        curr = nxt\n    return prev\n```",
     "costUsd": 0,
-    "latencyMs": 11215
+    "latencyMs": 37887
   },
   {
     "taskId": "code-001",
     "category": "code",
     "strategy": "always-expensive",
     "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
-    "response": "```python\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef reverse_list(head: ListNode) -> ListNode:\n    prev = None\n    current = head\n    while current:\n        next_node = current.next\n        current.next = prev\n        prev = current\n        current = next_node\n    return prev\n```",
+    "response": "```python\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef reverse_linked_list(head: ListNode) -> ListNode:\n    prev = None\n    current = head\n    while current:\n        next_node = current.next\n        current.next = prev\n        prev = current\n        current = next_node\n    return prev\n```",
     "costUsd": 0,
-    "latencyMs": 2847
+    "latencyMs": 3622
   },
   {
     "taskId": "code-001",
     "category": "code",
     "strategy": "heuristic-router",
     "modelUsed": "cohere/north-mini-code:free",
-    "response": "```python\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef reverseList(head: ListNode) -> ListNode:\n    prev = None\n    current = head\n    \n    while current is not None:\n        next_node = current.next\n        current.next = prev\n        prev = current\n        current = next_node\n        \n    return prev\n```",
+    "response": "```python\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef reverseList(head: ListNode) -> ListNode:\n    prev = None\n    curr = head\n    while curr:\n        nxt = curr.next\n        curr.next = prev\n        prev = curr\n        curr = nxt\n    return prev\n```",
     "costUsd": 0,
-    "latencyMs": 33504,
+    "latencyMs": 36853,
     "classificationSource": "heuristic"
+  },
+  {
+    "taskId": "code-001",
+    "category": "code",
+    "strategy": "learned-bandit",
+    "modelUsed": "cohere/north-mini-code:free",
+    "response": "```python\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef reverseList(head: ListNode) -> ListNode:\n    prev = None\n    curr = head\n    while curr:\n        next_temp = curr.next\n        curr.next = prev\n        prev = curr\n        curr = next_temp\n    return prev\n```",
+    "costUsd": 0,
+    "latencyMs": 38244
   },
   {
     "taskId": "code-002",
@@ -34,128 +43,1208 @@
     "modelUsed": "openai/gpt-oss-20b:free",
     "response": "Below is a compact, self‑contained C++ implementation of **binary search** that works on any sorted array (or vector).  \nIt is written as a **template** so you can use it with `int`, `double`, `std::string`, or any type that supports `operator<` and `operator==`.\n\n```cpp\n#include <vector>\n#include <iostream>\n\n/* -------------------------------------------------------------\n   Binary search – iterative version\n   -------------------------------------------------------------\n   Parameters\n   ----------\n   arr : const std::vector<T>&\n       Sorted container (ascending order).\n   target : const T&\n       Value to look for.\n\n   Returns\n   -------\n   int\n       Index of the target if found, otherwise -1.\n   ------------------------------------------------------------- */\ntemplate <typename T>\nint binarySearch(const std::vector<T>& arr, const T& target)\n{\n    int left  = 0;\n    int right = static_cast<int>(arr.size()) - 1;\n\n    while (left <= right)\n    {\n        // Avoid overflow: mid = left + (right-left)/2\n        int mid = left + (right - left) / 2;\n\n        if (arr[mid] == target)          // Found\n            return mid;\n        else if (arr[mid] < target)      // Search right half\n            left = mid + 1;\n        else                             // Search left half\n            right = mid - 1;\n    }\n\n    return -1;   // Not found\n}\n\n/* -------------------------------------------------------------\n   Binary search – recursive version\n   -------------------------------------------------------------\n   Parameters\n   ----------\n   arr : const std::vector<T>&\n       Sorted container (ascending order).\n   target : const T&\n       Value to look for.\n   left : int\n       Left boundary of the current search interval.\n   right : int\n       Right boundary of the current search interval.\n\n   Returns\n   -------\n   int\n       Index of the target if found, otherwise -1.\n   ------------------------------------------------------------- */\ntemplate <typename T>\nint binarySearchRecursive(const std::vector<T>& arr,\n                          const T& target,\n                          int left,\n                          int right)\n{\n    if (left > right)\n        return -1;   // Not found\n\n    int mid = left + (right - left) / 2;\n\n    if (arr[mid] == target)\n        return mid;\n    else if (arr[mid] < target)\n        return binarySearchRecursive(arr, target, mid + 1, right);\n    else\n        return binarySearchRecursive(arr, target, left, mid - 1);\n}\n\n/* -------------------------------------------------------------\n   Convenience wrapper for the recursive version\n   ------------------------------------------------------------- */\ntemplate <typename T>\nint binarySearchRecursive(const std::vector<T>& arr, const T& target)\n{\n    return binarySearchRecursive(arr, target, 0, static_cast<int>(arr.size()) - 1);\n}\n\n/* -------------------------------------------------------------\n   Example usage\n   ------------------------------------------------------------- */\nint main()\n{\n    std::vector<int> data = {1, 3, 5, 7, 9, 11, 13, 15};\n\n    int target = 7;\n    int idxIter = binarySearch(data, target);\n    int idxRec  = binarySearchRecursive(data, target);\n\n    std::cout << \"Iterative: index = \" << idxIter << '\\n';\n    std::cout << \"Recursive: index = \" << idxRec  << '\\n';\n\n    target = 8;\n    std::cout << \"Searching for \" << target << \" gives index = \"\n              << binarySearch(data, target) << '\\n';\n\n    return 0;\n}\n```\n\n### How it works\n\n1. **Iterative version**  \n   * Keeps two indices, `left` and `right`, that bound the current search interval.  \n   * Repeatedly computes the middle index `mid`.  \n   * If the middle element equals the target, the index is returned.  \n   * If the middle element is smaller, the search continues in the right half (`left = mid + 1`).  \n   * Otherwise it continues in the left half (`right = mid - 1`).  \n   * If the loop exits without finding the target, `-1` is returned.\n\n2. **Recursive version**  \n   * The same logic is applied, but the function calls itself with a narrowed interval.  \n   * The wrapper `binarySearchRecursive(const std::vector<T>&, const T&)` hides the `left`/`right` parameters from the caller.\n\n### Complexity\n\n* **Time** – `O(log n)` in the worst case.  \n* **Space** – `O(1)` for the iterative version; `O(log n)` stack space for the recursive version.\n\nFeel free to drop the function into any project that needs a fast lookup in a sorted array!",
     "costUsd": 0,
-    "latencyMs": 46960
+    "latencyMs": 36914
   },
   {
     "taskId": "code-002",
     "category": "code",
     "strategy": "always-expensive",
     "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
-    "response": "Here are two standard implementations: **Iterative** (preferred for production due to $O(1)$ space complexity) and **Recursive** ($O(\\log n)$ space complexity due to call stack).\n\n### 1. Iterative Implementation (Recommended)\nThis version uses templates to work with any comparable type (`int`, `double`, `std::string`, custom structs with `operator<`, etc.) and `std::vector` for modern C++ safety.\n\n```cpp\n#include <iostream>\n#include <vector>\n#include <optional> // C++17: Better than returning -1 for \"not found\"\n\n/**\n * Performs iterative binary search on a sorted container.\n * \n * @tparam T        The type of elements (must support operator< and operator==).\n * @tparam Container A container supporting random access (e.g., std::vector, std::array, raw array).\n * @param container The sorted container to search.\n * @param target    The value to find.\n * @return          std::optional<size_t> containing the index if found, \n *                  otherwise std::nullopt.\n */\ntemplate <typename T, typename Container>\nstd::optional<size_t> binary_search_iterative(const Container& container, const T& target) {\n    size_t left = 0;\n    // Use size_t for right. If container is empty, size() is 0.\n    // We initialize right to size() (exclusive upper bound) to handle empty containers safely.\n    size_t right = container.size(); \n\n    // Loop invariant: target is in [left, right) if it exists.\n    while (left < right) {\n        // Avoids overflow compared to (left + right) / 2\n        size_t mid = left + (right - left) / 2;\n\n        if (container[mid] == target) {\n            return mid; // Found\n        } else if (container[mid] < target) {\n            left = mid + 1; // Search upper half [mid+1, right)\n        } else {\n            right = mid; // Search lower half [left, mid)\n        }\n    }\n\n    return std::nullopt; // Not found\n}\n```\n\n---\n\n### 2. Recursive Implementation\nUseful for academic contexts or when the logic maps naturally to recursion.\n\n```cpp\n/**\n * Helper recursive function.\n * @param left  Inclusive lower bound index.\n * @param right Exclusive upper bound index.\n */\ntemplate <typename T, typename Container>\nstd::optional<size_t> binary_search_recursive_helper(const Container& container, const T& target, size_t left, size_t right) {\n    if (left >= right) {\n        return std::nullopt; // Base case: empty range\n    }\n\n    size_t mid = left + (right - left) / 2;\n\n    if (container[mid] == target) {\n        return mid;\n    } else if (container[mid] < target) {\n        return binary_search_recursive_helper(container, target, mid + 1, right);\n    } else {\n        return binary_search_recursive_helper(container, target, left, mid);\n    }\n}\n\n// Wrapper function to hide the left/right parameters from the caller\ntemplate <typename T, typename Container>\nstd::optional<size_t> binary_search_recursive(const Container& container, const T& target) {\n    return binary_search_recursive_helper(container, target, 0, container.size());\n}\n```\n\n---\n\n### 3. Complete Compilable Example (C++17)\n\n```cpp\n#include <iostream>\n#include <vector>\n#include <string>\n#include <optional>\n#include <algorithm> // For std::sort (just to ensure demo data is sorted)\n\n// ... Paste the template functions (iterative and recursive) here ...\n\nint main() {\n    // 1. Setup Data (Must be sorted!)\n    std::vector<int> data = {2, 5, 8, 12, 16, 23, 38, 56, 72, 91};\n    \n    // Test targets\n    int target_found = 23;\n    int target_missing = 20;\n    int target_edge_low = 2;   // First element\n    int target_edge_high = 91; // Last element\n\n    std::cout << \"Array: \";\n    for (int n : data) std::cout << n << \" \";\n    std::cout << \"\\n\\n\";\n\n    // 2. Run Iterative Search\n    std::cout << \"--- Iterative Search ---\\n\";\n    auto test_iterative = [&](int val) {\n        auto result = binary_search_iterative(data, val);\n        if (result) {\n            std::cout << \"Found \" << val << \" at index: \" << *result << \"\\n\";\n        } else {\n            std::cout << val << \" not found.\\n\";\n        }\n    };\n\n    test_iterative(target_found);\n    test_iterative(target_missing);\n    test_iterative(target_edge_low);\n    test_iterative(target_edge_high);\n\n    // 3. Run Recursive Search\n    std::cout << \"\\n--- Recursive Search ---\\n\";\n    auto test_recursive = [&](int val) {\n        auto result = binary_search_recursive(data, val);\n        if (result) {\n            std::cout << \"Found \" << val << \" at index: \" << *result << \"\\n\";\n        } else {\n            std::cout << val << \" not found.\\n\";\n        }\n    };\n\n    test_recursive(target_found);\n    test_recursive(target_missing);\n\n    // 4. Works with std::string (or any type with < and ==)\n    std::cout << \"\\n--- String Search ---\\n\";\n    std::vector<std::string> words = {\"apple\", \"banana\", \"cherry\", \"date\", \"fig\"};\n    auto res = binary_search_iterative(words, std::string(\"cherry\"));\n    if (res) std::cout << \"Found 'cherry' at index \" << *res << \"\\n\";\n\n    return 0;\n}\n```\n\n---\n\n### Key Implementation Details & Best Practices\n\n| Aspect | Detail |\n| :--- | :--- |\n| **Precondition** | The input **must be sorted** in ascending order (strict weak ordering). Behavior is undefined if unsorted. |\n| **Overflow Safety** | `mid = left + (right - left) / 2` prevents integer overflow that happens with `(left + right) / 2` on large arrays. |\n| **Boundaries** | Uses **[left, right)** (half-open interval). `right` starts at `size()`. This handles empty arrays (`size() == 0`) immediately without special casing. |\n| **Return Type** | `std::optional<size_t>` (C++17) is modern best practice. It distinguishes between \"Index 0\" (valid) and \"Not Found\" cleanly, unlike returning `-1` (which requires signed integers and magic numbers). |\n| **Generics** | Templates allow this to work on `std::vector`, `std::array`, `std::deque`, or raw pointers (`T*`) with no code duplication. |\n| **Complexity** | **Time:** $O(\\log n)$ | **Space (Iterative):** $O(1)$ | **Space (Recursive):** $O(\\log n)$ |\n\n### C++20 Alternative: `std::binary_search` / `std::lower_bound`\nIn modern production code, prefer the Standard Library algorithms. They are highly optimized and handle edge cases perfectly.\n\n```cpp\n#include <algorithm>\n#include <vector>\n\n// Returns bool (exists or not)\nbool exists = std::binary_search(data.begin(), data.end(), 23); \n\n// Returns iterator to first element >= target (allows finding index/insertion point)\nauto it = std::lower_bound(data.begin(), data.end(), 23);\nif (it != data.end() && *it == 23) {\n    size_t index = std::distance(data.begin(), it);\n    // Found at 'index'\n}\n```",
+    "response": "Here are two standard implementations: **Iterative** (preferred for O(1) space complexity) and **Recursive** (cleaner code, but uses O(log n) stack space).\n\n### 1. Iterative Implementation (Recommended)\n\n```cpp\n#include <iostream>\n#include <vector>\n#include <optional> // C++17 for std::optional (better than returning -1)\n\n// Returns the index of 'target' if found, otherwise std::nullopt\nstd::optional<size_t> binarySearch(const std::vector<int>& arr, int target) {\n    size_t left = 0;\n    // Use size_t for indices to match vector::size_type\n    // Handle empty array: if size is 0, right becomes SIZE_MAX (wraparound), \n    // so we check empty() first or use a signed type / different logic.\n    if (arr.empty()) return std::nullopt; \n    \n    size_t right = arr.size() - 1;\n\n    while (left <= right) {\n        // Avoid overflow: left + (right - left) / 2 is safer than (left + right) / 2\n        size_t mid = left + (right - left) / 2;\n\n        if (arr[mid] == target) {\n            return mid; // Found\n        } else if (arr[mid] < target) {\n            left = mid + 1; // Search right half\n        } else {\n            // Check for underflow if mid == 0 (though loop condition left<=right prevents infinite loop usually)\n            if (mid == 0) break; // Target smaller than smallest element\n            right = mid - 1; // Search left half\n        }\n    }\n\n    return std::nullopt; // Not found\n}\n```\n\n---\n\n### 2. Recursive Implementation\n\n```cpp\n// Helper for recursion\nstd::optional<size_t> binarySearchRecursiveHelper(const std::vector<int>& arr, int target, size_t left, size_t right) {\n    if (left > right) return std::nullopt;\n\n    size_t mid = left + (right - left) / 2;\n\n    if (arr[mid] == target) return mid;\n    \n    if (arr[mid] < target) {\n        return binarySearchRecursiveHelper(arr, target, mid + 1, right);\n    } else {\n        if (mid == 0) return std::nullopt; // Prevent size_t underflow\n        return binarySearchRecursiveHelper(arr, target, left, mid - 1);\n    }\n}\n\n// Wrapper function\nstd::optional<size_t> binarySearchRecursive(const std::vector<int>& arr, int target) {\n    if (arr.empty()) return std::nullopt;\n    return binarySearchRecursiveHelper(arr, target, 0, arr.size() - 1);\n}\n```\n\n---\n\n### 3. Complete Compilable Example (C++17)\n\n```cpp\n#include <iostream>\n#include <vector>\n#include <optional>\n#include <algorithm> // For std::sort (just to verify input)\n\n// --- Iterative Version ---\nstd::optional<size_t> binarySearch(const std::vector<int>& arr, int target) {\n    if (arr.empty()) return std::nullopt;\n    \n    size_t left = 0;\n    size_t right = arr.size() - 1;\n\n    while (left <= right) {\n        size_t mid = left + (right - left) / 2;\n\n        if (arr[mid] == target) {\n            return mid;\n        } else if (arr[mid] < target) {\n            left = mid + 1;\n        } else {\n            if (mid == 0) break; // Safety check for size_t underflow\n            right = mid - 1;\n        }\n    }\n    return std::nullopt;\n}\n\nint main() {\n    // Data MUST be sorted\n    std::vector<int> data = {2, 5, 8, 12, 16, 23, 38, 56, 72, 91};\n    int target = 23;\n\n    std::cout << \"Array: \";\n    for (int n : data) std::cout << n << \" \";\n    std::cout << \"\\nSearching for: \" << target << std::endl;\n\n    auto result = binarySearch(data, target);\n\n    if (result) {\n        std::cout << \"Element found at index: \" << *result << std::endl;\n    } else {\n        std::cout << \"Element not found in array.\" << std::endl;\n    }\n\n    // Test not found case\n    target = 20;\n    result = binarySearch(data, target);\n    if (!result) std::cout << target << \" not found (as expected).\" << std::endl;\n\n    return 0;\n}\n```\n\n---\n\n### Key Implementation Details\n\n| Aspect | Detail |\n| :--- | :--- |\n| **Precondition** | **The input array MUST be sorted in ascending order.** Undefined behavior/incorrect results if not. |\n| **Mid Calculation** | `mid = left + (right - left) / 2` prevents integer overflow for massive arrays (where `left + right > INT_MAX`). |\n| **Loop Condition** | `left <= right` ensures the single-element case (`left == right`) is checked. |\n| **Return Type** | `std::optional<size_t>` (C++17) is modern best practice. It distinguishes \"found at index 0\" from \"not found\" cleanly, unlike returning `-1` (which requires signed integers). |\n| **Types** | Uses `size_t` (unsigned) for indices to match `std::vector::size()`. **Caution:** `right = mid - 1` causes underflow if `mid` is 0. The `if (mid == 0) break;` check handles this. Alternatively, use `long long` or `int` for indices if you prefer simpler logic. |\n| **Time Complexity** | **O(log n)** |\n| **Space Complexity** | **Iterative: O(1)** | **Recursive: O(log n)** (stack frames) |\n\n### Using `std::binary_search` (Standard Library)\nIn production C++, prefer the STL algorithm unless you need the **index** (STL only returns `bool`):\n\n```cpp\n#include <algorithm>\n#include <vector>\n\nbool exists = std::binary_search(data.begin(), data.end(), 23); // Returns true/false\n\n// If you need the iterator/index:\nauto it = std::lower_bound(data.begin(), data.end(), 23);\nif (it != data.end() && *it == 23) {\n    size_t index = std::distance(data.begin(), it);\n}\n```",
     "costUsd": 0,
-    "latencyMs": 59407
+    "latencyMs": 60494
   },
   {
     "taskId": "code-002",
     "category": "code",
     "strategy": "heuristic-router",
     "modelUsed": "cohere/north-mini-code:free",
-    "response": "Here are three ways to implement binary search in C++:\n1.  **Iterative Approach** (Using a loop) - Most common and efficient.\n2.  **Recursive Approach** (Using function calls).\n3.  **Modern C++ Approach** (Using `std::vector` and iterators).\n\n---\n\n### 1. Iterative Approach (Standard Array)\nThis is the most common way to implement binary search. It uses a `while` loop to repeatedly divide the search interval.\n\n```cpp\n#include <iostream>\n\n// Function to perform binary search on a sorted array\nint binarySearch(int arr[], int size, int target) {\n    int left = 0;\n    int right = size - 1;\n\n    while (left <= right) {\n        // Calculate mid to avoid potential overflow\n        int mid = left + (right - left) / 2;\n\n        // Check if target is present at mid\n        if (arr[mid] == target) {\n            return mid;\n        }\n\n        // If target is greater, ignore left half\n        if (arr[mid] < target) {\n            left = mid + 1;\n        }\n        // If target is smaller, ignore right half\n        else {\n            right = mid - 1;\n        }\n    }\n\n    // If we reach here, then the element was not present\n    return -1;\n}\n\nint main() {\n    int arr[] = {2, 5, 8, 12, 16, 23, 38, 56, 72, 91};\n    int size = sizeof(arr) / sizeof(arr[0]);\n    int target = 23;\n    int result = binarySearch(arr, size, target);\n\n    if (result != -1) {\n        std::cout << \"Element found at index: \" << result << std::endl;\n    } else {\n        std::cout << \"Element not found in the array.\" << std::endl;\n    }\n\n    return 0;\n}\n```\n\n### 2. Recursive Approach\nThis version calls itself to search the remaining half of the array.\n\n```cpp\n#include <iostream>\n\nint binarySearchRecursive(int arr[], int left, int right, int target) {\n    if (right >= left) {\n        int mid = left + (right - left) / 2;\n\n        // If the element is present at the middle\n        if (arr[mid] == target) {\n            return mid;\n        }\n\n        // If element is smaller than mid, search left subarray\n        if (arr[mid] > target) {\n            return binarySearchRecursive(arr, left, mid - 1, target);\n        }\n\n        // If element is larger than mid, search right subarray\n        return binarySearchRecursive(arr, mid + 1, right, target);\n    }\n\n    // If we reach here, the element was not present\n    return -1;\n}\n\nint main() {\n    int arr[] = {1, 10, 15, 20, 25};\n    int size = sizeof(arr) / sizeof(arr[0]);\n    int target = 15;\n    int result = binarySearchRecursive(arr, 0, size - 1, target);\n\n    (result == -1) ? std::cout << \"Element not found.\" : std::cout << \"Element found at index \" << result;\n    return 0;\n}\n```\n\n### 3. Modern C++ Approach (std::vector)\nIn modern C++, it is often better to use `std::vector` than raw arrays.\n\n```cpp\n#include <iostream>\n#include <vector>\n\n// Using std::vector and auto for cleaner code\nint binarySearchVector(const std::vector<int>& arr, int target) {\n    int left = 0;\n    int right = (int)arr.size() - 1; // Cast to int because size() is unsigned\n\n    while (left <= right) {\n        int mid = left + (right - left) / 2;\n\n        if (arr.at(mid) == target) { // .at() throws an exception if out of bounds (safer)\n            return mid;\n        } else if (arr[mid] < target) {\n            left = mid + 1;\n        } else {\n            right = mid - 1;\n        }\n    }\n    return -1;\n}\n\nint main() {\n    std::vector<int> arr = {3, 6, 9, 12, 15, 18, 21};\n    int target = 18;\n    \n    int result = binarySearchVector(arr, target);\n\n    if (result != -1) {\n        std::cout << \"Element found at index: \" << result << std::endl;\n    } else {\n        std::cout << \"Element not found.\" << std::endl;\n    }\n\n    return 0;\n}\n```\n\n### Key Implementation Details\n1.  **Time Complexity:** $O(\\log n)$ — Because we cut the search space in half every time.\n2.  **Prerequisite:** The input array **must** be sorted in ascending order.\n3.  **Overflow Safety:** We use `mid = left + (right - left) / 2` instead of `mid = (left + right) / 2`. For very large arrays, `left + right` can exceed the maximum value an integer can hold, causing the program to crash. The subtraction method prevents this.",
+    "response": "Here is a complete C++ program that implements binary search. I have included the function itself, a `main` function to demonstrate its usage, and comments explaining the logic.\n\n```cpp\n#include <iostream>\nusing namespace std;\n\n// Function to perform binary search on a sorted array\n// arr[]: The sorted array\n// l:    Starting index (left boundary)\n// r:    Ending index (right boundary)\n// x:    The value to search for\nint binarySearch(int arr[], int l, int r, int x) {\n    while (l <= r) {\n        // Calculate the middle index to avoid overflow (though unlikely in this small example)\n        int mid = l + (r - l) / 2;\n\n        // Check if x is present at mid\n        if (arr[mid] == x)\n            return mid;\n\n        // If x is greater, ignore the left half\n        if (arr[mid] < x)\n            l = mid + 1;\n\n        // If x is smaller, ignore the right half\n        else\n            r = mid - 1;\n    }\n\n    // If we reach here, then the element was not present\n    return -1;\n}\n\n// Driver code to test the function\nint main(void) {\n    int arr[] = {2, 3, 4, 10, 40};\n    int n = sizeof(arr) / sizeof(arr[0]); // Calculate array size\n    int x = 10;\n    int result = binarySearch(arr, 0, n - 1, x);\n\n    if (result == -1)\n        cout << \"Element is not present in array\";\n    else\n        cout << \"Element is present at index \" << result;\n\n    return 0;\n}\n```\n\n### Key Concepts:\n\n1.  **Sorted Array:** Binary search only works if the array is sorted in ascending or descending order.\n2.  **Divide and Conquer:** The algorithm repeatedly divides the search interval in half.\n3.  **Logic:**\n    *   It calculates the `mid` index.\n    *   If the element at `mid` matches the target (`x`), it returns the index.\n    *   If `x` is **greater** than `arr[mid]`, the target must be in the right half, so we set the left boundary `l` to `mid + 1`.\n    *   If `x` is **less** than `arr[mid]`, the target must be in the left half, so we set the right boundary `r` to `mid - 1`.\n4.  **Termination:** The loop continues as long as `l <= r`. If the loop finishes without finding the element, the function returns `-1`.\n\n### Complexity:\n*   **Time Complexity:** $O(\\log n)$ — because the size of the search space is halved every time.\n*   **Space Complexity:** $O(1)$ — it uses only a few variables (iterative approach).",
     "costUsd": 0,
-    "latencyMs": 86906,
+    "latencyMs": 74326,
     "classificationSource": "heuristic"
+  },
+  {
+    "taskId": "code-002",
+    "category": "code",
+    "strategy": "learned-bandit",
+    "modelUsed": "cohere/north-mini-code:free",
+    "response": "Here is a robust C++ function to perform a binary search. I have provided the solution using `std::vector` (which is the standard C++ way) and also included a version for raw C-style arrays.\n\n### 1. Using `std::vector` (Recommended)\n\nThis is the most idiomatic way to search in C++. It automatically handles the size of the array.\n\n```cpp\n#include <iostream>\n#include <vector>\n\n/**\n * Performs binary search on a sorted vector.\n * \n * @param arr The sorted vector to search.\n * @param target The value to find.\n * @return The index of the target if found, -1 otherwise.\n */\nint binarySearch(const std::vector<int>& arr, int target) {\n    int left = 0;\n    int right = arr.size() - 1;\n\n    while (left <= right) {\n        // Calculate mid to avoid integer overflow (though rare in modern systems)\n        int mid = left + (right - left) / 2;\n\n        if (arr[mid] == target) {\n            return mid; // Element found\n        } else if (arr[mid] < target) {\n            left = mid + 1; // Search the right half\n        } else {\n            right = mid - 1; // Search the left half\n        }\n    }\n\n    return -1; // Element not found\n}\n\n// Example usage\nint main() {\n    std::vector<int> data = {2, 5, 8, 12, 16, 23, 38, 56, 72, 91};\n    int target = 23;\n    int result = binarySearch(data, target);\n\n    if (result != -1) {\n        std::cout << \"Element \" << target << \" found at index \" << result << std::endl;\n    } else {\n        std::cout << \"Element \" << target << \" not found in the array.\" << std::endl;\n    }\n\n    return 0;\n}\n```\n\n### 2. Using Raw Arrays (C-style)\n\nIf you are working with standard C-style arrays (e.g., `int arr[]`), you must pass the size of the array as an argument because the function cannot determine the size of a raw array at runtime.\n\n```cpp\n#include <iostream>\n\n// Function for raw arrays\nint binarySearch(int arr[], int left, int right, int target) {\n    while (left <= right) {\n        int mid = left + (right - left) / 2;\n\n        if (arr[mid] == target) {\n            return mid;\n        } else if (arr[mid] < target) {\n            left = mid + 1;\n        } else {\n            right = mid - 1;\n        }\n    }\n    return -1;\n}\n\nint main() {\n    int myArray[] = {10, 20, 30, 40, 50};\n    int n = sizeof(myArray) / sizeof(myArray[0]); // Calculate size\n    int target = 30;\n\n    int result = binarySearch(myArray, 0, n - 1, target);\n\n    if (result != -1) {\n        std::cout << \"Found at index: \" << result << std::endl;\n    } else {\n        std::cout << \"Not found.\" << std::endl;\n    }\n\n    return 0;\n}\n```\n\n### Key Details:\n*   **Time Complexity:** $O(\\log n)$ — The search space is halved every step.\n*   **Space Complexity:** $O(1)$ — It uses a constant amount of extra memory (iterative approach).\n*   **Prerequisite:** The input array **must** be sorted. Binary search will not work correctly on unsorted data.",
+    "costUsd": 0,
+    "latencyMs": 67976
+  },
+  {
+    "taskId": "code-003",
+    "category": "code",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "Below is a compact, self‑contained implementation that checks whether an **undirected** graph contains a cycle using a depth‑first search (DFS).  \nThe graph is represented as an adjacency list – a `dict` (or `defaultdict`) where each key is a node and the value is an iterable of its neighbours.\n\n```python\nfrom collections import defaultdict\nfrom typing import Dict, Iterable, Set, Any\n\ndef has_cycle(graph: Dict[Any, Iterable[Any]]) -> bool:\n    \"\"\"\n    Detects a cycle in an undirected graph using DFS.\n\n    Parameters\n    ----------\n    graph : dict\n        Adjacency list representation of the graph.\n        Keys are nodes; values are iterables of neighbouring nodes.\n\n    Returns\n    -------\n    bool\n        True if the graph contains at least one cycle, False otherwise.\n    \"\"\"\n    visited: Set[Any] = set()\n\n    def dfs(node: Any, parent: Any) -> bool:\n        \"\"\"Return True if a cycle is found in the component containing `node`.\"\"\"\n        visited.add(node)\n        for neighbour in graph[node]:\n            if neighbour == parent:\n                # The edge leads back to the node we just came from – ignore it.\n                continue\n            if neighbour in visited:\n                # We found a back‑edge to an already visited node that is not the parent.\n                return True\n            if dfs(neighbour, node):\n                return True\n        return False\n\n    # The graph may be disconnected – run DFS from every unvisited node.\n    for start in graph:\n        if start not in visited:\n            if dfs(start, None):\n                return True\n    return False\n```\n\n### How it works\n\n1. **Visited set** – keeps track of nodes that have already been explored.\n2. **Parent parameter** – when exploring an undirected edge `(u, v)` we ignore the edge that leads back to the node we just came from (`parent`).  \n   Any other edge to an already visited node indicates a cycle.\n3. **DFS recursion** – if any recursive call returns `True`, we propagate that up the call stack.\n4. **Disconnected graphs** – we start a DFS from every node that hasn't been visited yet.\n\n### Complexity\n\n- **Time**: `O(V + E)` – each vertex and edge is examined at most once.\n- **Space**: `O(V)` – for the recursion stack and the visited set.\n\n### Example usage\n\n```python\nif __name__ == \"__main__\":\n    # Example 1: Graph with a cycle\n    g1 = defaultdict(list, {\n        1: [2, 3],\n        2: [1, 3],\n        3: [1, 2, 4],\n        4: [3]\n    })\n    print(has_cycle(g1))   # Output: True\n\n    # Example 2: A tree (no cycle)\n    g2 = defaultdict(list, {\n        'a': ['b', 'c'],\n        'b': ['a', 'd'],\n        'c': ['a'],\n        'd': ['b']\n    })\n    print(has_cycle(g2))   # Output: False\n```\n\nFeel free to adapt the function to your specific graph representation (e.g., list of edges, adjacency matrix, etc.). The core idea—DFS with parent tracking—remains the same.",
+    "costUsd": 0,
+    "latencyMs": 31377
+  },
+  {
+    "taskId": "code-003",
+    "category": "code",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "Here is a clean, well-commented Python implementation using an **adjacency list** representation.\n\n### The Algorithm Logic\nFor an **undirected graph**, a cycle exists if during DFS traversal, we encounter a **visited node that is NOT the parent** of the current node.\n*   **Parent Tracking**: Essential because in an undirected graph, edge $u \\leftrightarrow v$ appears twice ($u$ in $v$'s list, $v$ in $u$'s list). Visiting the parent is just backtracking, not a cycle.\n\n```python\nfrom collections import defaultdict\n\ndef has_cycle_undirected(graph, num_vertices):\n    \"\"\"\n    Detects cycle in an undirected graph using DFS.\n    \n    Args:\n        graph (dict): Adjacency list {node: [neighbors]}.\n        num_vertices (int): Total number of vertices (0 to V-1 or 1 to V).\n        \n    Returns:\n        bool: True if cycle exists, False otherwise.\n    \"\"\"\n    visited = set()\n    \n    # The graph might be disconnected, so we check every component\n    for vertex in range(num_vertices):\n        if vertex not in visited:\n            # Start DFS. Parent of root is -1 (or None)\n            if dfs_cycle_check(vertex, -1, visited, graph):\n                return True\n                \n    return False\n\ndef dfs_cycle_check(current, parent, visited, graph):\n    \"\"\"\n    Recursive DFS helper.\n    Returns True immediately if a cycle is found.\n    \"\"\"\n    visited.add(current)\n    \n    for neighbor in graph.get(current, []):\n        if neighbor not in visited:\n            # Recurse: pass 'current' as the new parent\n            if dfs_cycle_check(neighbor, current, visited, graph):\n                return True\n        elif neighbor != parent:\n            # Neighbor is visited AND not the parent -> CYCLE FOUND\n            return True\n            \n    return False\n```\n\n---\n\n### Example Usage\n\n```python\n# --- Example 1: Graph WITH a cycle (0-1-2-0) ---\nV1 = 4\nedges1 = [(0, 1), (1, 2), (2, 0), (2, 3)] # Triangle 0-1-2\ngraph1 = defaultdict(list)\nfor u, v in edges1:\n    graph1[u].append(v)\n    graph1[v].append(u)\n\nprint(f\"Graph 1 has cycle: {has_cycle_undirected(graph1, V1)}\") \n# Output: True\n\n# --- Example 2: Graph WITHOUT a cycle (Tree) ---\nV2 = 4\nedges2 = [(0, 1), (0, 2), (2, 3)] \ngraph2 = defaultdict(list)\nfor u, v in edges2:\n    graph2[u].append(v)\n    graph2[v].append(u)\n\nprint(f\"Graph 2 has cycle: {has_cycle_undirected(graph2, V2)}\") \n# Output: False\n\n# --- Example 3: Disconnected Graph (Cycle in one component) ---\nV3 = 6\nedges3 = [(0, 1), (1, 2), (2, 0), (3, 4)] # Component 0-1-2 has cycle; 3-4 is a tree\ngraph3 = defaultdict(list)\nfor u, v in edges3:\n    graph3[u].append(v)\n    graph3[v].append(u)\n\nprint(f\"Graph 3 has cycle: {has_cycle_undirected(graph3, V3)}\") \n# Output: True\n```\n\n---\n\n### Complexity Analysis\n| Metric | Complexity | Reason |\n| :--- | :--- | :--- |\n| **Time** | $O(V + E)$ | Every vertex visited once, every edge checked twice (once from each end). |\n| **Space** | $O(V)$ | `visited` set + Recursion stack depth (worst case $V$ for a skewed tree). |\n\n---\n\n### Iterative Version (Stack) — *No Recursion Limit Issues*\nIf your graph is very deep (e.g., 10,000+ nodes in a line), Python's recursion limit (~1000) will raise a `RecursionError`. Use this iterative version instead:\n\n```python\ndef has_cycle_iterative(graph, num_vertices):\n    visited = set()\n    \n    for start_node in range(num_vertices):\n        if start_node in visited:\n            continue\n            \n        # Stack stores tuples: (current_node, parent_node)\n        stack = [(start_node, -1)]\n        \n        while stack:\n            current, parent = stack.pop()\n            \n            if current in visited:\n                # If we pop a visited node, it means we reached it via a \n                # different path than the tree edge -> CYCLE\n                return True\n            \n            visited.add(current)\n            \n            for neighbor in graph.get(current, []):\n                if neighbor != parent:\n                    stack.append((neighbor, current))\n                    \n    return False\n```\n**Note on Iterative Logic:** The iterative version marks `visited` **upon popping** (not pushing). This allows the same node to be pushed onto the stack multiple times via different neighbors. If it gets popped a second time, it's already in `visited` $\\rightarrow$ Cycle detected. This mimics the recursive \"back-edge\" check perfectly.",
+    "costUsd": 0,
+    "latencyMs": 41026
+  },
+  {
+    "taskId": "code-003",
+    "category": "code",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-003",
+    "category": "code",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-004",
+    "category": "code",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-004",
+    "category": "code",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-004",
+    "category": "code",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-004",
+    "category": "code",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-005",
+    "category": "code",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-005",
+    "category": "code",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-005",
+    "category": "code",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-005",
+    "category": "code",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-006",
+    "category": "code",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-006",
+    "category": "code",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-006",
+    "category": "code",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-006",
+    "category": "code",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-007",
+    "category": "code",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-007",
+    "category": "code",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-007",
+    "category": "code",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-007",
+    "category": "code",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-008",
+    "category": "code",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-008",
+    "category": "code",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-008",
+    "category": "code",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-008",
+    "category": "code",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-009",
+    "category": "code",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-009",
+    "category": "code",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-009",
+    "category": "code",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "code-009",
+    "category": "code",
+    "strategy": "learned-bandit",
+    "modelUsed": "cohere/north-mini-code:free",
+    "response": "Here is a Python implementation of topological sorting using **Kahn's algorithm**.\n\nThis implementation uses an adjacency list representation of the graph. It assumes that the nodes are numbered from `0` to `n-1`, but the logic can be adapted for other data types (like strings) by changing how the in-degree map is initialized.\n\n### The Python Function\n\n```python\nfrom collections import deque\n\ndef kahn_topological_sort(graph, n):\n    \"\"\"\n    Performs a topological sort on a directed acyclic graph (DAG) using Kahn's algorithm.\n    \n    Args:\n        graph (dict): An adjacency list where keys are nodes and values are lists \n                      of neighboring nodes. \n                      Example: {0: [1, 2], 1: [3], 2: [3], 3: []}\n        n (int): The total number of nodes in the graph (assuming nodes are 0 to n-1).\n        \n    Returns:\n        list: A list representing the topological order. \n              If a cycle is detected, raises a ValueError.\n    \"\"\"\n    \n    # 1. Calculate the in-degree of every node.\n    # Initialize in_degree array with 0 for all nodes 0 to n-1.\n    in_degree = [0] * n\n    \n    for u in graph:\n        for v in graph[u]:\n            in_degree[v] += 1\n            \n    # 2. Initialize the queue with all nodes having in-degree 0.\n    queue = deque()\n    for i in range(n):\n        if in_degree[i] == 0:\n            queue.append(i)\n            \n    topo_order = []\n    \n    # 3. Process the nodes in the queue.\n    while queue:\n        # a. Remove a node from the front of the queue\n        u = queue.popleft()\n        topo_order.append(u)\n        \n        # b. Decrement the in-degree of every adjacent node of u\n        for v in graph.get(u, []):\n            in_degree[v] -= 1\n            \n            # c. If in-degree becomes 0, add it to the queue\n            if in_degree[v] == 0:\n                queue.append(v)\n                \n    # 4. Check for cycles.\n    # If we processed all nodes, the graph is acyclic. Otherwise, a cycle exists.\n    if len(topo_order) != n:\n        raise ValueError(\"Graph contains a cycle. Topological sort not possible.\")\n        \n    return topo_order\n\n# --- Example Usage ---\nif __name__ == \"__main__\":\n    # Example Graph:\n    # 0 -> 1\n    # 0 -> 2\n    # 1 -> 3\n    # 2 -> 3\n    # 3 -> 4\n    # Valid topological orders: [0, 1, 2, 3, 4] or [0, 2, 1, 3, 4], etc.\n    n = 5\n    example_graph = {\n        0: [1, 2],\n        1: [3],\n        2: [3],\n        3: [4],\n        4: []\n    }\n    \n    try:\n        result = kahn_topological_sort(example_graph, n)\n        print(\"Topological Order:\", result)\n    except ValueError as e:\n        print(e)\n```\n\n### How it Works\n\n1.  **Calculate In-Degrees (`O(V + E)`)**: We iterate through the graph and count how many times every node appears as a neighbor. This count is stored in the `in_degree` array.\n2.  **Initialize Queue**: We create a queue and add every node that has an `in_degree` of 0. These are the starting points (nodes with no dependencies).\n3.  **Process Loop**:\n    *   We remove a node `u` from the front of the queue.\n    *   We add `u` to our `topo_order` list.\n    *   We look at all neighbors `v` of `u`. We reduce their in-degree by 1 (since one dependency has been satisfied).\n    *   If a neighbor's in-degree drops to 0, we add that neighbor to the queue because it now has no remaining dependencies.\n4.  **Cycle Detection**: If the length of the final `topo_order` is less than `n`, it means we couldn't process every node (some nodes were stuck waiting for others in a cycle). In this case, the algorithm raises an error.\n\n### Complexity Analysis\n\n*   **Time Complexity**: **O(V + E)**, where V is the number of vertices and E is the number of edges. We visit each node and edge exactly once.\n*   **Space Complexity**: **O(V)** to store the in-degree array and the queue.",
+    "costUsd": 0,
+    "latencyMs": 71100
+  },
+  {
+    "taskId": "code-010",
+    "category": "code",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "Below is a compact, self‑contained C++ implementation of **Kadane’s algorithm** – the classic linear‑time solution for the maximum sub‑array (contiguous) sum problem.\n\n```cpp\n#include <vector>\n#include <algorithm>   // for std::max\n#include <limits>      // for std::numeric_limits\n\n/**\n * @brief  Computes the maximum sum of any contiguous sub‑array.\n *\n * @param arr  A vector of integers (can contain negative values).\n * @return    The maximum sub‑array sum.  If the vector is empty, returns 0.\n *\n * Complexity:  O(n) time, O(1) auxiliary space.\n */\nint maxSubArraySum(const std::vector<int>& arr)\n{\n    if (arr.empty()) return 0;          // or throw an exception if you prefer\n\n    int currentMax = arr[0];            // best sum ending at current position\n    int globalMax  = arr[0];            // best sum seen so far\n\n    for (size_t i = 1; i < arr.size(); ++i)\n    {\n        // Either extend the previous sub‑array or start a new one at arr[i]\n        currentMax = std::max(arr[i], currentMax + arr[i]);\n\n        // Update the global best if needed\n        globalMax = std::max(globalMax, currentMax);\n    }\n\n    return globalMax;\n}\n```\n\n### How it works\n\n1. **`currentMax`** keeps the best sum of a sub‑array that *ends* at the current index.  \n   - If adding the current element to the previous sub‑array (`currentMax + arr[i]`) is better than starting fresh with `arr[i]`, we extend the sub‑array.  \n   - Otherwise we start a new sub‑array at the current element.\n\n2. **`globalMax`** records the best sum seen anywhere in the array so far.\n\n3. The loop runs once over the array → **O(n)** time.  \n   Only two integer variables are used → **O(1)** extra space.\n\n### Example usage\n\n```cpp\n#include <iostream>\n\nint main()\n{\n    std::vector<int> data = { -2, 1, -3, 4, -1, 2, 1, -5, 4 };\n    std::cout << \"Maximum sub‑array sum = \"\n              << maxSubArraySum(data) << '\\n';   // prints 6\n    return 0;\n}\n```\n\nThe maximum sub‑array in the example is `[4, -1, 2, 1]`, whose sum is `6`.\n\nFeel free to adapt the function signature (e.g., return `long long` for very large sums, or accept iterators instead of a `vector`).",
+    "costUsd": 0,
+    "latencyMs": 43171
+  },
+  {
+    "taskId": "code-010",
+    "category": "code",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "Here is a clean, standard C++ implementation of **Kadane's Algorithm**.\n\n### Implementation\n\n```cpp\n#include <vector>\n#include <algorithm> // For std::max\n#include <limits>    // For std::numeric_limits\n#include <iostream>\n\n/**\n * Finds the maximum sum of a contiguous subarray.\n * \n * @param nums Input array of integers (can be positive, negative, or zero).\n * @return The maximum subarray sum. \n *         Returns 0 for an empty array (or std::numeric_limits<int>::min() \n *         if you prefer to treat empty as invalid).\n */\nint maxSubArraySum(const std::vector<int>& nums) {\n    if (nums.empty()) {\n        return 0; // Or throw an exception, depending on requirements\n    }\n\n    // Initialize both to the first element. \n    // This correctly handles arrays with all negative numbers.\n    int maxSoFar = nums[0];\n    int maxEndingHere = nums[0];\n\n    // Start loop from the second element (index 1)\n    for (size_t i = 1; i < nums.size(); ++i) {\n        // Core Kadane logic: either extend the previous subarray or start new at current element\n        maxEndingHere = std::max(nums[i], maxEndingHere + nums[i]);\n        \n        // Update global max if the current local max is better\n        maxSoFar = std::max(maxSoFar, maxEndingHere);\n    }\n\n    return maxSoFar;\n}\n\n// --- Example Usage ---\nint main() {\n    // Test Case 1: Standard mixed array\n    std::vector<int> arr1 = {-2, 1, -3, 4, -1, 2, 1, -5, 4};\n    std::cout << \"Array 1: Max Sum = \" << maxSubArraySum(arr1) << \" (Expected: 6)\\n\";\n\n    // Test Case 2: All negative numbers\n    std::vector<int> arr2 = {-5, -2, -8, -1, -9};\n    std::cout << \"Array 2: Max Sum = \" << maxSubArraySum(arr2) << \" (Expected: -1)\\n\";\n\n    // Test Case 3: All positive numbers\n    std::vector<int> arr3 = {1, 2, 3, 4};\n    std::cout << \"Array 3: Max Sum = \" << maxSubArraySum(arr3) << \" (Expected: 10)\\n\";\n\n    // Test Case 4: Single element\n    std::vector<int> arr4 = {42};\n    std::cout << \"Array 4: Max Sum = \" << maxSubArraySum(arr4) << \" (Expected: 42)\\n\";\n\n    // Test Case 5: Empty array\n    std::vector<int> arr5 = {};\n    std::cout << \"Array 5: Max Sum = \" << maxSubArraySum(arr5) << \" (Expected: 0)\\n\";\n\n    return 0;\n}\n```\n\n---\n\n### Key Details\n\n| Aspect | Detail |\n| :--- | :--- |\n| **Time Complexity** | **O(N)** — Single pass through the array. |\n| **Space Complexity** | **O(1)** — Constant extra space used. |\n| **Initialization** | `maxSoFar` and `maxEndingHere` are initialized to `nums[0]`, **not 0**. This is critical for correct handling of **all-negative arrays** (e.g., `[-5, -2]` should return `-2`, not `0`). |\n| **Empty Input** | Returns `0`. You may change this to `throw std::invalid_argument(\"Empty array\")` or return `INT_MIN` based on your specific API contract. |\n\n---\n\n### Variation: Returning Indices (Start/End)\nIf you need the **subarray indices** (not just the sum), track the start index whenever you \"reset\" the current subarray:\n\n```cpp\nstd::tuple<int, int, int> maxSubArrayWithIndices(const std::vector<int>& nums) {\n    if (nums.empty()) return {0, -1, -1}; // Sum, Start, End\n\n    int maxSoFar = nums[0];\n    int maxEndingHere = nums[0];\n    int start = 0, end = 0;\n    int tempStart = 0;\n\n    for (size_t i = 1; i < nums.size(); ++i) {\n        if (nums[i] > maxEndingHere + nums[i]) {\n            maxEndingHere = nums[i];\n            tempStart = i; // New subarray starts here\n        } else {\n            maxEndingHere += nums[i];\n        }\n\n        if (maxEndingHere > maxSoFar) {\n            maxSoFar = maxEndingHere;\n            start = tempStart;\n            end = i;\n        }\n    }\n    return {maxSoFar, start, end};\n}\n```",
+    "costUsd": 0,
+    "latencyMs": 42663
+  },
+  {
+    "taskId": "code-010",
+    "category": "code",
+    "strategy": "heuristic-router",
+    "modelUsed": "cohere/north-mini-code:free",
+    "response": "Here is the C++ implementation of Kadane's algorithm to find the maximum subarray sum.\n\n### The Algorithm\nKadane's algorithm works by iterating through the array once. At each step, it maintains two variables:\n1.  **`max_ending_here`**: The sum of the maximum subarray found so far ending at the current index.\n2.  **`max_so_far`**: The global maximum sum found anywhere in the array up to the current index.\n\nFor every element, we decide whether it is better to:\n1.  **Start a new subarray** at the current element (if the current element is greater than the accumulated sum plus the current element).\n2.  **Extend the existing subarray** (keep adding the current element to the accumulated sum).\n\nTime Complexity: **O(n)**\nSpace Complexity: **O(1)**\n\n### C++ Code\n\n```cpp\n#include <vector>\n#include <algorithm> // For std::max\n#include <iostream>\n\nclass Solution {\npublic:\n    int maxSubArray(std::vector<int>& nums) {\n        // Handle edge case for empty array (optional, depending on requirements)\n        if (nums.empty()) {\n            return 0; \n        }\n\n        // Initialize both variables to the first element\n        // This ensures correctness even if all numbers are negative\n        int max_so_far = nums[0];\n        int max_ending_here = nums[0];\n\n        // Start iterating from the second element\n        for (int i = 1; i < nums.size(); i++) {\n            // Either extend the current subarray or start a new one\n            // max_ending_here = max(current_element, current_element + previous_ending_here)\n            max_ending_here = std::max(nums[i], max_ending_here + nums[i]);\n\n            // Update the global maximum if we found a new higher sum\n            max_so_far = std::max(max_so_far, max_ending_here);\n        }\n\n        return max_so_far;\n    }\n};\n\n// Example usage\nint main() {\n    Solution sol;\n    \n    // Test Case 1: Standard case\n    std::vector<int> nums1 = {-2, 1, -3, 4, -1, 2, 1, -5, 4};\n    std::cout << \"Max Subarray Sum (Test 1): \" << sol.maxSubArray(nums1) << std::endl; \n    // Expected Output: 6 (Subarray: [4, -1, 2, 1])\n\n    // Test Case 2: All negative numbers\n    std::vector<int> nums2 = {-5, -2, -8, -1};\n    std::cout << \"Max Subarray Sum (Test 2): \" << sol.maxSubArray(nums2) << std::endl;\n    // Expected Output: -1 (Subarray: [-1])\n\n    // Test Case 3: All positive numbers\n    std::vector<int> nums3 = {1, 2, 3, 4};\n    std::cout << \"Max Subarray Sum (Test 3): \" << sol.maxSubArray(nums3) << std::endl;\n    // Expected Output: 10 (Subarray: [1, 2, 3, 4])\n\n    return 0;\n}\n```\n\n### Explanation of Key Parts\n\n1.  **`std::max(nums[i], max_ending_here + nums[i])`**: This is the core logic.\n    *   If `max_ending_here` is positive, adding `nums[i]` makes it larger, so we keep extending.\n    *   If `max_ending_here` is negative, adding `nums[i]` makes it smaller than just taking `nums[i]` alone, so we reset the subarray starting at index `i`.\n2.  **Initialization**: We set both `max_so_far` and `max_ending_here` to `nums[0]`. This is crucial. If you initialized them to 0, an array of all negative numbers would incorrectly return 0.",
+    "costUsd": 0,
+    "latencyMs": 32333,
+    "classificationSource": "heuristic"
+  },
+  {
+    "taskId": "code-010",
+    "category": "code",
+    "strategy": "learned-bandit",
+    "modelUsed": "cohere/north-mini-code:free",
+    "response": "Here is the C++ implementation of Kadane's Algorithm to find the maximum subarray sum.\n\n```cpp\n#include <iostream>\n#include <vector>\n#include <algorithm> // For std::max\n\n/**\n * Finds the maximum sum of any contiguous subarray using Kadane's Algorithm.\n * \n * @param nums A vector of integers.\n * @return The maximum sum of a contiguous subarray.\n */\nint maxSubArray(const std::vector<int>& nums) {\n    // Handle empty input case\n    if (nums.empty()) {\n        return 0;\n    }\n\n    // Initialize variables with the first element\n    // current_sum keeps track of the max sum ending at the current position\n    // max_sum keeps track of the global maximum found so far\n    int current_sum = nums[0];\n    int max_sum = nums[0];\n\n    // Iterate through the array starting from the second element\n    for (size_t i = 1; i < nums.size(); ++i) {\n        // Decide whether to start a new subarray at nums[i] \n        // or extend the previous subarray (current_sum + nums[i])\n        current_sum = std::max(nums[i], current_sum + nums[i]);\n\n        // Update the global maximum if the current sum is greater\n        max_sum = std::max(max_sum, current_sum);\n    }\n\n    return max_sum;\n}\n\n// Example usage\nint main() {\n    std::vector<int> nums = {-2, 1, -3, 4, -1, 2, 1, -5, 4};\n\n    int result = maxSubArray(nums);\n\n    std::cout << \"The maximum subarray sum is: \" << result << std::endl;\n\n    return 0;\n}\n```\n\n### How it works:\n1.  **Initialization:** Both `current_sum` and `max_sum` are initialized to the first element of the array. This handles the edge case where all numbers are negative.\n2.  **Iteration:** The loop starts at index 1.\n3.  **Logic:** At each element `nums[i]`, we calculate `current_sum`.\n    *   `current_sum` is the maximum of:\n        *   `nums[i]`: Starting a new subarray at the current index.\n        *   `current_sum + nums[i]`: Extending the previous best subarray.\n4.  **Result:** We compare `current_sum` with `max_sum` and update `max_sum` if the current sum is greater.\n\n**Time Complexity:** O(n)\n**Space Complexity:** O(1)",
+    "costUsd": 0,
+    "latencyMs": 35443
+  },
+  {
+    "taskId": "code-011",
+    "category": "code",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "Below is a compact, self‑contained implementation that checks whether a binary tree is **height‑balanced** (also called *AVL‑balanced*).  \nThe routine runs in **O(n)** time and uses **O(h)** auxiliary space, where *h* is the height of the tree (worst‑case *O(n)* for a degenerate tree, best‑case *O(log n)* for a perfectly balanced tree).\n\n```python\n# ------------------------------------------------------------\n#  Height‑balanced binary‑tree checker\n# ------------------------------------------------------------\nfrom __future__ import annotations\nfrom dataclasses import dataclass\nfrom typing import Optional, Tuple\n\n@dataclass\nclass TreeNode:\n    \"\"\"Simple binary‑tree node.\"\"\"\n    val: int\n    left: Optional['TreeNode'] = None\n    right: Optional['TreeNode'] = None\n\ndef is_balanced(root: Optional[TreeNode]) -> bool:\n    \"\"\"\n    Return True iff the binary tree rooted at `root` is height‑balanced.\n    A tree is height‑balanced if for every node the heights of its\n    left and right subtrees differ by at most 1.\n    \"\"\"\n    def check(node: Optional[TreeNode]) -> Tuple[bool, int]:\n        \"\"\"\n        Recursively compute:\n          - whether the subtree rooted at `node` is balanced\n          - the height of that subtree\n        \"\"\"\n        if node is None:\n            return True, -1   # height of empty tree is defined as -1\n\n        left_bal, left_h = check(node.left)\n        if not left_bal:          # early exit if left side already unbalanced\n            return False, 0\n\n        right_bal, right_h = check(node.right)\n        if not right_bal:         # early exit if right side already unbalanced\n            return False, 0\n\n        # Current node is balanced iff left/right heights differ by ≤ 1\n        balanced = abs(left_h - right_h) <= 1\n        height = max(left_h, right_h) + 1\n        return balanced, height\n\n    balanced, _ = check(root)\n    return balanced\n\n# ------------------------------------------------------------\n#  Example usage\n# ------------------------------------------------------------\nif __name__ == \"__main__\":\n    # Balanced tree\n    #        1\n    #       / \\\n    #      2   3\n    #     /\n    #    4\n    root_bal = TreeNode(1,\n                        TreeNode(2,\n                                 TreeNode(4)),\n                        TreeNode(3))\n    print(is_balanced(root_bal))   # → True\n\n    # Unbalanced tree (left subtree height 3, right subtree height 0)\n    #        1\n    #       /\n    #      2\n    #     /\n    #    3\n    #   /\n    #  4\n    root_unbal = TreeNode(1,\n                          TreeNode(2,\n                                   TreeNode(3,\n                                            TreeNode(4))))\n    print(is_balanced(root_unbal)) # → False\n```\n\n### How it works\n\n1. **Base case** – An empty subtree is balanced and has height `-1`.  \n   (Defining the height of an empty tree as `-1` makes the height of a leaf node `0`.)\n\n2. **Recursive step** – For a non‑empty node:\n   * Recursively check the left subtree → `(left_bal, left_h)`.\n   * If the left subtree is already unbalanced, we can stop early.\n   * Recursively check the right subtree → `(right_bal, right_h)`.\n   * If the right subtree is unbalanced, stop early.\n   * The current node is balanced iff `abs(left_h - right_h) <= 1`.\n   * Height of the current node is `max(left_h, right_h) + 1`.\n\n3. **Result** – The helper returns a tuple `(balanced, height)`; the outer function only cares about the `balanced` flag.\n\n### Complexity\n\n* **Time** – Each node is visited once: `O(n)`.\n* **Space** – Recursion depth equals the tree height: `O(h)`.\n\nFeel free to adapt the `TreeNode` definition to match your own tree implementation.",
+    "costUsd": 0,
+    "latencyMs": 51594
+  },
+  {
+    "taskId": "code-011",
+    "category": "code",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "code-011",
+    "category": "code",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "code-011",
+    "category": "code",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "code-012",
+    "category": "code",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "code-012",
+    "category": "code",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "code-012",
+    "category": "code",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "code-012",
+    "category": "code",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "code-013",
+    "category": "code",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "code-013",
+    "category": "code",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "code-013",
+    "category": "code",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "code-013",
+    "category": "code",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "code-014",
+    "category": "code",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "code-014",
+    "category": "code",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "code-014",
+    "category": "code",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "code-014",
+    "category": "code",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "code-015",
+    "category": "code",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "code-015",
+    "category": "code",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "code-015",
+    "category": "code",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "code-015",
+    "category": "code",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "reasoning-001",
     "category": "reasoning",
     "strategy": "always-cheap",
-    "modelUsed": "openai/gpt-oss-20b:free",
-    "response": "The speed is found by dividing distance by time:\n\n\\[\n\\text{Speed} = \\frac{120\\ \\text{km}}{2\\ \\text{h}} = 60\\ \\text{km/h}.\n\\]\n\nSo the train travels at **60 km/h**.",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 4168
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "reasoning-001",
     "category": "reasoning",
     "strategy": "always-expensive",
-    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
-    "response": "To find the speed, use the formula:\n\n\\[\n\\text{Speed} = \\frac{\\text{Distance}}{\\text{Time}}\n\\]\n\n**Calculation:**\n\\[\n\\text{Speed} = \\frac{120 \\text{ km}}{2 \\text{ hours}} = 60 \\text{ km/h}\n\\]\n\n**Answer:** The train's speed is **60 km/h**.",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 2416
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "reasoning-001",
     "category": "reasoning",
     "strategy": "heuristic-router",
-    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
-    "response": "To find the speed, use the formula:\n\n$$ \\text{Speed} = \\frac{\\text{Distance}}{\\text{Time}} $$\n\n**Calculation:**\n$$ \\text{Speed} = \\frac{120 \\text{ km}}{2 \\text{ hours}} = 60 \\text{ km/h} $$\n\n**Answer:** The train's speed is **60 km/h**.",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 6287,
-    "classificationSource": "heuristic"
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-001",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "reasoning-002",
     "category": "reasoning",
     "strategy": "always-cheap",
-    "modelUsed": "openai/gpt-oss-20b:free",
-    "response": "₹800 – 25 % = ₹800 × 0.75 = **₹600**.",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 4453
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "reasoning-002",
     "category": "reasoning",
     "strategy": "always-expensive",
-    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
-    "response": "**Final Price: ₹600**\n\n**Calculation:**\n1.  **Discount Amount:** 25% of ₹800 = $0.25 \\times 800 = \\text{₹}200$\n2.  **Final Price:** ₹800 - ₹200 = **₹600**\n\n*(Alternatively: You pay 75% of the original price. $0.75 \\times 800 = 600$)*",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 3493
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "reasoning-002",
     "category": "reasoning",
     "strategy": "heuristic-router",
-    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
-    "response": "**Final Price: ₹600**\n\n**Calculation:**\n1.  **Discount Amount:** 25% of ₹800 = $0.25 \\times 800 = \\text{₹}200$\n2.  **Final Price:** ₹800 - ₹200 = **₹600**\n\n*(Alternatively: You pay 75% of the original price. $0.75 \\times 800 = 600$)*",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 25839,
-    "classificationSource": "llm-fallback"
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-002",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-003",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-003",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-003",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-003",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-004",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-004",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-004",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-004",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-005",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-005",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-005",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-005",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-006",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-006",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-006",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-006",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-007",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-007",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-007",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-007",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-008",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-008",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-008",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-008",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-009",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-009",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-009",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-009",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-010",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-010",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-010",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-010",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-011",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-011",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-011",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-011",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-012",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-012",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-012",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-012",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-013",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-013",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-013",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-013",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-014",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-014",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-014",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-014",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-015",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-015",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-015",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "reasoning-015",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "extraction-001",
     "category": "extraction",
     "strategy": "always-cheap",
-    "modelUsed": "openai/gpt-oss-20b:free",
-    "response": "**Cities mentioned:**\n\n- Kolkata  \n- Delhi  \n- Lucknow",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 3904
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "extraction-001",
     "category": "extraction",
     "strategy": "always-expensive",
-    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
-    "response": "The cities mentioned are:\n*   Kolkata\n*   Delhi\n*   Lucknow",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 2092
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "extraction-001",
     "category": "extraction",
     "strategy": "heuristic-router",
-    "modelUsed": "nvidia/nemotron-3-super-120b-a12b:free",
-    "response": "Based on the sentence: **\"Alice traveled from Kolkata to Delhi via Lucknow.\"**, the extracted cities are:\n\n1. **Kolkata** (starting point, indicated by \"from\")\n2. **Delhi** (destination, indicated by \"to\")\n3. **Lucknow** (intermediate stop, indicated by \"via\")\n\nAll three are well-known cities in India. No other cities are mentioned in the sentence.\n\n**Extracted Cities:** Kolkata, Delhi, Lucknow.",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 5837,
-    "classificationSource": "heuristic"
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-001",
+    "category": "extraction",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "extraction-002",
     "category": "extraction",
     "strategy": "always-cheap",
-    "modelUsed": "openai/gpt-oss-20b:free",
-    "response": "**Company names extracted:**\n\n- Google  \n- Fitbit  \n- Microsoft",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 2317
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "extraction-002",
     "category": "extraction",
     "strategy": "always-expensive",
-    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
-    "response": "Google, Fitbit, Microsoft",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 2656
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "extraction-002",
@@ -165,118 +1254,1136 @@
     "response": null,
     "costUsd": 0,
     "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-002",
+    "category": "extraction",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-003",
+    "category": "extraction",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-003",
+    "category": "extraction",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-003",
+    "category": "extraction",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-003",
+    "category": "extraction",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-004",
+    "category": "extraction",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-004",
+    "category": "extraction",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-004",
+    "category": "extraction",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
     "error": "fetch failed"
   },
   {
+    "taskId": "extraction-004",
+    "category": "extraction",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "extraction-005",
+    "category": "extraction",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "extraction-005",
+    "category": "extraction",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "extraction-005",
+    "category": "extraction",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "fetch failed"
+  },
+  {
+    "taskId": "extraction-005",
+    "category": "extraction",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-006",
+    "category": "extraction",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-006",
+    "category": "extraction",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-006",
+    "category": "extraction",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-006",
+    "category": "extraction",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-007",
+    "category": "extraction",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-007",
+    "category": "extraction",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-007",
+    "category": "extraction",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-007",
+    "category": "extraction",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-008",
+    "category": "extraction",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-008",
+    "category": "extraction",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-008",
+    "category": "extraction",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-008",
+    "category": "extraction",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-009",
+    "category": "extraction",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-009",
+    "category": "extraction",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-009",
+    "category": "extraction",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-009",
+    "category": "extraction",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-010",
+    "category": "extraction",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-010",
+    "category": "extraction",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-010",
+    "category": "extraction",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "extraction-010",
+    "category": "extraction",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
     "taskId": "creative-001",
     "category": "creative",
     "strategy": "always-cheap",
-    "modelUsed": "openai/gpt-oss-20b:free",
-    "response": "Rain drapes the Ganges‑lit lanes,  \nBengal’s pulse in every splash—  \nBengal‑bazar’s chatter fades,  \nMonsoon swallows Kolkata’s hush.",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 6416
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "creative-001",
     "category": "creative",
     "strategy": "always-expensive",
-    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
-    "response": "The tram clangs slow through water-mirrored streets,\nWhere steaming *chai* and *telebhaja* meet.\nThe Hooghly swells beneath a bruised-grey sky,\nAnd Kolkata breathes, washed clean and high.",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 3264
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "creative-001",
     "category": "creative",
     "strategy": "heuristic-router",
-    "modelUsed": "nvidia/nemotron-3-super-120b-a12b:free",
-    "response": "Tram tracks become rivers, slow and deep,  \nDrumming on tin roofs, a relentless sweep.  \nChai wallahs grin beneath plastic sheets, steaming,  \nAs the drowned city breathes, petrichor dreaming.  \n\n*(4 lines. Captures Kolkata's monsoon: transformed streets, constant rain sound, resilient street-life, and the deep, earthy relief after summer heat.)*",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 10440,
-    "classificationSource": "heuristic"
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-001",
+    "category": "creative",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "creative-002",
     "category": "creative",
     "strategy": "always-cheap",
-    "modelUsed": "openai/gpt-oss-20b:free",
-    "response": "🚀 **Consistency: The Quiet Power Behind Every Success Story** 🚀  \n\nWhen we think of career breakthroughs, we often look for that one “aha” moment—a big project, a viral post, a promotion. But the truth is, most of the time, it’s the *small, steady actions* that build the foundation for those moments.\n\n🔑 **Why consistency matters:**\n\n1. **Builds Trust** – Clients, colleagues, and leaders notice when you deliver on time, every time. Reliability becomes your brand.\n2. **Creates Momentum** – Tiny wins accumulate. A 10‑minute daily learning habit, a weekly networking call, or a monthly performance review can snowball into major growth.\n3. **Reduces Stress** – When you’re consistent, you’re less likely to scramble at the last minute. Your day becomes a series of predictable, productive steps.\n\n💡 **My personal experiment:**  \nFor the past 90 days, I set a simple rule: *“I will spend 15 minutes each morning writing a short reflection on my work goals.”* The result? I’ve already closed two deals that would have taken months to secure, and my inbox is now a curated list of opportunities rather than a chaotic inbox.\n\n🔄 **Your turn:**  \nPick one small habit that aligns with your career goals. Commit to it for 30 days. Track your progress. Celebrate the wins—no matter how small.\n\nRemember: **Consistency is not about perfection; it’s about persistence.** The next big thing you’re dreaming of is just a series of consistent steps away.\n\nLet’s keep moving forward—one steady step at a time. 💪\n\n#Consistency #CareerGrowth #ProfessionalDevelopment #SuccessMindset #LinkedInTips #DailyHabits #GrowthMindset #Leadership #MotivationMonday  ",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 29645
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "creative-002",
     "category": "creative",
     "strategy": "always-expensive",
-    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
-    "response": "**The \"Overnight Success\" took 1,095 days. 📉➡️📈**\n\nWe celebrate the launch. The promotion. The viral post. The finished marathon.\n\nWe rarely talk about the 6:00 AM alarms when it was dark and cold. 🌑\nThe reps done when no one was watching. 🏋️\nThe drafts deleted. The proposals rejected. The progress photos that looked exactly the same for months. 📸\n\n**Consistency isn’t glamorous. It’s boring. It’s repetitive. It’s invisible.**\n\nBut here is the brutal truth: **Intensity makes a good story. Consistency makes a legacy.**\n\n❌ One 12-hour grind session doesn’t build a business.\n✅ One hour a day for 1,000 days does.\n\n❌ One \"perfect\" week of eating doesn’t change your health.\n✅ 80% effort, every single week, for years does.\n\n❌ Motivation gets you started.\n✅ Discipline (showing up when you don’t want to) keeps you going.\n\n**The Compound Effect is real, but it’s ruthless.**\nIt ignores your feelings. It ignores your excuses. It only counts **reps**.\n\nSo, if you’re in the \"messy middle\" right now—where the effort is high and the evidence is low—**stay there.**\n\nThat is exactly where the separation happens. 📍\n\n**Keep showing up. The results are loading. ⏳**\n\n***\n\n**Your turn:** What is the *one* non-negotiable habit you’re committing to this week, regardless of how you feel? Drop it below 👇 Let’s hold each other accountable.\n\n#Consistency #Discipline #CompoundEffect #GrowthMindset #Habits #Success #Motivation #LinkedInCommunity",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 10987
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "creative-002",
     "category": "creative",
     "strategy": "heuristic-router",
-    "modelUsed": "nvidia/nemotron-3-super-120b-a12b:free",
-    "response": "Here’s a motivational LinkedIn post about consistency—crafted to feel authentic, actionable, and rooted in real-world professional growth (no toxic positivity, just honest encouragement):  \n\n---\n\n**The quiet superpower nobody talks about: Consistency.**  \n\nWe’re obsessed with \"overnight success\" stories—but the truth? Real growth happens in the *unseen* moments:  \n- The skill you practice for 15 minutes daily when no one’s watching.  \n- The follow-up email you send *even* when you’re swamped.  \n- The habit you rebuild *after* you missed a day (because life happens).  \n\nConsistency isn’t about perfection. It’s about showing up—**again and again**—when motivation fades, when progress feels invisible, when the \"why\" gets fuzzy. That’s where compound growth lives: in the tiny, repeated choices that build expertise, trust, and resilience over time.  \n\nI’ve seen it in careers:  \n✅ The person who consistently shares thoughtful insights (not just when promoting something) becomes the go-to expert.  \n✅ The teammate who reliably delivers small wins earns trust for bigger opportunities.  \n✅ The leader who consistently listens—even in tough conversations—creates psychological safety that fuels innovation.  \n\nYour daily effort *is* the legacy. Not the grand gesture. Not the viral post. **The steady, unglamorous, *unseen* work.**  \n\nSo today: Do *one* small thing that aligns with your long-term goal—even if it feels insignificant. Send that message. Block time for learning. Reply to that comment.  \n**Trust the process. Not because it’s easy—but because it works.**  \n\nWhat’s one area where you’re committing to show up consistently this week? Share below—I’ll cheer you on. 💪  \n\n\\#ConsistencyOverPerfection \\#CareerGrowth \\#Leadership \\#ProfessionalDevelopment \\#ShowUp  \n\n---  \n\n**Why this works:**  \n- **Acknowledges the struggle** (no fake \"just hustle harder!\" energy)—validates that consistency is hard *because* it’s boring/unseen.  \n- **Focuses on observable professional outcomes** (trust, expertise, opportunities)—makes it relevant to LinkedIn’s audience.  \n- **Action-oriented** (\"Do *one* small thing\")—avoids vagueness; gives a clear starting point.  \n- **Invites engagement** (the question at the end) — encourages authentic sharing, boosting reach organically.  \n- **Tone:** Warm, credible, and human—like a mentor sharing hard-won wisdom, not a guru selling a dream.  \n\nConsistency wins because it’s *unexciting*—and that’s exactly why it’s powerful. Your network will feel seen, not sold to.  \n\nLet me know if you’d like a shorter version, a twist for a specific industry (e.g., tech, healthcare), or one focused on personal branding! 😊",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 22578,
-    "classificationSource": "llm-fallback"
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-002",
+    "category": "creative",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-003",
+    "category": "creative",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-003",
+    "category": "creative",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-003",
+    "category": "creative",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-003",
+    "category": "creative",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-004",
+    "category": "creative",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-004",
+    "category": "creative",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-004",
+    "category": "creative",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-004",
+    "category": "creative",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-005",
+    "category": "creative",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-005",
+    "category": "creative",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-005",
+    "category": "creative",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-005",
+    "category": "creative",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-006",
+    "category": "creative",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-006",
+    "category": "creative",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-006",
+    "category": "creative",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-006",
+    "category": "creative",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-007",
+    "category": "creative",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-007",
+    "category": "creative",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-007",
+    "category": "creative",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-007",
+    "category": "creative",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-008",
+    "category": "creative",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-008",
+    "category": "creative",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-008",
+    "category": "creative",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-008",
+    "category": "creative",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-009",
+    "category": "creative",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-009",
+    "category": "creative",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-009",
+    "category": "creative",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-009",
+    "category": "creative",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-010",
+    "category": "creative",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-010",
+    "category": "creative",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-010",
+    "category": "creative",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "creative-010",
+    "category": "creative",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "chat-001",
     "category": "chat",
     "strategy": "always-cheap",
-    "modelUsed": "openai/gpt-oss-20b:free",
-    "response": "Below is a practical, step‑by‑step roadmap that most beginners find useful.  \nFeel free to adapt the timeline and resources to your own pace and interests.\n\n---\n\n## 1. Set the Foundations\n\n| What | Why | How |\n|------|-----|-----|\n| **Pick a language** | CP is language‑agnostic, but C++ is the de‑facto standard because of its fast STL and low‑level control. Python is fine for learning, but you’ll hit speed limits in contests. | Install a compiler (GCC/Clang) and a lightweight editor (VS Code, Sublime, or even Vim). |\n| **Learn the syntax** | You’ll spend most of your time writing code, not debugging language quirks. | Do a quick “Hello, World” and practice basic I/O, loops, conditionals, functions, and arrays. |\n| **Understand the environment** | You’ll submit to online judges; knowing how to compile, run, and debug locally saves time. | Practice compiling from the command line (`g++ -std=c++17 main.cpp -O2 -o main`) and running with sample input. |\n\n---\n\n## 2. Master the Core Concepts\n\n| Topic | Key Ideas | Resources |\n|-------|-----------|-----------|\n| **Data Structures** | Arrays, vectors, strings, maps, sets, priority queues, DSU (Union‑Find), segment trees, Fenwick trees, tries | *Competitive Programming 4* (CP4) – Chapter 1; *Data Structures and Algorithms in C++* by Goodrich |\n| **Algorithms** | Sorting, binary search, greedy, divide‑and‑conquer, DP (1‑D, 2‑D, knapsack, longest subsequence), graph basics (BFS, DFS, Dijkstra, Floyd‑Warshall), flow (max‑flow/min‑cut), bitmasking, backtracking | CP4 Chapters 2‑5; *Introduction to Algorithms* (CLRS) – selected chapters |\n| **Mathematics** | Modulo arithmetic, combinatorics, number theory (GCD, primes, Euler’s theorem), geometry basics | *The Art of Problem Solving* – Volume 1; CP4 Chapter 6 |\n| **Problem‑Solving Process** | Read → Understand → Plan → Code → Test → Optimize → Reflect | Practice the “5‑step method” on every problem you solve. |\n\n> **Tip:** Keep a small notebook (or a digital note) where you write down a short “template” for each data structure or algorithm. Re‑using these snippets speeds up coding during contests.\n\n---\n\n## 3. Start Practicing\n\n| Platform | Strength | Suggested First Tasks |\n|----------|----------|-----------------------|\n| **Codeforces** | Beginner contests (Div. 3) + warm‑up problems | Solve all “Div. 3” problems in the first 10 rounds. |\n| **AtCoder** | Beginner contests (ABC) | Complete ABC‑1 to ABC‑10. |\n| **LeetCode** | Data‑structure focused | Finish “Easy” problems in the “Array” and “String” categories. |\n| **HackerRank** | Interview‑style problems | Complete the “Data Structures” and “Algorithms” tracks. |\n| **SPOJ / Kattis** | Longer, more varied problems | Pick a problem from each difficulty tier and solve it. |\n\n**Practice Routine (first 4–6 weeks)**\n\n1. **Daily Warm‑Up** – 1–2 easy problems (≤ 5 min each).  \n2. **Weekly Deep Dive** – Pick one algorithmic topic (e.g., “Binary Search”) and solve 5–10 medium problems that use it.  \n3. **End‑of‑Week Review** – Read editorial, compare your solution with others, note any optimizations or alternative approaches.\n\n---\n\n## 4. Join Contests\n\n| Contest | Frequency | Difficulty | How to Start |\n|---------|-----------|------------|--------------|\n| **Codeforces Div. 3** | 2–3 times a week | Easy–Medium | Register, read the rules, and submit your first solution. |\n| **AtCoder ABC** | Weekly | Beginner | Solve all problems in the first 5 contests. |\n| **CodeChef Lunchtime** | Weekly | Medium | Use the “Practice” section to warm up before the contest. |\n| **TopCoder SRM** | Bi‑weekly | Medium–Hard | Start with “Easy” rounds, then move to “Medium.” |\n\n**Contest Strategy**\n\n- **Before the contest**: Warm up with 2–3 problems.  \n- **During the contest**:  \n  - Read all problems quickly.  \n  - Pick the easiest one you’re confident about.  \n  - Code, test locally, submit.  \n  - Move to the next problem.  \n- **After the contest**:  \n  - Read editorial for every problem you solved.  \n  - Re‑implement the editorial solution if you didn’t solve it.  \n  - Note any new techniques or patterns.\n\n---\n\n## 5. Build a Personal Library\n\n- **Template Repository** – Store your favorite snippets (e.g., fast I/O, DSU, segment tree).  \n- **Problem Archive** – Keep a spreadsheet or a GitHub repo with links, tags, difficulty, and your solution notes.  \n- **Reflection Log** – After each contest, write a short paragraph: “What went well? What didn’t? What did I learn?”\n\n---\n\n## 6. Learn from the Community\n\n| Resource | What You Get |\n|----------|--------------|\n| **Codeforces Blog & Editorials** | In‑depth explanations, alternative solutions, and community discussions. |\n| **AtCoder Library Practice Contest** | Practice with the AtCoder Library (ACL) – a powerful C++ library for CP. |\n| **Reddit r/competitiveprogramming** | Tips, problem recommendations, and motivation. |\n| **Discord/Telegram CP communities** | Real‑time help, pair‑programming, and contest alerts. |\n| **YouTube channels** (e.g., “Errichto”, “William Lin”) | Visual walkthroughs of contest solutions. |\n\n---\n\n## 7. Scale Up\n\n| Phase | Goals | Typical Problems |\n|-------|-------|------------------|\n| **Intermediate (3–6 months)** | Master DP, graph algorithms, advanced data structures. | “Longest Increasing Subsequence”, “Dijkstra with priority queue”, “Segment Tree with lazy propagation”. |\n| **Advanced (6–12 months)** | Tackle hard contests (Codeforces Div. 2, ICPC regionals). | “Maximum Flow (Dinic)”, “Convex Hull Trick”, “Persistent Segment Tree”. |\n| **Competitive Edge** | Optimize code, learn to debug quickly, understand time limits. | “Bitset optimization”, “Parallel processing tricks”, “Memory‑efficient solutions”. |\n\n---\n\n## 8. Maintain Motivation\n\n1. **Set Small, Achievable Milestones** – e.g., “Solve 10 medium problems in a month.”  \n2. **Track Progress** – Use a spreadsheet or a simple script to log solved problems, time taken, and rating changes.  \n3. **Celebrate Wins** – Even a single contest win is a milestone.  \n4. **Pair‑Program** – Find a study partner or join a local CP club.  \n5. **Teach Others** – Writing a blog post or explaining a solution reinforces your own understanding.\n\n---\n\n## 9. Quick Reference Checklist\n\n- [ ] Install compiler & editor.  \n- [ ] Learn basic I/O, loops, functions.  \n- [ ] Master arrays, vectors, maps, sets.  \n- [ ] Understand sorting, binary search, greedy.  \n- [ ] Practice 1–2 easy problems daily.  \n- [ ] Solve all ABC‑1 to ABC‑10.  \n- [ ] Join a Codeforces Div. 3 contest.  \n- [ ] Read editorial after each contest.  \n- [ ] Build a personal library of snippets.  \n- [ ] Gradually tackle harder contests.  \n\n---\n\n### Final Thought\n\nCompetitive programming is a marathon, not a sprint. Consistency beats intensity. Stick to a routine, review your mistakes, and keep challenging yourself with new topics. Over time, patterns will emerge, and solving a problem will feel more like a puzzle than a chore. Good luck, and enjoy the journey!",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 171140
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "chat-001",
     "category": "chat",
     "strategy": "always-expensive",
-    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
-    "response": "Starting competitive programming (CP) can feel overwhelming because of the vast amount of topics and platforms. Here is a **structured, step-by-step roadmap** designed to take you from \"knowing basic syntax\" to \"solving contest problems efficiently.\"\n\n---\n\n### 🎯 Phase 0: Prerequisites (Do this first)\n**Goal:** Be comfortable with *one* language before learning algorithms.\n\n1.  **Pick ONE Language:** **C++** (industry standard, fastest, STL library is god-tier for CP) or **Python** (easier syntax, slower execution—risk of TLE on hard problems). *Recommendation: C++.*\n2.  **Master the Basics:**\n    *   I/O (`cin/cout` + `ios_base::sync_with_stdio(false); cin.tie(NULL);`), Loops, Functions, Arrays/Vectors, Strings, Sorting (`sort()`), Basic Math (`gcd`, `max`, `min`, `abs`).\n    *   **Debugging:** Learn to use `cerr` (C++) or `print` (Python) effectively. Learn to run custom test cases locally.\n\n---\n\n### 📚 Phase 1: The \"Must-Know\" Foundations (Weeks 1–4)\n*Don't just read—implement every data structure/algorithm from scratch at least once.*\n\n| Category | Topics to Learn | Practice Focus |\n| :--- | :--- | :--- |\n| **Complexity Analysis** | Big-O, Time/Memory limits (1s ≈ $10^8$ ops), Logarithms. | Estimating if $O(N^2)$ passes for $N=10^5$ (It doesn't). |\n| **STL / Standard Library** | `vector`, `pair`, `set`/`map` (ordered), `unordered_set/map` (hash), `priority_queue`, `deque`, `algorithm` (`sort`, `binary_search`, `lower_bound`, `gcd`). | **Crucial.** 50% of Div2 A/B problems are just STL usage. |\n| **Basic Math** | Modular Arithmetic (`%`), Fast Exponentiation, GCD/LCM, Prime Sieve (Eratosthenes), Prefix Sums. | Number Theory basics. |\n| **Core Algorithms** | **Binary Search** (on answer & array), **Two Pointers / Sliding Window**, **Recursion & Backtracking** (basics), **Bit Manipulation**. | Pattern recognition. |\n\n**🎯 Milestone:** Solve **50–80 problems** rated **800–1100 (Codeforces)** / **Easy (LeetCode)**. Focus on *implementation speed* and *clean code*.\n\n---\n\n### 🧠 Phase 2: Core Algorithms & Data Structures (Months 2–4)\n*This is where you stop \"coding\" and start \"problem solving.\"*\n\n1.  **Graph Theory (High Priority)**\n    *   Representation (Adjacency List), BFS/DFS, Connected Components, Topological Sort, Shortest Path (Dijkstra, Bellman-Ford, 0-1 BFS), MST (Kruskal/Prim - DSU needed), Cycles detection.\n2.  **Dynamic Programming (DP)**\n    *   1D DP (Fibonacci, Knapsack, Coin Change), 2D DP (Grid paths, LCS, Edit Distance), **State Transition** thinking. *Start with \"AtCoder DP Contest\" (Standard educational set).*\n3.  **Data Structures**\n    *   **Disjoint Set Union (DSU / Union Find)** - Essential for Graphs/Offline queries.\n    *   **Segment Tree / Fenwick Tree (BIT)** - Range queries & Point updates.\n    *   **Stack/Monotonic Stack** - Next Greater Element, Histogram area.\n4.  **Greedy & Constructive Algorithms**\n    *   Sorting by custom comparators, Interval scheduling, \"Exchange Argument\" proofs.\n5.  **Strings (Optional but good)**\n    *   KMP / Z-function / Hashing (Rabin-Karp) / Trie.\n\n**🎯 Milestone:** Consistently solve **Codeforces Div2 A & B** (Rating 1100–1400). Start attempting **Div2 C**.\n\n---\n\n### ⚔️ Phase 3: Contest Routine & \"Upsolving\" (Ongoing)\n**Contests are the only way to improve speed and handle pressure.**\n\n1.  **Platform:** **Codeforces** (Gold standard). **AtCoder** (Best for beginners—educational, no hacks, great problems). **LeetCode** (Good for DP/Graph patterns, Weekly Contests are easier).\n2.  **Frequency:** **2–3 contests/week** (e.g., Codeforces Round + AtCoder ABC + LeetCode Weekly).\n3.  **The Golden Rule: Upsolving.**\n    *   During contest: Try your best. Don't give up early.\n    *   **Immediately after:** Read editorial for problems you couldn't solve.\n    *   **Re-implement** the solution *without looking at the code*. If you still can't, look at tourist's/jiangly's submission (clean, standard style).\n    *   Add the \"upsolved\" problem to your practice list.\n\n---\n\n### 🛠️ Recommended Resources (Curated List)\n\n| Type | Resource | Why? |\n| :--- | :--- | :--- |\n| **Structured Curriculum** | **USACO Guide** (usaco.guide) | **Best free roadmap.** Organized by rating (Bronze → Platinum). Language agnostic. |\n| | **CP-Algorithms (e-maxx.ru)** | The \"Wikipedia\" of CP algorithms. Best reference for implementation details. |\n| **Video Lectures** | **Errichto (YouTube)** | \"C++ for CP\", \"DP Series\", \"Graph Series\". Excellent intuition. |\n| | **NeetCode / TakeUForward (YouTube)** | Best for LeetCode-style pattern recognition (Sliding Window, DP patterns). |\n| **Problem Sets** | **CSES Problem Set** | 300 curated problems, progressive difficulty. **Do this after Phase 1.** |\n| | **AtCoder DP Contest** | 26 problems (A-Z) teaching every standard DP state. **Mandatory.** |\n| | **Codeforces \"Problemset\" Filter** | Filter by `Rating: 800-1200`, `Tags: implementation, greedy, dp`. Sort by \"Solved Count\" (desc). |\n| **Books (Reference)** | *Competitive Programming 4* (Halim) / *Guide to Competitive Programming* (Antti Laaksonen) | Good to have on desk for deep dives. |\n\n---\n\n### 💡 Critical Advice for Beginners (Read This Twice)\n\n#### 1. **Don't \"Grind\" Blindly**\nSolving 100 easy implementation problems teaches you nothing new after the first 20. **Move up in difficulty.** If you solve a problem in < 15 mins without thinking, it's too easy.\n\n#### 2. **The \"20-Minute Rule\" (During Practice)**\n*   Spend **20 mins** thinking: examples, edge cases, algorithm design, complexity proof.\n*   If stuck: **Read the Editorial / Hint.**\n*   **Understand the \"Why\":** Why does Greedy work? Why DP state `dp[i][j]`? Why `lower_bound`?\n*   **Code it yourself.** Close the editorial. Write from memory.\n\n#### 3. **Template & Snippets**\nBuild a personal `template.cpp` with:\n*   Fast I/O.\n*   Common typedefs (`ll`, `vi`, `pii`).\n*   Debug macro (`#define debug(x) cerr << #x << \" = \" << x << endl`).\n*   Pre-written: Power mod, GCD, Sieve, DSU, SegTree, Dijkstra.\n*   *Saves 5–10 mins per contest.*\n\n#### 4. **Rating is Noise, Learning is Signal**\n*   Your first 10–20 contests will be volatile.\n*   **Goal:** Learn 1 new concept/trick per contest.\n*   Don't cheat (copy-paste) during contests. It destroys the learning feedback loop.\n\n#### 5. **Consistency > Intensity**\n*   **1 hour/day** > **7 hours on Sunday**.\n*   CP requires \"muscle memory\" for patterns (Binary Search, Sliding Window, DFS). That only comes from daily exposure.\n\n---\n\n### 🗓️ Sample Weekly Schedule (Adjust for your time)\n\n| Day | Activity |\n| :--- | :--- |\n| **Mon** | **Contest** (Codeforces / AtCoder ABC / LeetCode Weekly) |\n| **Tue** | **Upsolve** 2–3 problems from yesterday's contest + Read Editorials deeply. |\n| **Wed** | **Topic Study** (e.g., \"Segment Tree\") + Solve 3-4 tagged problems (CSES/CP-Algorithms). |\n| **Thu** | **Contest** or **Virtual Contest** (Past CF round). |\n| **Fri** | **Upsolve** Virtual Contest problems. |\n| **Sat** | **Weakness Practice** (e.g., \"I suck at Binary Search on Answer\" → Do 5 specific problems). |\n| **Sun** | **Rest / Light Review** (Read a blog, optimize template, watch Errichto video). |\n\n---\n\n### 🚀 Your First Action Items (Do this TODAY)\n1.  Setup **C++ Environment** (VS Code + CMake/Compiler, or CLion, or Online IDE like CF/AtCoder custom test).\n2.  Create `template.cpp`.\n3.  Solve **A. Theatre Square** (Codeforces 1A) + **A. Watermelon** (Codeforces 4A) + **A. Way Too Long Words** (Codeforces 71A).\n4.  Register on **Codeforces**, **AtCoder**, **CSES**.\n5.  Bookmark **USACO Guide** (start at \"General\" → \"Getting Started\").\n\n**Welcome to the grind. It’s frustrating, addictive, and the best way to master problem solving. Good luck! 🚀**",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 74138
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "chat-001",
     "category": "chat",
     "strategy": "heuristic-router",
-    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
-    "response": "Starting competitive programming (CP) can feel overwhelming because the field is vast. The key is **structure over speed**. Don't jump straight into contests; build a foundation first.\n\nHere is a practical, step-by-step roadmap for a complete beginner.\n\n---\n\n### Phase 0: Choose & Master **One Language**\nDon't learn 3 languages. Pick **one** and learn its standard library inside out.\n*   **Top Recommendation: C++ (GNU++17/20)** – Fastest execution, best STL (Standard Template Library), industry standard for CP.\n*   **Alternative: Python 3 (PyPy 3)** – Easier syntax, built-in Big Integers, great for prototyping. *Warning: Can get TLE (Time Limit Exceeded) on tight limits; requires fast I/O tricks.*\n*   **Alternative: Java** – Verbose, slower startup, but acceptable if you already know it.\n\n**Must-know language features:**\n*   Fast I/O (`ios::sync_with_stdio(0); cin.tie(0);` in C++; `sys.stdin.buffer.read` in Python).\n*   **Containers:** Vector/ArrayList, Set/HashSet, Map/HashMap, PriorityQueue/Heap, Queue/Deque, Stack.\n*   **Algorithms in library:** `sort`, `binary_search`, `lower_bound`/`upper_bound`, `gcd`, `reverse`, `next_permutation`.\n\n---\n\n### Phase 1: The \"Syntax & Logic\" Basics (1–2 Weeks)\nSolve **~50–80 easy problems** to get comfortable with implementation, loops, conditionals, and I/O.\n*   **Platforms:** **Codeforces** (sort by difficulty 800–1000), **AtCoder Beginner Contest (ABC)** problems A & B, **CSES Introductory Problems**, **Luogu** (Chinese, great difficulty tags).\n*   **Focus:** Zero logic errors. Learn to debug using `cerr` (C++) or `print` (Python) locally.\n\n---\n\n### Phase 2: Core Data Structures & Algorithms (The \"Meat\") — 2–4 Months\nThis is where you actually *learn* CP. Do not just read—**implement everything from scratch at least once.**\n\n#### Tier 1: Fundamentals (Do these first)\n1.  **Complexity Analysis:** Big-O, Time/Memory limits estimation ($10^8$ ops $\\approx$ 1 sec).\n2.  **Prefix Sums / Difference Arrays:** Range sum queries, range updates.\n3.  **Two Pointers / Sliding Window:** Subarray/substring problems.\n4.  **Binary Search:** On answer (monotonic functions), `lower_bound`/`upper_bound`.\n5.  **Basic Sorting & Custom Comparators.**\n6.  **Recursion & Backtracking:** Subsets, permutations, N-Queens style.\n7.  **Bit Manipulation:** XOR properties, bitmasks (subsets iteration), builtin functions (`__builtin_popcount`).\n\n#### Tier 2: Standard Data Structures\n1.  **Stack/Queue/Deque:** Monotonic Stack/Queue (Next Greater Element, Sliding Window Max).\n2.  **Hash Map / Hash Set:** Frequency counting, coordinate compression. *Learn custom hash for C++ `unordered_map` to avoid hacking.*\n3.  **Heaps (Priority Queue):** Dijkstra, Top K elements, merging.\n4.  **Disjoint Set Union (DSU / Union Find):** Connected components, Kruskal’s MST, \"Rollback\" DSU later.\n\n#### Tier 3: Essential Algorithms\n1.  **Graph Theory (Huge chunk of CP):**\n    *   Representation (Adjacency List vs Matrix).\n    *   **BFS/DFS:** Connected components, cycle detection, topological sort (Kahn's/DFS).\n    *   **Shortest Paths:** Dijkstra (non-negative weights), Bellman-Ford (negative weights/negative cycle), Floyd-Warshall (APSP, small $N$).\n    *   **MST:** Kruskal (DSU), Prim (PQ).\n    *   **Trees:** LCA (Binary Lifting), Diameter, DP on Trees, Subtree queries (Euler Tour/Flattening).\n2.  **Dynamic Programming (DP):**\n    *   1D: Fibonacci, Knapsack (0/1, Unbounded), Coin Change, LIS ($O(N \\log N)$ patience sorting).\n    *   2D: Grid paths, LCS, Edit Distance.\n    *   *Key skill:* Recognizing \"State\" and \"Transition\".\n3.  **Greedy:** Interval scheduling, Huffman coding logic, \"Sort by end time/ratio\" proofs.\n4.  **String Algorithms:** KMP (Prefix Function), Z-Function, Hashing (Rabin-Karp), Trie.\n5.  **Number Theory:** Sieve of Eratosthenes, GCD/LCM/Extended Euclid, Modular Arithmetic (Inverse, Exponentiation), Fermat's Little Theorem, Chinese Remainder Theorem.\n\n#### Tier 4: Advanced (Learn *after* you are comfortable with Tier 1–3)\n*   Segment Tree / Fenwick Tree (BIT) / Sparse Table (Range Queries + Point Updates).\n*   Lazy Propagation (Range Updates).\n*   Centroid Decomposition / Heavy-Light Decomposition (HLD).\n*   Mo’s Algorithm (Offline Queries).\n*   Convex Hull Trick / Li Chao Tree (DP Optimization).\n*   FFT / NTT (Polynomial Multiplication).\n*   Game Theory (Sprague-Grundy).\n\n---\n\n### Phase 3: Structured Practice Strategy\n**Don't just solve randomly. Use \"Ladders\" or \"Sheets\".**\n\n1.  **CP-Algorithms (e-maxx.ru):** The bible. Read article $\\to$ Implement $\\to$ Solve linked problems.\n2.  **CSES Problem Set:** **Gold standard.** Do it in order: Intro $\\to$ Sorting/Searching $\\to$ DP $\\to$ Graph $\\to$ Range Queries $\\to$ Tree $\\to$ Math. *If stuck > 1 hour, read editorial, understand, close editorial, re-code from memory.*\n3.  **AtCoder Educational DP Contest (DP Contest):** 26 problems A–Z. Best way to master DP patterns.\n4.  **Codeforces \"Problemset\" Filter:** Tag + Rating (Start 800 $\\to$ 900 $\\to$ 1000 $\\to$ 1100...).\n5.  **Topic-wise Sheets (Google \"Codeforces [Topic] Sheet\" or \"Striver Sheet\" / \"NeetCode\" adapted for CP):**\n    *   *Binary Search Sheet, Graph Sheet, DP Sheet, Segment Tree Sheet.*\n\n**The \"Upsolve\" Rule:** **You learn only when you upsolve.**\n*   Attempt contest/virtual contest.\n*   Read editorial for unsolved problems.\n*   **Re-implement without looking at editorial code.**\n*   Add to \"Review List\" (re-solve in 3 days, 1 week, 1 month).\n\n---\n\n### Phase 4: Contest Routine (Start ASAP, but prepared)\n*   **Start Virtual Contests:** Simulate real pressure. Do past Codeforces Div 3/4 / Div 2 (A–B–C) / AtCoder ABC / Codeforces Educational Rounds.\n*   **Real Contests:** Once you can solve ~2 problems in a Virtual Div 2 / ABC, join live.\n    *   **Codeforces:** Div 3, Div 4, Educational Rounds (best for learning).\n    *   **AtCoder:** ABC (Sat/Sun), ARC (harder). *Best platform for beginners: clean problems, no hacks, great editorial.*\n    *   **LeetCode Weekly:** Good for interview-style, slower pace.\n*   **Post-Contest Analysis:** This is where rating grows.\n    *   Why did I get WA/TLE? (Bug? Logic? Complexity? Edge case?)\n    *   Could I have solved the next problem? (Read editorial immediately).\n\n---\n\n### Essential Tooling & Workflow\n1.  **IDE:** VS Code (Highly recommended).\n    *   Extensions: **Competitive Programming Helper (cph)**, **C++ Intellisense**, **Code Runner**.\n    *   *Snippet:* Create a template with fast I/O, `main()`, common typedefs (`ll`, `vi`, `pii`), and debug macro.\n2.  **Debugging:** Learn to use **Debugger (breakpoints)** in VS Code. `cerr << \"DEBUG: \" << var << endl;` is okay for small things, debugger is better for logic errors.\n3.  **Stress Testing:** Write a brute force (slow but correct) + random generator + your fast solution. Run 10k tests to find bugs automatically. *Crucial for geometry/graphs/DP.*\n\n---\n\n### Common Beginner Traps (Avoid These)\n| Trap | Solution |\n| :--- | :--- |\n| **Reading solutions without coding** | **Muscle memory matters.** Type it out. |\n| **Stuck on one problem for 4+ hours** | Cap at **45–60 mins**. Read editorial. Learn pattern. Move on. |\n| **Ignoring Math/Number Theory** | 30% of Div 2 A/B/C are math/observation. Learn Mod Arithmetic early. |\n| **Using `std::map`/`std::set` for everything** | Use `unordered_map`/`unordered_set` (with custom hash) or vectors/arrays for $O(1)$. Ordered structures are $O(\\log N)$. |\n| **Fear of \"Rating\"** | Rating is noise. Focus on **Delta** (learning per contest). Hide rating extension if anxious. |\n| **Comparing to \"Prodigies\"** | Everyone starts at 0. Consistency > Intensity. |\n\n---\n\n### Recommended Resource List (Curated)\n\n**Websites:**\n*   **cp-algorithms.com** (Best reference for algos + implementations).\n*   **usaco.guide** (Structured curriculum: Bronze $\\to$ Platinum. **Highly recommended roadmap**).\n*   **Codeforces Catalog / Edu Section** (Courses + Practice).\n*   **AtCoder Library (ACL) Documentation** (Reference for SegTree, DSU, etc.).\n\n**YouTube Channels (Visual Learners):**\n*   **Errichto** (Concepts, Streams, \"How to learn\" videos).\n*   **SecondThread** (Advanced topics, clear explanations).\n*   **William Lin** (High-level contests, \"How to think\" process).\n*   **NeetCode / Striver** (Good for LeetCode/Interview style DP/Graph basics).\n*   **Codeforces \"Edu\" Round Streams** (Live solving with commentary).\n\n**Books (Optional, Deep Dive):**\n*   *Competitive Programming 4* (Halim & Halim) – The textbook.\n*   *Guide to Competitive Programming* (Antti Laaksonen) – Concise, modern C++.\n\n---\n\n### Your First Week Action Plan\n1.  **Day 1:** Setup VS Code + C++ Compiler (g++) + CPH Extension. Write Template.\n2.  **Day 2–3:** Solve **Codeforces 800 rated** problems (Sort by \"Solved count\" descending). Target: 10–15 problems. Focus: I/O, Loops, Vectors, Sort.\n3.  **Day 4:** Learn **Prefix Sums** & **Two Pointers**. Solve 5 problems each (CSES/CP-Algorithms).\n4.  **Day 5:** Learn **Binary Search (on answer)** & **Bit Manipulation**. Solve 5 problems.\n5.  **Day 6:** **Virtual Contest:** Codeforces Div 3 (recent one). 2.5 hours. No Google.\n6.  **Day 7:** **Upsolve** the Virtual Contest. Read editorials for unsolved. Implement fixes.\n\n---\n\n### Final Mindset\n> **\"Competitive Programming is not about knowing algorithms; it's about problem-solving patterns and implementation speed.\"**\n\nYou will hit plateaus. You will get negative delta. You will see `Wrong Answer on Test 1`.\n**That is the process.** Keep the feedback loop tight: **Attempt $\\to$ Fail $\\to$ Analyze $\\to$ Learn $\\to$ Repeat.**\n\nGood luck. See you on the leaderboard. 🚀",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 59446,
-    "classificationSource": "llm-fallback"
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-001",
+    "category": "chat",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "chat-002",
     "category": "chat",
     "strategy": "always-cheap",
-    "modelUsed": "openai/gpt-oss-20b:free",
-    "response": "Below is a **step‑by‑step playbook** that takes you from “I’m not sure what to study” to “I walk into an onsite and feel confident.”  \nFeel free to cherry‑pick the parts that fit your schedule, goals, and learning style.\n\n---\n\n## 1. Map the Interview Landscape\n\n| Stage | Typical format | What you’ll see | Key skills |\n|-------|----------------|-----------------|------------|\n| **Phone / Video Screen** | 30‑45 min coding + 5‑10 min behavioral | One or two LeetCode‑style problems, quick resume walk‑through | Problem‑solving, communication |\n| **Technical Phone / Video** | 60 min coding | 2‑3 medium‑difficulty problems, sometimes a system‑design sketch | Data structures, algorithms, edge‑case thinking |\n| **On‑site / Virtual On‑site** | 4‑5 hrs (often 3‑4 rounds) | 2‑3 coding rounds, 1‑2 system‑design, 1‑2 behavioral | Deep DS/Algo, design patterns, architecture, teamwork |\n| **Offer / Negotiation** | Email / call | Salary, equity, benefits | Negotiation, research |\n\n> **Tip:** Look up the specific interview flow for the company you’re targeting (Google, Amazon, Stripe, etc.). Most companies publish their own “Interview Guide” on their career pages.\n\n---\n\n## 2. Build a Strong Foundation\n\n| Topic | Why it matters | Resources |\n|-------|----------------|-----------|\n| **Data Structures** | Arrays, linked lists, trees, graphs, heaps, hash tables, tries | *Cracking the Coding Interview* (Ch. 1‑4), *Algorithms* by Robert Sedgewick & Kevin Wayne (online), *CS‑50* (free) |\n| **Algorithms** | Sorting, searching, DP, greedy, backtracking, graph traversal | *Introduction to Algorithms* (CLRS), *LeetCode Explore* (DS & Algo paths) |\n| **Complexity Analysis** | Big‑O, space/time trade‑offs | *Algorithms* by Sedgewick, *Grokking the Coding Interview* |\n| **Object‑Oriented Design** | Encapsulation, SOLID, design patterns | *Design Patterns: Elements of Reusable Object‑Oriented Software* (GoF), *Head First Design Patterns* |\n| **System Design Basics** | Scalability, reliability, latency, consistency | *System Design Primer* (GitHub), *Designing Data‑Intensive Applications* (Martin Kleppmann) |\n| **Coding Style & Testing** | Clean code, unit tests, TDD | *Clean Code* (Robert C. Martin), *Test‑Driven Development* (Kent Beck) |\n\n> **Practice:** Write a small library for each data structure (e.g., a `LinkedList` class) and expose a clean API. This will help you think in terms of objects during design questions.\n\n---\n\n## 3. Structured Coding Practice\n\n| Week | Focus | How to Practice |\n|------|-------|-----------------|\n| 1‑2 | Warm‑up: Easy problems (arrays, strings) | 30 min LeetCode “Easy” per day |\n| 3‑4 | Medium problems (two‑pointer, sliding window) | 45 min LeetCode “Medium” per day |\n| 5‑6 | Hard problems (DP, graph, bitmask) | 1 hr LeetCode “Hard” per day |\n| 7‑8 | Mock interviews (pair‑programming) | 1 hr mock with a friend or online platform (Pramp, Interviewing.io) |\n| 9‑10 | System‑design practice | 30 min design a simple system (e.g., URL shortener) each day |\n\n> **Rule of thumb:** Aim for **at least 200 problems** (≈ 50 % easy, 30 % medium, 20 % hard). The exact number depends on your baseline skill.\n\n---\n\n## 4. Master the Interview Process\n\n### 4.1 Coding Rounds\n\n| Step | What to do | Why |\n|------|------------|-----|\n| **Clarify** | Ask 1‑2 clarifying questions | Shows you’re thinking about edge cases |\n| **Think aloud** | Explain your thought process | Lets interviewers see your reasoning |\n| **Write pseudocode** | Outline the algorithm before coding | Reduces bugs |\n| **Code** | Use a clean, readable style | Easier to debug |\n| **Test** | Cover edge cases, big‑O | Demonstrates thoroughness |\n| **Explain** | Walk through your solution | Reinforces understanding |\n\n### 4.2 System‑Design Rounds\n\n| Phase | Checklist |\n|-------|-----------|\n| **Requirements** | Functional, non‑functional, constraints |\n| **High‑level diagram** | Show components, data flow |\n| **Trade‑offs** | Latency vs. consistency, CAP |\n| **Scalability** | Load, sharding, caching |\n| **Reliability** | Failover, redundancy |\n| **Security** | Authentication, encryption |\n| **Monitoring** | Metrics, alerts |\n\n> **Practice:** Use the *System Design Primer* “Design a URL shortener” or “Design a chat app” as templates. Record yourself explaining the design and review the video.\n\n### 4.3 Behavioral Rounds\n\n| STAR | What to include |\n|------|-----------------|\n| **Situation** | Context of the story |\n| **Task** | Your responsibility |\n| **Action** | What you did, why |\n| **Result** | Outcome, metrics, lessons learned |\n\n> **Common questions:** “Tell me about a time you disagreed with a teammate,” “Describe a challenging bug you fixed,” “How do you prioritize tasks?”\n\n---\n\n## 5. Build a Portfolio & Resume\n\n| Item | Why it matters | How to showcase |\n|------|----------------|-----------------|\n| **GitHub** | Proof of coding skill | 3‑5 projects, clean README, tests |\n| **Personal website** | Design & communication | Showcasing projects, blog posts |\n| **Open‑source contributions** | Collaboration, impact | Pull requests, issues closed |\n| **Side projects** | Passion & initiative | Real‑world problems solved |\n| **Resume** | First impression | 1‑page, bullet points, metrics |\n\n> **Tip:** For each project, write a short “What I built” paragraph that includes the problem, tech stack, and impact.\n\n---\n\n## 6. Mock Interviews & Feedback Loop\n\n1. **Schedule weekly mock interviews** (1 hr each).  \n2. **Record** the session (screen + audio).  \n3. **Self‑review**: note where you hesitated, missed edge cases, or got stuck.  \n4. **Get feedback**: from peers, mentors, or platforms like Pramp.  \n5. **Iterate**: adjust your study plan based on gaps.\n\n---\n\n## 7. Mental & Physical Prep\n\n| Practice | Frequency | Benefit |\n|----------|-----------|---------|\n| **Sleep 7‑8 hrs** | Every night | Cognitive performance |\n| **Exercise** | 3×/week | Stress reduction |\n| **Mindfulness** | 10 min/day | Focus & calm |\n| **Mock interview anxiety drills** | 1×/week | Desensitization |\n| **Review interview questions** | 1×/day | Confidence |\n\n> **Remember:** Interviewers are human. A calm, honest answer is often better than a perfect but rushed one.\n\n---\n\n## 8. Timeline (3‑6 Months)\n\n| Month | Focus |\n|-------|-------|\n| **1** | Fundamentals (DS/Algo), resume polish |\n| **2** | Coding practice (easy‑medium), mock interviews |\n| **3** | Hard problems, system‑design basics |\n| **4** | Advanced system design, behavioral prep |\n| **5** | Targeted company prep, networking |\n| **6** | Final mock interviews, interview day prep |\n\n> **Adjust**: If you’re already strong in DS/Algo, skip to system design earlier.\n\n---\n\n## 9. Resources Cheat‑Sheet\n\n| Category | Top Picks |\n|----------|-----------|\n| **Coding practice** | LeetCode, HackerRank, CodeSignal, CodeChef |\n| **DS/Algo books** | *Cracking the Coding Interview*, *Algorithms* (Sedgewick) |\n| **System design** | *System Design Primer* (GitHub), *Designing Data‑Intensive Applications* |\n| **Behavioral** | *The STAR Method* (YouTube), *Cracking the Coding Interview* (behavioral chapter) |\n| **Mock interview platforms** | Pramp, Interviewing.io, Gainlo |\n| **Video tutorials** | CS50, MIT 6.006, freeCodeCamp |\n| **Podcasts** | “The Interview Guys,” “Software Engineering Daily” |\n| **Communities** | r/cscareerquestions, r/leetcode, Discord “Coding Interview Prep” |\n\n---\n\n## 10. After the Interview\n\n1. **Send a thank‑you email** (within 24 hrs).  \n2. **Reflect**: What went well? What could improve?  \n3. **Update your tracker**: interview date, company, round, feedback.  \n4. **If rejected**: ask for feedback, adjust plan, keep practicing.  \n5. **If offered**: research salary ranges, negotiate, accept or politely decline.\n\n---\n\n### Quick Checklist (Before Each Interview)\n\n- [ ] Review the company’s tech stack & recent news.  \n- [ ] Re‑warm up with 2‑3 LeetCode problems.  \n- [ ] Prepare 3 STAR stories.  \n- [ ] Have a clear, concise elevator pitch.  \n- [ ] Test your environment (IDE, webcam, mic).  \n- [ ] Dress appropriately (even for virtual).  \n- [ ] Take a 5‑minute breathing exercise before starting.\n\n---\n\n## Final Thought\n\n**Preparation is a marathon, not a sprint.** Consistency beats cramming. Treat each interview as a learning opportunity—whether you get the job or not. Over time, you’ll notice that the “hard” problems become routine, your design sketches flow faster, and your confidence grows.\n\nGood luck, and enjoy the journey! 🚀",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 182092
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "chat-002",
     "category": "chat",
     "strategy": "always-expensive",
-    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
-    "response": "Preparing for software engineering interviews is a marathon, not a sprint. The process typically spans **Data Structures & Algorithms (DSA), System Design, Domain Knowledge, and Behavioral Skills**.\n\nHere is a structured, battle-tested roadmap categorized by phase.\n\n---\n\n### 🗓️ Phase 0: Strategy & Logistics (Week 0)\n**Before writing code, define your target.**\n1.  **Categorize Companies:**\n    *   **Tier 1 (FAANG/MANGA/Unicorns):** Heavy LeetCode Hard, deep System Design, high hiring bar.\n    *   **Tier 2 (High-growth startups, FinTech):** LeetCode Medium/Hard, practical System Design, domain relevance.\n    *   **Tier 3 (Enterprise, Mid-size):** LeetCode Easy/Medium, practical coding, cultural fit.\n2.  **Pick a Primary Language:** Python (fastest for interviews), Java, C++, or Go. **Master one.** Know standard library tricks (e.g., `collections.Counter`, `heapq`, `deque` in Python).\n3.  **Get Your Resume Ready:** Quantify impact (\"Reduced latency 40%,\" \"Scaled to 1M users\"). Be ready to deep-dive into *any* line item.\n\n---\n\n### 🧱 Phase 1: Core Foundations (Weeks 1–4)\n**Goal: Fluency, not memorization.**\n\n#### 1. Data Structures (Know internals, time/space complexity, use cases)\n*   **Arrays/Strings:** Two pointers, Sliding Window, Prefix Sums.\n*   **Hash Maps/Sets:** O(1) lookup, frequency counting.\n*   **Stacks/Queues:** Monotonic Stack, BFS/DFS iteration.\n*   **Linked Lists:** Fast/Slow pointers, Reversal, Merge.\n*   **Trees/BSTs:** Recursion, Iterative Traversal (In/Pre/Post), Serialization.\n*   **Heaps (Priority Queues):** Top K, Merge K Sorted Lists, Median Stream.\n*   **Graphs:** **Adjacency List vs Matrix**, BFS/DFS, Topological Sort, Union Find (Disjoint Set), Dijkstra/Bellman-Ford.\n*   **Tries:** Prefix search, Autocomplete.\n*   **Advanced (Tier 1):** Segment Trees, Fenwick Trees (BIT), Suffix Arrays/Automaton.\n\n#### 2. Algorithmic Patterns (The \"Blind 75\" / \"NeetCode 150\" Approach)\nDon't do random problems. **Master patterns.** Do 2–3 problems per pattern until you recognize them instantly.\n| Pattern | Key Problems (Start Here) |\n| :--- | :--- |\n| **Sliding Window** | Longest Substring Without Repeating, Min Window Substring |\n| **Two Pointers** | Valid Palindrome, 3Sum, Container With Most Water |\n| **Fast/Slow Pointers** | Linked List Cycle, Middle of LL, Happy Number |\n| **Binary Search** | Search in Rotated Array, Koko Eating Bananas, Search a 2D Matrix |\n| **BFS/DFS Tree** | Level Order, Max Depth, Path Sum, Serialize/Deserialize |\n| **Backtracking** | Subsets, Permutations, Combination Sum, Word Search |\n| **Dynamic Programming** | Climbing Stairs, House Robber, Coin Change, **Edit Distance**, **Longest Inc. Subsequence** |\n| **Graphs** | Number of Islands, Clone Graph, Course Schedule (Topo Sort), Alien Dictionary |\n| **Heaps** | Kth Largest, Top K Frequent, Merge K Lists, Meeting Rooms II |\n| **Tries** | Implement Trie, Word Search II |\n\n**Resource:** [NeetCode.io Roadmap](https://neetcode.io/roadmap) (Best free structured path) or [Blind 75 List](https://www.teamblind.com/post/New-Year-Gift---Curated-List-of-Top-75-LeetCode-Questions-to-Save-Your-Time-OaM1qEU).\n\n---\n\n### 🏗️ Phase 2: System Design (Weeks 3–6+)\n**Critical for Mid/Senior (L5+). New Grads: Know basics (CAP, Load Balancing, Caching, DB Indexing).**\n\n#### 1. Fundamentals (The \"Building Blocks\")\n*   **Scalability:** Vertical vs. Horizontal, Load Balancers (L4 vs L7), Consistent Hashing.\n*   **Databases:** SQL vs NoSQL, ACID vs BASE, **Indexing (B+ Trees)**, Sharding, Replication, Read Replicas.\n*   **Caching:** Strategies (Write-through, Write-back, Look-aside), Eviction (LRU, LFU), Cache Stampede/Thundering Herd.\n*   **Messaging:** Kafka/RabbitMQ, Pub/Sub, Exactly-once vs At-least-once, Dead Letter Queues.\n*   **Consistency:** CAP Theorem, PACELC, Quorum, Vector Clocks, CRDTs.\n*   **API Design:** REST vs gRPC vs GraphQL, Idempotency, Versioning, Rate Limiting (Token Bucket/Leaky Bucket).\n\n#### 2. The Interview Framework (RESHA / USE)\n1.  **R**equirements (Functional / Non-functional: Latency, Throughput, Consistency).\n2.  **E**stimation (QPS, Storage, Bandwidth, Memory) — *Back of the envelope math.*\n3.  **S**torage Schema (DB choice, Tables, Keys, Indexes).\n4.  **H**igh-Level Architecture (Boxes & Arrows: Client -> LB -> Services -> DB/Cache/Queue).\n5.  **A**PI Contract (Endpoints, Payloads).\n6.  **Deep Dives** (Interviewer picks: Sharding logic, Cache invalidation, Hot partitions, Failure modes).\n\n#### 3. Practice Designs\n*   **Beginner:** URL Shortener, Pastebin, Rate Limiter.\n*   **Intermediate:** Instagram Feed/Timeline, WhatsApp/Chat, Uber/Lyft Dispatch, YouTube/Netflix.\n*   **Advanced:** Distributed Locking, Distributed Transaction (Saga), Search Engine (Typeahead), Logging/Metrics Pipeline.\n\n**Resources:** *Designing Data-Intensive Applications (DDIA)* by Martin Kleppmann (Bible), *System Design Interview* by Alex Xu (Vol 1 & 2), [Husain's System Design Cheat Sheet](https://github.com/husain1992/system-design-cheatsheet).\n\n---\n\n### 💻 Phase 3: Domain & Specialized Knowledge (Parallel)\n**Tailor this to the role (Backend, Frontend, ML, Infra, Mobile).**\n\n*   **Backend:** Concurrency (Mutex, Channels, `synchronized`), Thread Pools, Connection Pooling, SQL Tuning (Explain Plan), Docker/K8s basics, CI/CD.\n*   **Frontend:** React Lifecycle/Hooks, Virtual DOM, Closure/Event Loop, CSS Layout (Flex/Grid), Browser Rendering (Critical Path), Web Security (CORS, CSP, XSS/CSRF).\n*   **ML/DS:** Model Serving, Feature Stores, Data Drift, Evaluation Metrics, Basics of Transformers/LLMs (if applying to AI roles).\n*   **OOD/LLD (Low Level Design):** **SOLID Principles**, Design Patterns (Factory, Builder, Strategy, Observer, Decorator). Practice: Design Parking Lot, Elevator, Chess, Splitwise.\n\n---\n\n### 🎭 Phase 4: Behavioral & Soft Skills (Ongoing)\n**FAANG uses \"Leadership Principles\" (Amazon) / \"Googleyness\" / \"Core Values\". Use the STAR method.**\n*   **S**ituation (Context)\n*   **T**ask (Your responsibility)\n*   **A**ction (What **YOU** did specifically — use \"I\", not \"We\")\n*   **R**esult (Quantifiable impact + Lessons learned)\n\n**Prepare 8–10 \"Core Stories\" covering:**\n1.  Hardest Technical Challenge / Bug Hunt.\n2.  Conflict Resolution / Disagree & Commit.\n3.  Mentoring / Growing Others.\n4.  Project Failure / Post-mortem.\n5.  Ambiguity / Making decisions with incomplete data.\n6.  Improving Process / Tech Debt Paydown.\n7.  Cross-functional Collaboration.\n8.  \"Why this company?\" (Specifics: their tech blog, specific product, culture).\n\n---\n\n### 🥊 Phase 5: Mock Interviews & Peak Performance (Final 2 Weeks)\n1.  **Pramp / Interviewing.io:** Free peer mocks. Treat them like real interviews.\n2.  **Paid Mocks (Optional but high ROI):** System Design mock with ex-FAANG engineers (e.g., via System Design School, HelloInterview, or 1:1 mentors).\n3.  **Simulate Conditions:**\n    *   Whiteboard / Google Doc / CoderPad (no syntax highlighting/autocomplete).\n    *   **Talk aloud constantly.** Silence = Fail.\n    *   Clarify constraints *before* coding.\n    *   Write clean, modular code (helper functions, meaningful names).\n    *   **Test your own code** (Edge cases: empty, null, huge, duplicates, overflow).\n\n---\n\n### 📅 Sample 12-Week Schedule (Working Professional: 10–15 hrs/week)\n\n| Week | Focus | Target |\n| :--- | :--- | :--- |\n| **1-2** | **Patterns & Blind 75 (Easy/Medium)** | 20 Problems. Master Sliding Window, Two Pointers, Heaps, Basic Trees. |\n| **3-4** | **Blind 75 (Medium/Hard) + Graphs/DP** | 25 Problems. Focus on **recognizing patterns**. Start System Design Fundamentals (DDIA Ch 1-3). |\n| **5-6** | **System Design Core** | 3 Designs (URL Shortener, Rate Limiter, Chat App). Read DDIA Ch 5, 6, 7. |\n| **7-8** | **Advanced DS / Hard Problems + SD Deep Dives** | Topological Sort, Trie, Bit Manip, Hard DP. 2 Complex Designs (Instagram, Uber). |\n| **9**   | **Domain Prep + Behavioral Stories** | Write STAR stories. Review OOD/Concurrency/SQL for your track. |\n| **10**  | **Mock Interviews (3-5 total)** | Mix of Coding + System Design. Get feedback. Fix weak spots. |\n| **11**  | **Company Specific Prep** | Read their engineering blog. Tagged LeetCode lists (LeetCode \"Explore\" -> Company tags). |\n| **12**  | **Taper & Logistics** | Light review (flashcards/cheatsheets). Sleep 8hrs. Setup env (Zoom, CoderPad, good mic/lighting). |\n\n---\n\n### 🛠️ Essential Toolkit\n*   **Tracking:** Notion / Airtable / Google Sheets (Track: Problem, Pattern, Difficulty, Status: *Solved/Review/Blocked*, Date, Time Complexity).\n*   **Coding:** LeetCode (Standard), CodeSignal (UI practice), Codeforces (if you need speed/contest practice).\n*   **System Design:** Draw.io / Excalidraw / Miro (Practice drawing diagrams fast).\n*   **Flashcards:** Anki (for Big-O complexities, Linux commands, SQL syntax, Design definitions).\n\n---\n\n### ⚠️ Common Traps to Avoid\n1.  **Tutorial Hell:** Watching videos ≠ solving problems. **Code it yourself.**\n2.  **Memorizing Solutions:** Interviewers change constraints. You must derive the approach.\n3.  **Ignoring \"Easy\" Problems:** You must solve Easy in **< 10 mins** to bank time for Hards.\n4.  **Silent Coding:** If you think silently for 5 mins, the signal is \"No Hire.\" Narrate: *\"I'm thinking of a hash map approach because...\"*\n5.  **Neglecting Behavioral:** Many strong coders fail at \"Bar Raiser\" / \"Hiring Manager\" rounds due to poor storytelling or arrogance.\n6.  **Burnout:** Take 1 full day off/week. Sleep consolidates memory.\n\n---\n\n### 🎯 The \"Day Of\" Checklist\n*   [ ] Quiet room, plain background, good lighting.\n*   [ ] Laptop plugged in, **Do Not Disturb ON**, only interview tab open.\n*   [ ] Pen + Paper (for scratch work/estimation math).\n*   [ ] Water bottle.\n*   [ ] Resume & Job Description printed/open.\n*   [ ] Backup internet (Phone hotspot tested).\n*   [ ] **Mindset:** \"I am a colleague collaborating on a problem,\" not \"A student taking a test.\"\n\n---\n\n**Final Thought:** Consistency beats intensity. **1 hour daily > 10 hours Sunday.** Track your \"Error Rate\" (bugs per problem) and \"Time to First Solution\" — watch them trend down. Good luck. 🚀",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 67637
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   },
   {
     "taskId": "chat-002",
     "category": "chat",
     "strategy": "heuristic-router",
-    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
-    "response": "Preparing for software engineering interviews is a marathon, not a sprint. It typically requires **2–4 months of consistent effort (10–15 hrs/week)** if you are working full-time.\n\nHere is a structured, battle-tested roadmap covering the **four main pillars**: **Coding (DSA), System Design, Behavioral, and Domain/Tools.**\n\n---\n\n### 🗓️ Phase 0: The Strategy & Setup (Week 1)\n*   **Pick ONE Language:** Python (fastest to write), Java/C++ (standard for Big Tech), or Go/Rust (if targeting specific infra roles). **Stick to it.**\n*   **Environment:** Set up a local IDE (VS Code/IntelliJ) + LeetCode/NeetCode/CodeSignal premium. Practice *writing code without autocomplete* initially.\n*   **Target Companies:** Tier your list (Dream, Target, Safety). FAANG/MANGA require LeetCode Hard readiness; startups/growth companies prioritize System Design + Pragmatism.\n*   **Timeline:** Work backward from your target interview date.\n\n---\n\n### 1️⃣ Pillar 1: Data Structures & Algorithms (The \"Filter\")\n*Goal: Solve Mediums in 20–25 mins, Hards in 35–45 mins.*\n\n#### **A. The Curriculum (Follow this order)**\n1.  **Arrays & Strings** (Two Pointers, Sliding Window, Prefix Sum)\n2.  **Hash Maps / Sets** (Frequency counts, Lookup O(1))\n3.  **Linked Lists** (Fast/Slow pointers, Reversal, Merge)\n4.  **Stacks & Queues** (Monotonic Stack, Parenthesis matching)\n5.  **Binary Trees / BST** (DFS Recursive/Iterative, BFS, Serialization)\n6.  **Heaps / Priority Queues** (Top K, Median stream, Scheduling)\n7.  **Graphs** (BFS/DFS, Topological Sort, Union Find, Dijkstra, A*)\n8.  **Dynamic Programming** (1D, 2D, Grid, Subsequence, Knapsack, *Patterns > Memorization*)\n9.  **Tries, Bit Manipulation, Segment Trees** (High leverage, lower frequency)\n10. **Concurrency/OS Basics** (Locks, Deadlocks, Thread pools - often asked in follow-ups)\n\n#### **B. The \"NeetCode 150\" / \"Blind 75\" Strategy**\n*   **Do not grind randomly.** Use a curated list: **[NeetCode 150](https://neetcode.io/roadmap)** (best structure/video explanations) or **Grind 75**.\n*   **Workflow per problem:**\n    1.  **Struggle (15-20 min):** Try to solve. Whiteboard the logic.\n    2.  **Read Solution:** Understand the *pattern*, not just the code.\n    3.  **Re-implement:** Code it from memory *without looking*.\n    4.  **Spaced Repetition:** Re-solve in 3 days → 1 week → 1 month. Use **Anki** or a Notion tracker.\n\n#### **C. Mock Interviews (Critical)**\n*   Start **4 weeks before** real interviews.\n*   Platforms: **Pramp** (free, peer-to-peer), **Interviewing.io** (anonymous, senior engineers), or pay for **Mockingbird / Exponent**.\n*   Simulate the *exact* environment: 45 mins, share screen, talk aloud, no debugger.\n\n---\n\n### 2️⃣ Pillar 2: System Design (The \"Differentiator\")\n*Required for Mid/Senior+ (L5+). Juniors: know basics (API design, DB choice).*\n\n#### **A. The Framework (Use every time): `RESAHA`**\n1.  **R**equirements (Functional / Non-functional: Latency, Availability, Consistency).\n2.  **E**stimation (QPS, Storage, Bandwidth, Memory) -> **Back-of-envelope math.**\n3.  **S**torage Schema (SQL vs NoSQL, Table design, Partitioning/Sharding keys).\n4.  **A**PI Design (REST/gRPC/GraphQL, Idempotency, Versioning).\n5.  **H**igh-Level Architecture (Load Balancers, API Gateway, Services, Message Queues, Cache, CDN).\n6.  **A**lgorithms & Deep Dives (Consistent Hashing, Leader Election, Rate Limiting, Replication).\n\n#### **B. Core Concepts to Master**\n*   **CAP / PACELC Theorem** (Tradeoffs in distributed systems).\n*   **Scaling:** Vertical vs Horizontal; Stateless services; Caching strategies (Write-through, Look-aside, Write-back); DB Replication vs Sharding.\n*   **Messaging:** Kafka vs RabbitMQ; At-least-once vs Exactly-once; Dead letter queues.\n*   **Consistency:** Strong vs Eventual; Quorum reads/writes; Vector clocks/CRDTs.\n\n#### **C. Resources**\n*   **Book:** *Designing Data-Intensive Applications (DDIA)* by Martin Kleppmann (The Bible — read Ch 1, 2, 3, 6, 7, 9 minimum).\n*   **Course:** **System Design Interview by Alex Xu (ByteByteGo)** or **Grokking System Design (DesignGurus)**.\n*   **Practice:** Design: **URL Shortener, Rate Limiter, Notification System, Feed (Instagram/Twitter), Chat (WhatsApp), Ride Sharing (Uber), Search Autocomplete.**\n\n---\n\n### 3️⃣ Pillar 3: Behavioral & Leadership (The \"Hire/No-Hire\" Tiebreaker)\n*FAANG uses structured rubrics (Leadership Principles / Core Values). You **will** fail if you wing this.*\n\n#### **A. The STAR Method (Non-negotiable)**\n*   **S**ituation (Context: 1-2 sentences)\n*   **T**ask (Your specific ownership)\n*   **A**ction (What **YOU** did — use \"I\", not \"We\". 60% of answer)\n*   **R**esult (Metrics: Revenue, Latency %, Users, Cost saved, Time saved)\n\n#### **B. Build Your \"Story Bank\" (8-10 Stories)**\nMap stories to these universal themes:\n1.  **Hardest Technical Challenge** (Deep dive architecture/debugging)\n2.  **Conflict/Disagreement** (With PM, Manager, Peer — focus on resolution)\n3.  **Failure/Mistake** (Own it, fix it, process change)\n4.  **Ambiguity** (Vague reqs -> you defined scope/delivered)\n5.  **Mentorship/Team Growth** (Onboarding, code review culture, hiring)\n6.  **Trade-off Decision** (Tech debt vs Feature, Buy vs Build, SQL vs NoSQL)\n7.  **Project Retrospective** (What would you do differently?)\n\n#### **C. Company Specifics**\n*   **Amazon:** Memorize **16 Leadership Principles**. Every answer must map to one.\n*   **Google:** \"Googleyness\" (Comfort with ambiguity, user focus, collaboration).\n*   **Meta:** \"Move Fast,\" \"Focus on Impact,\" \"Build Awesome Things.\"\n*   **Prepare 3 intelligent questions** for the interviewer (Team challenges, tech debt, on-call, culture).\n\n---\n\n### 4️⃣ Pillar 4: Domain Knowledge & \"The Job\" (Often Overlooked)\n*Tailor this to the specific role (Backend, Frontend, ML, Mobile, Infra, Fullstack).*\n\n*   **Backend:** SQL (Joins, Indexes, Explain Plan, Transactions/Isolation levels), Redis internals, Docker/K8s basics, API design (REST/gRPC), Auth (OAuth2/JWT), Observability (Logs/Metrics/Traces).\n*   **Frontend:** React/Vue internals (Virtual DOM, Reconciliation, Hooks lifecycle), CSS (Flex/Grid, Centering, Specificity), Browser Rendering (Critical Rendering Path, Reflow/Repaint), Web Vitals, Accessibility, State Management.\n*   **ML/DS:** Model deployment, Feature stores, Data drift, Evaluation metrics, System design for ML (Training vs Serving).\n*   **All:** **Security basics** (OWASP Top 10, SQLi, XSS, CSRF, CORS).\n\n---\n\n### 📅 Sample 12-Week Schedule (Working Professional)\n\n| Week | Focus | Deliverable |\n| :--- | :--- | :--- |\n| **1-2** | **Foundations** | Language fluency; Arrays/Strings/Hashmaps/LinkedLists (NeetCode 1-30); Read DDIA Ch 1,2. |\n| **3-4** | **Core Patterns** | Trees/Graphs/Heaps/Backtracking (NeetCode 31-70); Start System Design Course (Module 1-3). |\n| **5-6** | **Advanced Patterns** | DP (NeetCode 71-100); System Design Case Studies (URL Shortener, Rate Limiter, Key-Value Store). |\n| **7-8** | **Mastery & Weaknesses** | Finish NeetCode 150; **Mock Interviews (2-3/week)**; Deep dive weak areas (e.g., Trie, Segment Tree, Concurrency). |\n| **9-10** | **System Design Fluency** | Design 1 complex system/day (Feed, Chat, Uber, Search); Practice drawing diagrams on Excalidraw/Whiteboard. |\n| **11** | **Behavioral Polish** | Write out 10 STAR stories; **Mock Behaviorals** with peers/mentors; Research target company LPs. |\n| **12** | **Taper & Logistics** | Light review (Flashcards/Anki); Sleep 8hrs; Prepare \"Day-of\" kit (Water, Pen, Paper, Backup internet); **Stop learning new things 48h before.** |\n\n---\n\n### 🛠️ Essential Toolkit\n*   **Tracking:** Notion / Airtable / Google Sheets (Track: Problem, Pattern, Difficulty, Date Solved, Re-solve Dates, Time Complexity, Bugs Made).\n*   **Whiteboarding:** **Excalidraw** (best free), Miro, or physical whiteboard.\n*   **Cheatsheets:** `Big-O Cheatsheet`, `SQL Joins visual`, `System Design Checklist (RESAHA)`.\n*   **Health:** Sleep > LeetCode. Exercise manages cortisol. Burnout = Failure.\n\n---\n\n### 🚨 Common Traps to Avoid\n1.  **Tutorial Hell:** Watching videos ≠ solving. **You must type code.**\n2.  **Memorizing Solutions:** Interviewers change constraints. Learn **Patterns** (e.g., \"Sliding Window\" not \"Longest Substring\").\n3.  **Silent Coding:** **Talk. Constantly.** \"I'm thinking X... but Y is better because...\" Silence = Fail.\n4.  **Ignoring Edge Cases:** Empty input, Null, Integer Overflow, Single element, Huge input (streaming).\n5.  **Arguing with Interviewer:** They give a hint -> Say \"That's a great idea, let me try that.\" Even if you disagree.\n6.  **Neglecting \"Easy\" Questions:** Warm-up questions set the tone. Treat them seriously.\n\n---\n\n### 🎯 Final Tip: The \"Strong Hire\" Signal\nInterviewers look for: **Communication > Optimal Code > Bug-Free Code > Speed.**\n*   Clarify requirements *before* coding.\n*   Write pseudocode/comments first.\n*   Walk through a test case *manually* before running.\n*   Admit trade-offs: \"This is O(N) space, we could do O(1) with Morris Traversal but it's complex and mutates the tree. I'll stick with this unless you prefer the optimization.\"\n\n**Good luck. Consistency beats intensity. Trust the process.** 🚀",
+    "modelUsed": null,
+    "response": null,
     "costUsd": 0,
-    "latencyMs": 104893,
-    "classificationSource": "llm-fallback"
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-002",
+    "category": "chat",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-003",
+    "category": "chat",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-003",
+    "category": "chat",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-003",
+    "category": "chat",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-003",
+    "category": "chat",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-004",
+    "category": "chat",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-004",
+    "category": "chat",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-004",
+    "category": "chat",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-004",
+    "category": "chat",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-005",
+    "category": "chat",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-005",
+    "category": "chat",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-005",
+    "category": "chat",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-005",
+    "category": "chat",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-006",
+    "category": "chat",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-006",
+    "category": "chat",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-006",
+    "category": "chat",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-006",
+    "category": "chat",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-007",
+    "category": "chat",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-007",
+    "category": "chat",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-007",
+    "category": "chat",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-007",
+    "category": "chat",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-008",
+    "category": "chat",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-008",
+    "category": "chat",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-008",
+    "category": "chat",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-008",
+    "category": "chat",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-009",
+    "category": "chat",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-009",
+    "category": "chat",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-009",
+    "category": "chat",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-009",
+    "category": "chat",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-010",
+    "category": "chat",
+    "strategy": "always-cheap",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-010",
+    "category": "chat",
+    "strategy": "always-expensive",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-010",
+    "category": "chat",
+    "strategy": "heuristic-router",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
+  },
+  {
+    "taskId": "chat-010",
+    "category": "chat",
+    "strategy": "learned-bandit",
+    "modelUsed": null,
+    "response": null,
+    "costUsd": 0,
+    "latencyMs": 0,
+    "error": "Request failed: 500"
   }
 ]

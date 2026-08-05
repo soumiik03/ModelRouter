@@ -6,15 +6,21 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "eval": "tsx ../evals/run.ts",
+    "score": "tsx ../evals/score.ts",
+    "report": "tsx ../evals/report.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@huggingface/transformers": "^4.2.0",
+    "@upstash/redis": "^1.38.2",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "fastify": "^5.11.0",
+    "ioredis": "^6.0.0",
     "pg": "^8.22.0"
   },
   "devDependencies": {
