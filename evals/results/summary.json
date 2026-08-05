@@ -1,0 +1,43 @@
+[
+  {
+    "strategy": "always-cheap",
+    "totalCost": 0,
+    "avgLatencyMs": 46231,
+    "avgQualityScore": "0.00",
+    "failureCount": 0,
+    "heuristicHitRate": "—",
+    "llmFallbackRate": "—",
+    "mostFrequentModel": "openai/gpt-oss-20b:free",
+    "modelBreakdown": {
+      "openai/gpt-oss-20b:free": 10
+    }
+  },
+  {
+    "strategy": "always-expensive",
+    "totalCost": 0,
+    "avgLatencyMs": 22894,
+    "avgQualityScore": "0.00",
+    "failureCount": 0,
+    "heuristicHitRate": "—",
+    "llmFallbackRate": "—",
+    "mostFrequentModel": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "modelBreakdown": {
+      "nvidia/nemotron-3-ultra-550b-a55b:free": 10
+    }
+  },
+  {
+    "strategy": "heuristic-router",
+    "totalCost": 0,
+    "avgLatencyMs": 39526,
+    "avgQualityScore": "0.00",
+    "failureCount": 1,
+    "heuristicHitRate": "56%",
+    "llmFallbackRate": "44%",
+    "mostFrequentModel": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "modelBreakdown": {
+      "cohere/north-mini-code:free": 2,
+      "nvidia/nemotron-3-ultra-550b-a55b:free": 4,
+      "nvidia/nemotron-3-super-120b-a12b:free": 3
+    }
+  }
+]

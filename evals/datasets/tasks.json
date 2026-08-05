@@ -1,0 +1,574 @@
+[
+  {
+    "id": "code-001",
+    "category": "code",
+    "prompt": "Write a Python function to reverse a singly linked list. Return only code.",
+    "expectedType": "code",
+    "scoringMethod": "unit-test",
+    "testCases": [
+      {
+        "input": "sample",
+        "expectedOutput": "correct"
+      }
+    ]
+  },
+  {
+    "id": "code-002",
+    "category": "code",
+    "prompt": "Write a C++ function to perform binary search on a sorted array.",
+    "expectedType": "code",
+    "scoringMethod": "unit-test",
+    "testCases": [
+      {
+        "input": "sample",
+        "expectedOutput": "correct"
+      }
+    ]
+  },
+  {
+    "id": "code-003",
+    "category": "code",
+    "prompt": "Write a Python function to detect a cycle in an undirected graph using DFS.",
+    "expectedType": "code",
+    "scoringMethod": "unit-test",
+    "testCases": [
+      {
+        "input": "sample",
+        "expectedOutput": "correct"
+      }
+    ]
+  },
+  {
+    "id": "code-004",
+    "category": "code",
+    "prompt": "Write a C++ function for BFS traversal of a graph.",
+    "expectedType": "code",
+    "scoringMethod": "unit-test",
+    "testCases": [
+      {
+        "input": "sample",
+        "expectedOutput": "correct"
+      }
+    ]
+  },
+  {
+    "id": "code-005",
+    "category": "code",
+    "prompt": "Write a Python function to merge two sorted linked lists.",
+    "expectedType": "code",
+    "scoringMethod": "unit-test",
+    "testCases": [
+      {
+        "input": "sample",
+        "expectedOutput": "correct"
+      }
+    ]
+  },
+  {
+    "id": "code-006",
+    "category": "code",
+    "prompt": "Write a C++ function to find the Lowest Common Ancestor in a BST.",
+    "expectedType": "code",
+    "scoringMethod": "unit-test",
+    "testCases": [
+      {
+        "input": "sample",
+        "expectedOutput": "correct"
+      }
+    ]
+  },
+  {
+    "id": "code-007",
+    "category": "code",
+    "prompt": "Write a Python function implementing Dijkstra's algorithm.",
+    "expectedType": "code",
+    "scoringMethod": "unit-test",
+    "testCases": [
+      {
+        "input": "sample",
+        "expectedOutput": "correct"
+      }
+    ]
+  },
+  {
+    "id": "code-008",
+    "category": "code",
+    "prompt": "Write a C++ function to validate balanced parentheses using a stack.",
+    "expectedType": "code",
+    "scoringMethod": "unit-test",
+    "testCases": [
+      {
+        "input": "sample",
+        "expectedOutput": "correct"
+      }
+    ]
+  },
+  {
+    "id": "code-009",
+    "category": "code",
+    "prompt": "Write a Python function for topological sorting using Kahn's algorithm.",
+    "expectedType": "code",
+    "scoringMethod": "unit-test",
+    "testCases": [
+      {
+        "input": "sample",
+        "expectedOutput": "correct"
+      }
+    ]
+  },
+  {
+    "id": "code-010",
+    "category": "code",
+    "prompt": "Write a C++ function to find the maximum subarray sum (Kadane).",
+    "expectedType": "code",
+    "scoringMethod": "unit-test",
+    "testCases": [
+      {
+        "input": "sample",
+        "expectedOutput": "correct"
+      }
+    ]
+  },
+  {
+    "id": "code-011",
+    "category": "code",
+    "prompt": "Write a Python function to check if a binary tree is height balanced.",
+    "expectedType": "code",
+    "scoringMethod": "unit-test",
+    "testCases": [
+      {
+        "input": "sample",
+        "expectedOutput": "correct"
+      }
+    ]
+  },
+  {
+    "id": "code-012",
+    "category": "code",
+    "prompt": "Write a C++ function to solve the Two Sum problem.",
+    "expectedType": "code",
+    "scoringMethod": "unit-test",
+    "testCases": [
+      {
+        "input": "sample",
+        "expectedOutput": "correct"
+      }
+    ]
+  },
+  {
+    "id": "code-013",
+    "category": "code",
+    "prompt": "Write a Python function for Union Find (Disjoint Set Union).",
+    "expectedType": "code",
+    "scoringMethod": "unit-test",
+    "testCases": [
+      {
+        "input": "sample",
+        "expectedOutput": "correct"
+      }
+    ]
+  },
+  {
+    "id": "code-014",
+    "category": "code",
+    "prompt": "Write a C++ function to generate all permutations of a string.",
+    "expectedType": "code",
+    "scoringMethod": "unit-test",
+    "testCases": [
+      {
+        "input": "sample",
+        "expectedOutput": "correct"
+      }
+    ]
+  },
+  {
+    "id": "code-015",
+    "category": "code",
+    "prompt": "Write a Python function to find the longest common subsequence length.",
+    "expectedType": "code",
+    "scoringMethod": "unit-test",
+    "testCases": [
+      {
+        "input": "sample",
+        "expectedOutput": "correct"
+      }
+    ]
+  },
+  {
+    "id": "reasoning-001",
+    "category": "reasoning",
+    "prompt": "A train travels 120 km in 2 hours. What is its speed in km/h?",
+    "expectedType": "reasoning",
+    "scoringMethod": "exact-match",
+    "expectedAnswer": "60"
+  },
+  {
+    "id": "reasoning-002",
+    "category": "reasoning",
+    "prompt": "A \u20b9800 item has a 25% discount. Final price?",
+    "expectedType": "reasoning",
+    "scoringMethod": "exact-match",
+    "expectedAnswer": "600"
+  },
+  {
+    "id": "reasoning-003",
+    "category": "reasoning",
+    "prompt": "15 workers finish a job in 12 days. Ignoring efficiency changes, how many days for 20 workers?",
+    "expectedType": "reasoning",
+    "scoringMethod": "exact-match",
+    "expectedAnswer": "9"
+  },
+  {
+    "id": "reasoning-004",
+    "category": "reasoning",
+    "prompt": "What is 18 \u00d7 17?",
+    "expectedType": "reasoning",
+    "scoringMethod": "exact-match",
+    "expectedAnswer": "306"
+  },
+  {
+    "id": "reasoning-005",
+    "category": "reasoning",
+    "prompt": "A rectangle has length 12 and width 9. Area?",
+    "expectedType": "reasoning",
+    "scoringMethod": "exact-match",
+    "expectedAnswer": "108"
+  },
+  {
+    "id": "reasoning-006",
+    "category": "reasoning",
+    "prompt": "If 3x+5=20, find x.",
+    "expectedType": "reasoning",
+    "scoringMethod": "exact-match",
+    "expectedAnswer": "5"
+  },
+  {
+    "id": "reasoning-007",
+    "category": "reasoning",
+    "prompt": "Average of 10,20,30,40,50?",
+    "expectedType": "reasoning",
+    "scoringMethod": "exact-match",
+    "expectedAnswer": "30"
+  },
+  {
+    "id": "reasoning-008",
+    "category": "reasoning",
+    "prompt": "Convert 2.5 hours into minutes.",
+    "expectedType": "reasoning",
+    "scoringMethod": "exact-match",
+    "expectedAnswer": "150"
+  },
+  {
+    "id": "reasoning-009",
+    "category": "reasoning",
+    "prompt": "Simple interest on \u20b91000 at 10% for 2 years?",
+    "expectedType": "reasoning",
+    "scoringMethod": "exact-match",
+    "expectedAnswer": "200"
+  },
+  {
+    "id": "reasoning-010",
+    "category": "reasoning",
+    "prompt": "What is 2^10?",
+    "expectedType": "reasoning",
+    "scoringMethod": "exact-match",
+    "expectedAnswer": "1024"
+  },
+  {
+    "id": "reasoning-011",
+    "category": "reasoning",
+    "prompt": "A car covers 360 km in 6 hours. Speed?",
+    "expectedType": "reasoning",
+    "scoringMethod": "exact-match",
+    "expectedAnswer": "60"
+  },
+  {
+    "id": "reasoning-012",
+    "category": "reasoning",
+    "prompt": "If today is Monday, what day is 10 days later?",
+    "expectedType": "reasoning",
+    "scoringMethod": "exact-match",
+    "expectedAnswer": "Thursday"
+  },
+  {
+    "id": "reasoning-013",
+    "category": "reasoning",
+    "prompt": "LCM of 12 and 18?",
+    "expectedType": "reasoning",
+    "scoringMethod": "exact-match",
+    "expectedAnswer": "36"
+  },
+  {
+    "id": "reasoning-014",
+    "category": "reasoning",
+    "prompt": "Binary of decimal 10?",
+    "expectedType": "reasoning",
+    "scoringMethod": "exact-match",
+    "expectedAnswer": "1010"
+  },
+  {
+    "id": "reasoning-015",
+    "category": "reasoning",
+    "prompt": "A shop sells 5 pens for \u20b9100. Cost of 8 pens?",
+    "expectedType": "reasoning",
+    "scoringMethod": "exact-match",
+    "expectedAnswer": "160"
+  },
+  {
+    "id": "extraction-001",
+    "category": "extraction",
+    "prompt": "Extract all cities: Alice traveled from Kolkata to Delhi via Lucknow.",
+    "expectedType": "extraction",
+    "scoringMethod": "keyword-overlap",
+    "expectedKeywords": [
+      "Kolkata",
+      "Delhi",
+      "Lucknow"
+    ]
+  },
+  {
+    "id": "extraction-002",
+    "category": "extraction",
+    "prompt": "Extract all company names: Google acquired Fitbit before Microsoft invested elsewhere.",
+    "expectedType": "extraction",
+    "scoringMethod": "keyword-overlap",
+    "expectedKeywords": [
+      "Google",
+      "Fitbit",
+      "Microsoft"
+    ]
+  },
+  {
+    "id": "extraction-003",
+    "category": "extraction",
+    "prompt": "Extract all emails: support@test.com, admin@abc.org",
+    "expectedType": "extraction",
+    "scoringMethod": "keyword-overlap",
+    "expectedKeywords": [
+      "support@test.com",
+      "admin@abc.org"
+    ]
+  },
+  {
+    "id": "extraction-004",
+    "category": "extraction",
+    "prompt": "Extract phone numbers: +91-9876543210 and 9123456789",
+    "expectedType": "extraction",
+    "scoringMethod": "keyword-overlap",
+    "expectedKeywords": [
+      "+91-9876543210",
+      "9123456789"
+    ]
+  },
+  {
+    "id": "extraction-005",
+    "category": "extraction",
+    "prompt": "Extract dates: 15 Aug 2025 and 01/01/2026",
+    "expectedType": "extraction",
+    "scoringMethod": "keyword-overlap",
+    "expectedKeywords": [
+      "15 Aug 2025",
+      "01/01/2026"
+    ]
+  },
+  {
+    "id": "extraction-006",
+    "category": "extraction",
+    "prompt": "Extract countries: India, Japan, Brazil",
+    "expectedType": "extraction",
+    "scoringMethod": "keyword-overlap",
+    "expectedKeywords": [
+      "India",
+      "Japan",
+      "Brazil"
+    ]
+  },
+  {
+    "id": "extraction-007",
+    "category": "extraction",
+    "prompt": "Extract programming languages: Python, Rust, Java",
+    "expectedType": "extraction",
+    "scoringMethod": "keyword-overlap",
+    "expectedKeywords": [
+      "Python",
+      "Rust",
+      "Java"
+    ]
+  },
+  {
+    "id": "extraction-008",
+    "category": "extraction",
+    "prompt": "Extract person names: Alice met Bob and Charlie.",
+    "expectedType": "extraction",
+    "scoringMethod": "keyword-overlap",
+    "expectedKeywords": [
+      "Alice",
+      "Bob",
+      "Charlie"
+    ]
+  },
+  {
+    "id": "extraction-009",
+    "category": "extraction",
+    "prompt": "Extract products: iPhone, Galaxy S25, Pixel",
+    "expectedType": "extraction",
+    "scoringMethod": "keyword-overlap",
+    "expectedKeywords": [
+      "iPhone",
+      "Galaxy S25",
+      "Pixel"
+    ]
+  },
+  {
+    "id": "extraction-010",
+    "category": "extraction",
+    "prompt": "Extract universities: MIT, Stanford, IIT Bombay",
+    "expectedType": "extraction",
+    "scoringMethod": "keyword-overlap",
+    "expectedKeywords": [
+      "MIT",
+      "Stanford",
+      "IIT Bombay"
+    ]
+  },
+  {
+    "id": "creative-001",
+    "category": "creative",
+    "prompt": "Write a 4-line poem about monsoon in Kolkata.",
+    "expectedType": "creative",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "creative-002",
+    "category": "creative",
+    "prompt": "Write a motivational LinkedIn post about consistency.",
+    "expectedType": "creative",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "creative-003",
+    "category": "creative",
+    "prompt": "Write a product launch tagline for an AI email assistant.",
+    "expectedType": "creative",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "creative-004",
+    "category": "creative",
+    "prompt": "Write a short sci-fi story under 100 words.",
+    "expectedType": "creative",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "creative-005",
+    "category": "creative",
+    "prompt": "Write a professional thank-you note after an interview.",
+    "expectedType": "creative",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "creative-006",
+    "category": "creative",
+    "prompt": "Write a Twitter post about open-source contributions.",
+    "expectedType": "creative",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "creative-007",
+    "category": "creative",
+    "prompt": "Write a haiku about programming.",
+    "expectedType": "creative",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "creative-008",
+    "category": "creative",
+    "prompt": "Write a startup elevator pitch for an AI router.",
+    "expectedType": "creative",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "creative-009",
+    "category": "creative",
+    "prompt": "Write a blog intro on learning DSA.",
+    "expectedType": "creative",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "creative-010",
+    "category": "creative",
+    "prompt": "Write a slogan for eco-friendly transport.",
+    "expectedType": "creative",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "chat-001",
+    "category": "chat",
+    "prompt": "How should a beginner start competitive programming?",
+    "expectedType": "chat",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "chat-002",
+    "category": "chat",
+    "prompt": "How do I prepare for software engineering interviews?",
+    "expectedType": "chat",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "chat-003",
+    "category": "chat",
+    "prompt": "Explain Git branching in simple words.",
+    "expectedType": "chat",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "chat-004",
+    "category": "chat",
+    "prompt": "What is the difference between REST and GraphQL?",
+    "expectedType": "chat",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "chat-005",
+    "category": "chat",
+    "prompt": "How do I debug a memory leak?",
+    "expectedType": "chat",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "chat-006",
+    "category": "chat",
+    "prompt": "What roadmap should I follow for backend development?",
+    "expectedType": "chat",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "chat-007",
+    "category": "chat",
+    "prompt": "How do I improve problem-solving skills?",
+    "expectedType": "chat",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "chat-008",
+    "category": "chat",
+    "prompt": "What's the difference between TCP and UDP?",
+    "expectedType": "chat",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "chat-009",
+    "category": "chat",
+    "prompt": "How do I prepare for an OOP viva?",
+    "expectedType": "chat",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "chat-010",
+    "category": "chat",
+    "prompt": "Suggest good projects to strengthen a resume.",
+    "expectedType": "chat",
+    "scoringMethod": "manual-rubric"
+  }
+]

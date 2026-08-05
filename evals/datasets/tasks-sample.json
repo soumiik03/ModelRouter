@@ -1,0 +1,96 @@
+[
+  {
+    "id": "code-001",
+    "category": "code",
+    "prompt": "Write a Python function to reverse a singly linked list. Return only code.",
+    "expectedType": "code",
+    "scoringMethod": "unit-test",
+    "testCases": [
+      {
+        "input": "sample",
+        "expectedOutput": "correct"
+      }
+    ]
+  },
+  {
+    "id": "code-002",
+    "category": "code",
+    "prompt": "Write a C++ function to perform binary search on a sorted array.",
+    "expectedType": "code",
+    "scoringMethod": "unit-test",
+    "testCases": [
+      {
+        "input": "sample",
+        "expectedOutput": "correct"
+      }
+    ]
+  },
+  {
+    "id": "reasoning-001",
+    "category": "reasoning",
+    "prompt": "A train travels 120 km in 2 hours. What is its speed in km/h?",
+    "expectedType": "reasoning",
+    "scoringMethod": "exact-match",
+    "expectedAnswer": "60"
+  },
+  {
+    "id": "reasoning-002",
+    "category": "reasoning",
+    "prompt": "A ₹800 item has a 25% discount. Final price?",
+    "expectedType": "reasoning",
+    "scoringMethod": "exact-match",
+    "expectedAnswer": "600"
+  },
+  {
+    "id": "extraction-001",
+    "category": "extraction",
+    "prompt": "Extract all cities: Alice traveled from Kolkata to Delhi via Lucknow.",
+    "expectedType": "extraction",
+    "scoringMethod": "keyword-overlap",
+    "expectedKeywords": [
+      "Kolkata",
+      "Delhi",
+      "Lucknow"
+    ]
+  },
+  {
+    "id": "extraction-002",
+    "category": "extraction",
+    "prompt": "Extract all company names: Google acquired Fitbit before Microsoft invested elsewhere.",
+    "expectedType": "extraction",
+    "scoringMethod": "keyword-overlap",
+    "expectedKeywords": [
+      "Google",
+      "Fitbit",
+      "Microsoft"
+    ]
+  },
+  {
+    "id": "creative-001",
+    "category": "creative",
+    "prompt": "Write a 4-line poem about monsoon in Kolkata.",
+    "expectedType": "creative",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "creative-002",
+    "category": "creative",
+    "prompt": "Write a motivational LinkedIn post about consistency.",
+    "expectedType": "creative",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "chat-001",
+    "category": "chat",
+    "prompt": "How should a beginner start competitive programming?",
+    "expectedType": "chat",
+    "scoringMethod": "manual-rubric"
+  },
+  {
+    "id": "chat-002",
+    "category": "chat",
+    "prompt": "How do I prepare for software engineering interviews?",
+    "expectedType": "chat",
+    "scoringMethod": "manual-rubric"
+  }
+]
