@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ModelRouter SSE Streaming Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(18, 26, 43, 0.7);
+      --border: rgba(255, 255, 255, 0.1);
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --status-idle: #6b7280;
+      --status-connecting: #f59e0b;
+      --status-streaming: #3b82f6;
+      --status-complete: #10b981;
+      --status-error: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem 1rem;
+      background-image:
+        radial-gradient(at 20% 20%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+        radial-gradient(at 80% 80%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--status-idle);
+      transition: background-color 0.3s ease;
+    }
+
+    .status-idle .status-dot {
+      background-color: var(--status-idle);
+    }
+
+    .status-connecting .status-dot {
+      background-color: var(--status-connecting);
+      animation: pulse 1s infinite;
+    }
+
+    .status-streaming .status-dot {
+      background-color: var(--status-streaming);
+      animation: pulse 0.6s infinite;
+    }
+
+    .status-complete .status-dot {
+      background-color: var(--status-complete);
+    }
+
+    .status-error .status-dot {
+      background-color: var(--status-error);
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(1.2);
+      }
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .endpoint-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .endpoint-row .form-group {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .output-container {
+      position: relative;
+    }
+
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    pre {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.875rem;
+      color: #38bdf8;
+      line-height: 1.6;
+      min-height: 250px;
+      max-height: 450px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .error-msg {
+      color: #f87171 !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>ModelRouter SSE Streaming Test</h1>
+      <div id="statusBadge" class="status-badge status-idle">
+        <span class="status-dot"></span>
+        <span id="statusText">Idle</span>
+      </div>
+    </div>
+
+    <div class="endpoint-row">
+      <div class="form-group">
+        <label for="endpointInput">Streaming Endpoint URL</label>
+        <input type="text" id="endpointInput" value="http://localhost:3000/v1/route/stream"
+          placeholder="http://localhost:3000/v1/route/stream">
+      </div>
+      <div class="form-group" style="max-width: 220px;">
+        <label for="modelInput">Model (Optional)</label>
+        <input type="text" id="modelInput" placeholder="e.g. openai/gpt-oss-20b:free">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="promptInput">Prompt</label>
+      <textarea id="promptInput"
+        placeholder="Type your prompt here... (e.g., Explain quantum computing in 3 sentences)"></textarea>
+    </div>
+
+    <div class="actions" style="align-items: center; flex-wrap: wrap;">
+      <button id="startBtn" class="btn-primary">Start Streaming</button>
+      <button id="clearBtn" class="btn-secondary">Clear Output</button>
+      <div style="margin-left: auto; display: flex; align-items: center; gap: 0.5rem;">
+        <label for="viewModeSelect" style="margin-bottom: 0; font-size: 0.85rem;">Display Mode:</label>
+        <select id="viewModeSelect" style="background: rgba(0, 0, 0, 0.4); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 0.75rem; font-size: 0.85rem;">
+          <option value="parsed" selected>Parsed Content (Clean Text)</option>
+          <option value="raw">Raw SSE Stream (Protocol)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="output-container">
+      <div class="output-header">
+        <label>Streamed Output</label>
+      </div>
+      <pre id="outputPre">// Streamed chunks will appear here in real-time...</pre>
+    </div>
+  </div>
+
+  <script>
+    const promptInput = document.getElementById('promptInput');
+    const endpointInput = document.getElementById('endpointInput');
+    const modelInput = document.getElementById('modelInput');
+    const viewModeSelect = document.getElementById('viewModeSelect');
+    const startBtn = document.getElementById('startBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const outputPre = document.getElementById('outputPre');
+    const statusBadge = document.getElementById('statusBadge');
+    const statusText = document.getElementById('statusText');
+
+    function setStatus(state, label) {
+      statusBadge.className = `status-badge status-${state}`;
+      statusText.textContent = label;
+    }
+
+    clearBtn.addEventListener('click', () => {
+      outputPre.textContent = '';
+      outputPre.classList.remove('error-msg');
+      setStatus('idle', 'Idle');
+    });
+
+    startBtn.addEventListener('click', async () => {
+      const prompt = promptInput.value.trim();
+      const endpoint = endpointInput.value.trim() || 'http://localhost:3000/v1/route/stream';
+      const model = modelInput.value.trim();
+      const mode = viewModeSelect.value;
+
+      if (!prompt) {
+        alert('Please enter a prompt before streaming.');
+        return;
+      }
+
+      // Reset state
+      outputPre.textContent = '';
+      outputPre.classList.remove('error-msg');
+      startBtn.disabled = true;
+      setStatus('connecting', 'Connecting...');
+
+      try {
+        const payload = { prompt };
+        if (model) payload.model = model;
+
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status} - ${response.statusText}`);
+        }
+
+        if (!response.body) {
+          throw new Error('ReadableStream not supported by response');
+        }
+
+        setStatus('streaming', 'Streaming...');
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          
+          if (mode === 'raw') {
+            outputPre.textContent += chunk;
+          } else {
+            buffer += chunk;
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || ''; // Keep incomplete line in buffer
+
+            for (const line of lines) {
+              const trimmed = line.trim();
+              if (trimmed.startsWith('data: ')) {
+                const dataStr = trimmed.slice(6);
+                if (dataStr === '[DONE]') continue;
+                try {
+                  const json = JSON.parse(dataStr);
+                  const content = json.choices?.[0]?.delta?.content;
+                  if (content) {
+                    outputPre.textContent += content;
+                  }
+                } catch (e) {
+                  // Incomplete or non-JSON payload, ignore parse error
+                }
+              }
+            }
+          }
+          outputPre.scrollTop = outputPre.scrollHeight;
+        }
+
+        // Flush remaining buffer in parsed mode if any
+        if (mode === 'parsed' && buffer.trim().startsWith('data: ')) {
+          const dataStr = buffer.trim().slice(6);
+          if (dataStr !== '[DONE]') {
+            try {
+              const json = JSON.parse(dataStr);
+              const content = json.choices?.[0]?.delta?.content;
+              if (content) outputPre.textContent += content;
+            } catch (e) {}
+          }
+        }
+
+        setStatus('complete', 'Complete');
+
+      } catch (err) {
+        setStatus('error', 'Error');
+        outputPre.classList.add('error-msg');
+        outputPre.textContent += `\n[Stream Error]: ${err.message || err}`;
+      } finally {
+        startBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+
+</html>

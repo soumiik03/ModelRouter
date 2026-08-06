@@ -9,6 +9,7 @@ import { selectModelBandit } from '../routing/banditRouter.js';
 import { getExactMatch, setExactMatch } from '../cache/exactMatch.js';
 import { checkSemanticCache, saveSemanticCache } from '../cache/semanticCache.js';
 import { checkBudget, chargeBudget, BudgetExceededError } from '../budget/tracker.js';
+import { analyzePrompt } from '../routing/promptSignals.js';
 
 interface RouteRequestBody {
   prompt: string;
@@ -81,8 +82,8 @@ export default async function routeRoutes(app: FastifyInstance) {
           (!strategyHeader && process.env.ROUTING_STRATEGY === 'bandit');
 
         const routingResult = useBandit
-          ? await selectModelBandit(taskType, constraints)
-          : selectModel(taskType, constraints);
+          ? await selectModelBandit(taskType, constraints, prompt)
+          : selectModel(taskType, constraints, prompt);
 
         routingReason = routingResult.reason;
         selectedModel = getModelById(routingResult.modelId);
@@ -138,6 +139,7 @@ export default async function routeRoutes(app: FastifyInstance) {
           prompt,
           taskType: taskType ?? null,
           routingReason: routingReason ?? null,
+          ...analyzePrompt(prompt),
           ...providerResult,
         });
       } catch (logErr) {

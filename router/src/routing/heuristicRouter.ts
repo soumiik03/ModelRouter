@@ -1,6 +1,7 @@
 import type { TaskType } from './classify.js';
 import { modelRegistry, getModelById } from '../models/registry.js';
 import type { ModelConfig } from '../models/registry.js';
+import { analyzePrompt } from './promptSignals.js';
 
 interface Constraints {
   maxCostUsd?: number;
@@ -13,7 +14,7 @@ interface RoutingResult {
   reason: string;
 }
 
-// intentionally simple lookup table — task type -> preferred model id
+// intentionally simple lookup table â€” task type -> preferred model id
 const TASK_MODEL_MAP: Record<TaskType, string> = {
   code: 'cohere/north-mini-code:free',
   reasoning: 'nvidia/nemotron-3-ultra-550b-a55b:free',
@@ -29,7 +30,8 @@ export class ConstraintUnsatisfiableError extends Error {
   }
 }
 
-export function selectModel(taskType: TaskType, constraints?: Constraints): RoutingResult {
+export function selectModel(taskType: TaskType, constraints?: Constraints, prompt = ''): RoutingResult {
+  const signals = analyzePrompt(prompt);
   if (constraints?.maxCostUsd !== undefined && constraints.maxCostUsd < 0.001) {
     const cheapModel = getModelById('openai/gpt-oss-20b:free');
     if (cheapModel) {
@@ -51,6 +53,13 @@ export function selectModel(taskType: TaskType, constraints?: Constraints): Rout
     throw new ConstraintUnsatisfiableError(
       `No model in the pool satisfies the given constraints: ${JSON.stringify(constraints)}`
     );
+  }
+
+  if (signals.complexityScore > 0.5 || signals.estimatedTokens > 300) {
+    const strongest = [...candidates].filter((m) => m.qualityTier >= 4).sort((a, b) => b.qualityTier - a.qualityTier)[0];
+    if (strongest) {
+      return { modelId: strongest.id, reason: 'complexity signal (score=' + signals.complexityScore.toFixed(2) + ', ~' + signals.estimatedTokens + ' tokens) escalated to higher-tier model' };
+    }
   }
 
   const preferredId = TASK_MODEL_MAP[taskType];

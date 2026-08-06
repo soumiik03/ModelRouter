@@ -14,6 +14,10 @@ export const requestLogs = pgTable('request_logs', {
   taskType: text('task_type'),
   routingReason: text('routing_reason'),
   qualityScore: real('quality_score'),
+  promptLength: integer('prompt_length'),
+  estimatedTokens: integer('estimated_tokens'),
+  complexityScore: real('complexity_score'),
+  isLikelyMultiStep: boolean('is_likely_multi_step'),
 });
 
 export const semanticCache = pgTable('semantic_cache', {
