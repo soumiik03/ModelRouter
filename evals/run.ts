@@ -10,6 +10,22 @@ const tasks = JSON.parse(readFileSync(path.resolve(__dirname, `datasets/${datase
 
 console.log(`\n📂 Dataset: ${datasetFile} (${tasks.length} tasks)\n`);
 
+const hasEvalRange = process.env.EVAL_START !== undefined || process.env.EVAL_END !== undefined;
+const start = Number(process.env.EVAL_START ?? 0);
+const end = Number(process.env.EVAL_END ?? tasks.length);
+
+if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || end < start || end > tasks.length) {
+  throw new Error('Invalid evaluation range: EVAL_START=' + (process.env.EVAL_START ?? 0) + ', EVAL_END=' + (process.env.EVAL_END ?? tasks.length));
+}
+
+const tasksToRun = tasks.slice(start, end);
+const outputFile = hasEvalRange ? 'batch-' + (Math.floor(start / 15) + 1) + '.json' : 'raw-run.json';
+if (hasEvalRange) {
+  console.log('Running tasks ' + (start + 1) + '-' + end + ' of ' + tasks.length);
+} else {
+  console.log('Running full dataset (' + tasks.length + ' tasks)');
+}
+console.log('Saving results to ' + outputFile);
 const BASE_URL = process.env.EVAL_BASE_URL || 'http://localhost:3000';
 const DELAY_MS = 500; // stay under free-tier 20 req/min rate limit
 
@@ -69,7 +85,7 @@ async function runEval() {
   let heuristicHits = 0;
   let llmFallbackHits = 0;
 
-  for (const task of tasks) {
+  for (const task of tasksToRun) {
     // ---- Baseline A: always cheapest ----
     console.log(`  [CHEAP]     ${task.id}`);
     try {
@@ -159,7 +175,7 @@ async function runEval() {
   }
 
   // ---- Write results ----
-  writeFileSync('evals/results/raw-run.json', JSON.stringify(results, null, 2));
+  writeFileSync(path.resolve(__dirname, 'results', outputFile), JSON.stringify(results, null, 2));
 
   // ---- Summary ----
   const failures = results.filter((r) => r.error);
