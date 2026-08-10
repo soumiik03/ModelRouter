@@ -12,7 +12,7 @@ ModelRouter currently uses transparent heuristics, optional LLM-based classifica
 
 - [Live Dashboard](https://modelrouter-dashboard.onrender.com/dashboard)
 - [API Health Check](https://modelrouter-api-m8gg.onrender.com/health)
-- [Repository](https://github.com/soumik03/ModelRouter)
+- [Repository](https://github.com/soumiik03/ModelRouter)
 
 ## Screenshots
 
@@ -695,7 +695,7 @@ Until a license is added, no permission is granted to reuse, modify, or redistri
 
 **Soumik Talukder**
 
-- [GitHub](https://github.com/soumik03)
+- [GitHub](https://github.com/soumiik03)
 - [LinkedIn](https://linkedin.com/in/soumiktalukder)
 
 ModelRouter explores explainable LLM routing, provider abstraction, streaming infrastructure, caching, fallback execution, runtime observability, and model-selection evaluation.
