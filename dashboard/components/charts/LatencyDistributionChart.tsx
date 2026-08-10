@@ -10,11 +10,11 @@ interface LatencyProps {
 export default function LatencyDistributionChart({ data }: LatencyProps) {
   const getBarColor = (index: number) => {
     switch (index) {
-      case 0: return '#10b981'; // <100ms (Cache hit speed)
-      case 1: return '#06b6d4'; // 100-300ms (Fast cheap LLM)
-      case 2: return '#8b5cf6'; // 300-600ms (Mid tier)
-      case 3: return '#f59e0b'; // 600-1000ms (Heavy reasoning)
-      default: return '#f43f5e'; // >1000ms (Slow fallback)
+      case 0: return '#10b981'; 
+      case 1: return '#06b6d4'; 
+      case 2: return '#8b5cf6'; 
+      case 3: return '#f59e0b'; 
+      default: return '#f43f5e'; 
     }
   };
 

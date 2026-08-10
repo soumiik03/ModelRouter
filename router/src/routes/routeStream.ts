@@ -16,7 +16,6 @@ export default async function routeStreamRoutes(app: FastifyInstance) {
             return reply.code(400).send({ error: `Unknown model: ${modelId}` });
         }
 
-        // SSE requires these headers, set before writing any data
         reply.raw.writeHead(200, {
             'Content-Type': 'text/event-stream',
             'Cache-Control': 'no-cache',
@@ -44,7 +43,6 @@ export default async function routeStreamRoutes(app: FastifyInstance) {
                 return;
             }
 
-            // Node's fetch gives a web ReadableStream — convert to an async iterator
             const reader = upstreamRes.body.getReader();
             const decoder = new TextDecoder();
 
@@ -53,8 +51,6 @@ export default async function routeStreamRoutes(app: FastifyInstance) {
                 if (done) break;
 
                 const chunk = decoder.decode(value);
-                // OpenRouter sends lines prefixed "data: {...}" — forward them as-is,
-                // your client-side EventSource/fetch reader expects this exact format
                 reply.raw.write(chunk);
             }
 

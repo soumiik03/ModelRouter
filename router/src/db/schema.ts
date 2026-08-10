@@ -23,7 +23,7 @@ export const requestLogs = pgTable('request_logs', {
 export const semanticCache = pgTable('semantic_cache', {
   id: serial('id').primaryKey(),
   prompt: text('prompt').notNull(),
-  promptEmbedding: text('prompt_embedding').notNull(), // MiniLM is 384d, stored as vector but mapped as text here
+  promptEmbedding: text('prompt_embedding').notNull(), 
   response: text('response').notNull(),
   modelUsed: text('model_used').notNull(),
   createdAt: timestamp('created_at').defaultNow(),

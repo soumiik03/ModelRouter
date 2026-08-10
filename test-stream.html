@@ -341,7 +341,6 @@
         return;
       }
 
-      // Reset state
       outputPre.textContent = '';
       outputPre.classList.remove('error-msg');
       startBtn.disabled = true;
@@ -384,7 +383,7 @@
           } else {
             buffer += chunk;
             const lines = buffer.split('\n');
-            buffer = lines.pop() || ''; // Keep incomplete line in buffer
+            buffer = lines.pop() || ''; 
 
             for (const line of lines) {
               const trimmed = line.trim();
@@ -406,7 +405,6 @@
           outputPre.scrollTop = outputPre.scrollHeight;
         }
 
-        // Flush remaining buffer in parsed mode if any
         if (mode === 'parsed' && buffer.trim().startsWith('data: ')) {
           const dataStr = buffer.trim().slice(6);
           if (dataStr !== '[DONE]') {

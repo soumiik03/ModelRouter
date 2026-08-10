@@ -75,7 +75,6 @@ export default async function routeRoutes(app: FastifyInstance) {
         taskType = classification.taskType;
         classificationSource = classification.source;
 
-        // Per-request header takes priority, then env var, then default to heuristic
         const strategyHeader = (req.headers['x-routing-strategy'] as string | undefined)?.trim();
         const useBandit =
           strategyHeader === 'bandit' ||
@@ -93,7 +92,6 @@ export default async function routeRoutes(app: FastifyInstance) {
         }
       }
 
-      // Check Exact-Match Cache (only if model is known)
       if (selectedModel) {
         const exactCached = await getExactMatch(prompt, selectedModel.id);
         if (exactCached) {
@@ -101,13 +99,12 @@ export default async function routeRoutes(app: FastifyInstance) {
             ...exactCached,
             classificationSource: classificationSource ?? null,
             cached: 'exact',
-            costUsd: 0, // Cached responses are free
+            costUsd: 0, 
             latencyMs: 0
           };
         }
       }
 
-      // Check Semantic Cache (only if no specific model requested, allows serving across models)
       if (!model) {
         const semanticCached = await checkSemanticCache(prompt);
         if (semanticCached) {
@@ -123,13 +120,11 @@ export default async function routeRoutes(app: FastifyInstance) {
 
       providerResult = await callModel(selectedModel!.id, prompt);
 
-      // Save to Caches
       setExactMatch(prompt, selectedModel!.id, providerResult).catch(e => req.log.error(e, 'Failed to save exact match cache'));
       if (!model) {
         saveSemanticCache(prompt, providerResult, selectedModel!.id).catch(e => req.log.error(e, 'Failed to save semantic cache'));
       }
 
-      // Charge Budget
       if (userId && providerResult.costUsd > 0) {
         chargeBudget(userId, providerResult.costUsd).catch(e => req.log.error(e, 'Failed to charge budget'));
       }

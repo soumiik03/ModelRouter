@@ -14,7 +14,6 @@ interface RoutingResult {
   reason: string;
 }
 
-// intentionally simple lookup table â€” task type -> preferred model id
 const TASK_MODEL_MAP: Record<TaskType, string> = {
   code: 'cohere/north-mini-code:free',
   reasoning: 'nvidia/nemotron-3-ultra-550b-a55b:free',

@@ -1,0 +1,446 @@
+[
+  {
+    "taskId": "code-013",
+    "category": "code",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "Below is a compact, well‑documented **Python implementation of a Disjoint Set Union (Union‑Find)** data structure.  \nIt supports:\n\n* `find(x)` – returns the representative (root) of the set containing `x` (with path compression).  \n* `union(x, y)` – merges the two sets containing `x` and `y` (by size).  \n* `connected(x, y)` – checks whether two elements belong to the same set.  \n* `size(x)` – returns the size of the component that contains `x`.  \n\nFeel free to copy‑paste the class into your project or adapt it to your needs.\n\n```python\nfrom __future__ import annotations\nfrom typing import List, Iterable, Any\n\n\nclass DisjointSetUnion:\n    \"\"\"\n    A classic Union‑Find (Disjoint Set Union) data structure.\n\n    Parameters\n    ----------\n    n : int\n        Number of elements, indexed from 0 to n-1.\n    init_elements : Iterable[Any] | None, optional\n        If provided, the DSU will be initialized with the given\n        elements instead of the default 0..n-1.  The iterable must\n        contain exactly `n` distinct hashable items.\n    \"\"\"\n\n    def __init__(self, n: int, init_elements: Iterable[Any] | None = None) -> None:\n        if init_elements is None:\n            self.parent: List[int] = list(range(n))\n            self.size: List[int] = [1] * n\n            self._index = {i: i for i in range(n)}  # element -> index\n        else:\n            elems = list(init_elements)\n            if len(elems) != n:\n                raise ValueError(\"Length of init_elements must equal n\")\n            self.parent = list(range(n))\n            self.size = [1] * n\n            self._index = {elem: i for i, elem in enumerate(elems)}\n\n        self.n = n\n\n    # ------------------------------------------------------------------\n    # Core operations\n    # ------------------------------------------------------------------\n    def find(self, x: Any) -> int:\n        \"\"\"\n        Return the root of the set containing `x`.\n\n        Parameters\n        ----------\n        x : Any\n            Element whose set representative is requested.\n\n        Returns\n        -------\n        int\n            Index of the root element.\n        \"\"\"\n        idx = self._index[x]\n        # Path compression (iterative)\n        root = idx\n        while self.parent[root] != root:\n            root = self.parent[root]\n        # Compress the path\n        while self.parent[idx] != idx:\n            parent = self.parent[idx]\n            self.parent[idx] = root\n            idx = parent\n        return root\n\n    def union(self, x: Any, y: Any) -> bool:\n        \"\"\"\n        Merge the sets containing `x` and `y`.\n\n        Parameters\n        ----------\n        x, y : Any\n            Elements to merge.\n\n        Returns\n        -------\n        bool\n            True if a merge happened (x and y were in different sets),\n            False if they were already in the same set.\n        \"\"\"\n        rx = self.find(x)\n        ry = self.find(y)\n        if rx == ry:\n            return False\n\n        # Union by size: attach smaller tree under larger one\n        if self.size[rx] < self.size[ry]:\n            rx, ry = ry, rx  # ensure rx has larger size\n\n        self.parent[ry] = rx\n        self.size[rx] += self.size[ry]\n        return True\n\n    def connected(self, x: Any, y: Any) -> bool:\n        \"\"\"\n        Check whether `x` and `y` belong to the same set.\n\n        Parameters\n        ----------\n        x, y : Any\n            Elements to test.\n\n        Returns\n        -------\n        bool\n            True if both elements are in the same component.\n        \"\"\"\n        return self.find(x) == self.find(y)\n\n    def component_size(self, x: Any) -> int:\n        \"\"\"\n        Return the size of the component containing `x`.\n\n        Parameters\n        ----------\n        x : Any\n            Element whose component size is requested.\n\n        Returns\n        -------\n        int\n            Number of elements in the component.\n        \"\"\"\n        return self.size[self.find(x)]\n\n    # ------------------------------------------------------------------\n    # Convenience helpers\n    # ------------------------------------------------------------------\n    def __len__(self) -> int:\n        \"\"\"Number of elements in the DSU.\"\"\"\n        return self.n\n\n    def __repr__(self) -> str:\n        return f\"DSU(n={self.n}, size={self.size})\"\n\n    def __str__(self) -> str:\n        comps = {}\n        for elem in self._index:\n            root = self.find(elem)\n            comps.setdefault(root, []).append(elem)\n        return \"\\n\".join(f\"Root {root}: {members}\" for root, members in comps.items())\n\n\n# ----------------------------------------------------------------------\n# Example usage\n# ----------------------------------------------------------------------\nif __name__ == \"__main__\":\n    # Create a DSU for 10 elements (0..9)\n    dsu = DisjointSetUnion(10)\n\n    # Merge some pairs\n    dsu.union(1, 2)\n    dsu.union(3, 4)\n    dsu.union(2, 3)  # merges {1,2} with {3,4}\n\n    # Check connectivity\n    print(dsu.connected(1, 4))  # True\n    print(dsu.connected(1, 5))  # False\n\n    # Component sizes\n    print(dsu.component_size(1))  # 4\n    print(dsu.component_size(5))  # 1\n\n    # Pretty print all components\n    print(\"\\nAll components:\")\n    print(dsu)\n```\n\n### How it works\n\n1. **`parent` array** – each element points to its parent; a root points to itself.  \n2. **`size` array** – keeps the size of the tree rooted at each index.  \n3. **Path compression** – during `find`, every visited node is directly linked to the root, flattening the tree and guaranteeing almost‑constant amortized time.  \n4. **Union by size** – always attach the smaller tree under the larger one, keeping the tree shallow.\n\nFeel free to drop this class into any project that needs efficient connectivity queries or dynamic graph components.",
+    "costUsd": 0,
+    "latencyMs": 40985
+  },
+  {
+    "taskId": "code-013",
+    "category": "code",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "Here is a clean, efficient, and well-documented implementation of **Union Find (Disjoint Set Union)** in Python.\n\nIt includes the two critical optimizations:\n1.  **Path Compression** (in `find`) – flattens the tree structure for future lookups.\n2.  **Union by Rank/Size** (in `union`) – attaches the smaller tree under the root of the larger tree to keep depth minimal.\n\n### Implementation\n\n```python\nclass UnionFind:\n    def __init__(self, n: int):\n        \"\"\"\n        Initialize UnionFind for n elements (0 to n-1).\n        \n        Args:\n            n: Number of elements.\n        \"\"\"\n        self.parent = list(range(n))  # parent[i] = parent of i\n        self.rank = [0] * n           # rank[i] = height of tree rooted at i (approx.)\n        self.size = [1] * n           # size[i] = size of component rooted at i\n        self.count = n                # number of connected components\n\n    def find(self, x: int) -> int:\n        \"\"\"\n        Find the root of element x with path compression.\n        \n        Time Complexity: O(α(n)) amortized (Inverse Ackermann function ~ O(1))\n        \"\"\"\n        # Path Compression (Recursive)\n        if self.parent[x] != x:\n            self.parent[x] = self.find(self.parent[x])\n        return self.parent[x]\n        \n        # --- Alternative: Iterative Path Compression (avoids recursion depth limits) ---\n        # root = x\n        # while root != self.parent[root]:\n        #     root = self.parent[root]\n        # # Compress path\n        # while x != root:\n        #     parent_x = self.parent[x]\n        #     self.parent[x] = root\n        #     x = parent_x\n        # return root\n\n    def union(self, x: int, y: int) -> bool:\n        \"\"\"\n        Unite the sets containing x and y. Uses Union by Rank.\n        \n        Returns:\n            True if a merge happened, False if x and y were already in the same set.\n        \"\"\"\n        root_x = self.find(x)\n        root_y = self.find(y)\n\n        if root_x == root_y:\n            return False  # Already connected\n\n        # Union by Rank: attach smaller rank tree under larger rank tree\n        if self.rank[root_x] < self.rank[root_y]:\n            self.parent[root_x] = root_y\n            self.size[root_y] += self.size[root_x]\n        elif self.rank[root_x] > self.rank[root_y]:\n            self.parent[root_y] = root_x\n            self.size[root_x] += self.size[root_y]\n        else:\n            # Ranks equal: arbitrarily choose root_x as parent, increment its rank\n            self.parent[root_y] = root_x\n            self.rank[root_x] += 1\n            self.size[root_x] += self.size[root_y]\n\n        self.count -= 1\n        return True\n\n    def connected(self, x: int, y: int) -> bool:\n        \"\"\"Check if x and y belong to the same set.\"\"\"\n        return self.find(x) == self.find(y)\n\n    def get_size(self, x: int) -> int:\n        \"\"\"Return the size of the component containing x.\"\"\"\n        return self.size[self.find(x)]\n\n    def get_count(self) -> int:\n        \"\"\"Return the total number of connected components.\"\"\"\n        return self.count\n\n    def get_components(self) -> dict:\n        \"\"\"Utility: Group elements by their root (for debugging/visualization).\"\"\"\n        from collections import defaultdict\n        groups = defaultdict(list)\n        for i in range(len(self.parent)):\n            root = self.find(i)\n            groups[root].append(i)\n        return dict(groups)\n```\n\n---\n\n### Example Usage\n\n```python\nif __name__ == \"__main__\":\n    n = 10\n    uf = UnionFind(n)\n\n    # Define some connections (edges)\n    edges = [(0, 1), (1, 2), (3, 4), (5, 6), (6, 7), (7, 5), (8, 9)]\n\n    print(f\"Initial components: {uf.get_count()}\") # 10\n\n    for u, v in edges:\n        merged = uf.union(u, v)\n        status = \"Merged\" if merged else \"Cycle/Already Connected\"\n        print(f\"Union({u}, {v}) -> {status}\")\n\n    print(f\"\\nFinal components: {uf.get_count()}\") # 4\n    \n    # Check connectivity\n    print(f\"Are 0 and 2 connected? {uf.connected(0, 2)}\") # True\n    print(f\"Are 0 and 3 connected? {uf.connected(0, 3)}\") # False\n    \n    # Get component sizes\n    print(f\"Size of component containing 0: {uf.get_size(0)}\") # 3\n    print(f\"Size of component containing 5: {uf.get_size(5)}\") # 3\n    \n    # View all groups\n    print(f\"\\nComponent Groups: {uf.get_components()}\")\n    # Output example: {0: [0, 1, 2], 3: [3, 4], 5: [5, 6, 7], 8: [8, 9]}\n```\n\n---\n\n### Complexity Analysis\n\n| Operation | Time Complexity | Space Complexity |\n| :--- | :--- | :--- |\n| **Constructor** | $O(N)$ | $O(N)$ |\n| **Find** | $O(\\alpha(N)) \\approx O(1)$ | $O(1)$ |\n| **Union** | $O(\\alpha(N)) \\approx O(1)$ | $O(1)$ |\n| **Connected** | $O(\\alpha(N)) \\approx O(1)$ | $O(1)$ |\n\n*$\\alpha(N)$ is the Inverse Ackermann function, which grows incredibly slowly ( < 5 for any practical input size).*\n\n---\n\n### Key Design Choices Explained\n\n1.  **`rank` vs `size` for Union Heuristic**:\n    *   I included **both** `rank` (tree height upper bound) and `size` (node count).\n    *   **`rank`** is used for the `union` decision logic (standard Union by Rank).\n    *   **`size`** is maintained purely for the `get_size(x)` API convenience. You *can* use size for the union decision (Union by Size), which has identical complexity bounds.\n\n2.  **Recursive vs Iterative `find`**:\n    *   The **recursive** version is standard in competitive programming and interviews (cleaner code).\n    *   The **iterative** version (commented out) is safer for **production systems** or massive datasets ($N > 10^5$) where Python's recursion limit (default 1000) might be hit before path compression flattens the tree.\n\n3.  **0-Indexed**: Assumes elements are integers `0` to `n-1`. If you have arbitrary labels (strings, large IDs), wrap this class with a dictionary mapping `label -> index`.",
+    "costUsd": 0,
+    "latencyMs": 81433
+  },
+  {
+    "taskId": "code-013",
+    "category": "code",
+    "strategy": "heuristic-router",
+    "modelUsed": "cohere/north-mini-code:free",
+    "response": "Here is a standard and optimized implementation of the Union-Find (Disjoint Set Union) data structure in Python. This implementation uses **path compression** and **union by rank** to ensure near-constant time complexity for each operation.\n\n```python\nclass UnionFind:\n    def __init__(self, n):\n        \"\"\"\n        Initialize the Union-Find data structure.\n        \n        :param n: The number of elements (0 to n-1).\n        \"\"\"\n        # parent[i] stores the parent of element i\n        # Initially, every element is its own parent\n        self.parent = list(range(n))\n        \n        # rank[i] stores the rank (depth) of the tree rooted at i\n        # Initially, all ranks are 0\n        self.rank = [0] * n\n\n    def find(self, x):\n        \"\"\"\n        Find the root (representative) of the set containing x.\n        Applies Path Compression: makes x point directly to the root.\n        \"\"\"\n        if self.parent[x] != x:\n            # Recursively find the root and flatten the path\n            self.parent[x] = self.find(self.parent[x])\n        return self.parent[x]\n\n    def union(self, x, y):\n        \"\"\"\n        Merge the sets containing x and y.\n        Applies Union by Rank: attaches the shorter tree under the root of the taller tree.\n        \"\"\"\n        root_x = self.find(x)\n        root_y = self.find(y)\n\n        if root_x == root_y:\n            return # x and y are already in the same set\n\n        # Compare ranks of the two roots\n        if self.rank[root_x] < self.rank[root_y]:\n            # Attach x's tree under y's tree\n            self.parent[root_x] = root_y\n        elif self.rank[root_x] > self.rank[root_y]:\n            # Attach y's tree under x's tree\n            self.parent[root_y] = root_x\n        else:\n            # Ranks are equal: attach y's tree under x's tree\n            # Increase the rank of the new root\n            self.parent[root_y] = root_x\n            self.rank[root_x] += 1\n\n    def connected(self, x, y):\n        \"\"\"\n        Check if elements x and y are in the same set.\n        \"\"\"\n        return self.find(x) == self.find(y)\n\n\n# --- Usage Example ---\nif __name__ == \"__main__\":\n    # Initialize UnionFind with 5 elements (0, 1, 2, 3, 4)\n    uf = UnionFind(5)\n\n    # Union operations\n    uf.union(0, 1)\n    uf.union(1, 2)\n    uf.union(3, 4)\n\n    # Check connections\n    print(f\"0 and 2 connected? {uf.connected(0, 2)}\") # True\n    print(f\"0 and 3 connected? {uf.connected(0, 3)}\") # False\n\n    # Union the two sets\n    uf.union(2, 3)\n\n    # Check connections again\n    print(f\"0 and 4 connected? {uf.connected(0, 4)}\") # True\n```\n\n### Key Features:\n\n1.  **Path Compression**: In the `find` method, we update the parent of `x` to point directly to the root. This drastically reduces the height of the tree over many operations.\n2.  **Union by Rank**: In the `union` method, we compare the depths (`rank`) of the two root nodes. We always attach the shallower tree to the root of the deeper tree. If they have the same rank, we arbitrarily attach one and increment the rank of the new root.\n3.  **Time Complexity**: With both optimizations, the amortized time complexity for each operation (`find`, `union`, `connected`) is approximately $O(\\alpha(n))$, where $\\alpha$ is the inverse Ackermann function (effectively constant for all practical purposes).\n\n### How to use it:\n1.  Instantiate `UnionFind(n)` where `n` is the number of elements.\n2.  Call `union(x, y)` to connect two elements.\n3.  Call `connected(x, y)` to check if two elements share a connection.",
+    "costUsd": 0,
+    "latencyMs": 41808,
+    "classificationSource": "heuristic"
+  },
+  {
+    "taskId": "code-013",
+    "category": "code",
+    "strategy": "learned-bandit",
+    "modelUsed": "cohere/north-mini-code:free",
+    "response": "Here is a standard and optimized implementation of the Union-Find (Disjoint Set Union) data structure in Python. This implementation uses **path compression** and **union by rank** to ensure near-constant time complexity for each operation.\n\n```python\nclass UnionFind:\n    def __init__(self, n):\n        \"\"\"\n        Initialize the Union-Find data structure.\n        \n        :param n: The number of elements (0 to n-1).\n        \"\"\"\n        # parent[i] stores the parent of element i\n        # Initially, every element is its own parent\n        self.parent = list(range(n))\n        \n        # rank[i] stores the rank (depth) of the tree rooted at i\n        # Initially, all ranks are 0\n        self.rank = [0] * n\n\n    def find(self, x):\n        \"\"\"\n        Find the root (representative) of the set containing x.\n        Applies Path Compression: makes x point directly to the root.\n        \"\"\"\n        if self.parent[x] != x:\n            # Recursively find the root and flatten the path\n            self.parent[x] = self.find(self.parent[x])\n        return self.parent[x]\n\n    def union(self, x, y):\n        \"\"\"\n        Merge the sets containing x and y.\n        Applies Union by Rank: attaches the shorter tree under the root of the taller tree.\n        \"\"\"\n        root_x = self.find(x)\n        root_y = self.find(y)\n\n        if root_x == root_y:\n            return # x and y are already in the same set\n\n        # Compare ranks of the two roots\n        if self.rank[root_x] < self.rank[root_y]:\n            # Attach x's tree under y's tree\n            self.parent[root_x] = root_y\n        elif self.rank[root_x] > self.rank[root_y]:\n            # Attach y's tree under x's tree\n            self.parent[root_y] = root_x\n        else:\n            # Ranks are equal: attach y's tree under x's tree\n            # Increase the rank of the new root\n            self.parent[root_y] = root_x\n            self.rank[root_x] += 1\n\n    def connected(self, x, y):\n        \"\"\"\n        Check if elements x and y are in the same set.\n        \"\"\"\n        return self.find(x) == self.find(y)\n\n\n# --- Usage Example ---\nif __name__ == \"__main__\":\n    # Initialize UnionFind with 5 elements (0, 1, 2, 3, 4)\n    uf = UnionFind(5)\n\n    # Union operations\n    uf.union(0, 1)\n    uf.union(1, 2)\n    uf.union(3, 4)\n\n    # Check connections\n    print(f\"0 and 2 connected? {uf.connected(0, 2)}\") # True\n    print(f\"0 and 3 connected? {uf.connected(0, 3)}\") # False\n\n    # Union the two sets\n    uf.union(2, 3)\n\n    # Check connections again\n    print(f\"0 and 4 connected? {uf.connected(0, 4)}\") # True\n```\n\n### Key Features:\n\n1.  **Path Compression**: In the `find` method, we update the parent of `x` to point directly to the root. This drastically reduces the height of the tree over many operations.\n2.  **Union by Rank**: In the `union` method, we compare the depths (`rank`) of the two root nodes. We always attach the shallower tree to the root of the deeper tree. If they have the same rank, we arbitrarily attach one and increment the rank of the new root.\n3.  **Time Complexity**: With both optimizations, the amortized time complexity for each operation (`find`, `union`, `connected`) is approximately $O(\\alpha(n))$, where $\\alpha$ is the inverse Ackermann function (effectively constant for all practical purposes).\n\n### How to use it:\n1.  Instantiate `UnionFind(n)` where `n` is the number of elements.\n2.  Call `union(x, y)` to connect two elements.\n3.  Call `connected(x, y)` to check if two elements share a connection.",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "code-014",
+    "category": "code",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "Below is a compact, self‑contained C++ implementation that returns **all** permutations of a given string.  \nIt uses a classic back‑tracking routine (recursive swap) – this is the most common way to generate permutations in interview questions and gives you full control over the order in which the permutations are produced.\n\n```cpp\n#include <iostream>\n#include <vector>\n#include <string>\n#include <algorithm>   // for std::swap\n\n// ------------------------------------------------------------------\n//  Generate all permutations of a string\n// ------------------------------------------------------------------\nstd::vector<std::string> permute(const std::string& s)\n{\n    std::vector<std::string> result;\n    if (s.empty()) return result;          // nothing to permute\n\n    // Work on a mutable copy of the string\n    std::string cur = s;\n    std::vector<int> idx(cur.size(), 0);   // helper for recursion\n\n    // Recursive lambda – captures result by reference\n    std::function<void(int)> backtrack = [&](int pos)\n    {\n        if (pos == static_cast<int>(cur.size())) {\n            result.push_back(cur);        // a full permutation\n            return;\n        }\n\n        for (int i = pos; i < static_cast<int>(cur.size()); ++i) {\n            std::swap(cur[pos], cur[i]);  // put i‑th char at position pos\n            backtrack(pos + 1);           // recurse for the rest\n            std::swap(cur[pos], cur[i]);  // backtrack – restore original order\n        }\n    };\n\n    backtrack(0);\n    return result;\n}\n\n// ------------------------------------------------------------------\n//  Demo / test\n// ------------------------------------------------------------------\nint main()\n{\n    std::string str = \"abc\";\n    std::vector<std::string> perms = permute(str);\n\n    std::cout << \"Permutations of \\\"\" << str << \"\\\":\\n\";\n    for (const auto& p : perms) {\n        std::cout << p << '\\n';\n    }\n\n    return 0;\n}\n```\n\n### How it works\n\n1. **Mutable copy** – We copy the input string into `cur` so we can swap characters in place.\n2. **Backtracking** –  \n   * `pos` is the index of the character we are currently fixing.  \n   * For every position `i` from `pos` to the end, we swap `cur[pos]` with `cur[i]`, recurse to fill the rest of the string (`pos+1`), then swap back to restore the original order.\n3. **Base case** – When `pos` reaches the string length, we have a complete permutation, which we push into `result`.\n\n### Complexity\n\n*Time*: `O(n! * n)` – we generate `n!` permutations and each permutation is built in `O(n)` time (copying the string into the result vector).  \n*Space*: `O(n! * n)` for the output vector plus `O(n)` for the recursion stack and the mutable string.\n\n### Alternative: `std::next_permutation`\n\nIf you only need the permutations in lexicographic order and don’t care about the recursion, you can use the STL algorithm:\n\n```cpp\nstd::vector<std::string> permuteLexicographic(std::string s)\n{\n    std::vector<std::string> result;\n    std::sort(s.begin(), s.end());          // start from the smallest permutation\n    do {\n        result.push_back(s);\n    } while (std::next_permutation(s.begin(), s.end()));\n    return result;\n}\n```\n\nBoth approaches give you the same set of permutations; choose the one that best fits your needs.",
+    "costUsd": 0,
+    "latencyMs": 88024
+  },
+  {
+    "taskId": "code-014",
+    "category": "code",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "Here are the two most common ways to generate permutations in C++.\n\n### Method 1: Using `std::next_permutation` (Recommended / Idiomatic)\nThis is the **standard C++ way**. It is efficient, handles duplicates automatically (generates unique permutations), and requires minimal code.\n\n**Requirement:** The string must be sorted initially to generate *all* permutations.\n\n```cpp\n#include <iostream>\n#include <string>\n#include <algorithm> // for std::sort, std::next_permutation\n#include <vector>\n\nstd::vector<std::string> getPermutations(std::string s) {\n    std::vector<std::string> result;\n    \n    // 1. Sort the string to start from the lexicographically smallest permutation\n    std::sort(s.begin(), s.end());\n    \n    // 2. Generate permutations until next_permutation returns false\n    do {\n        result.push_back(s);\n    } while (std::next_permutation(s.begin(), s.end()));\n    \n    return result;\n}\n```\n\n---\n\n### Method 2: Recursive Backtracking (Classic Algorithm)\nThis is the standard \"textbook\" implementation. It is useful for understanding the logic or if you cannot use the STL for some reason. \n\n**Note:** This generates duplicates if the input string has repeated characters (e.g., \"AAB\" will generate 6 entries instead of 3 unique ones). See the \"Handling Duplicates\" section below for a fix.\n\n```cpp\n#include <iostream>\n#include <string>\n#include <vector>\n\nvoid permuteRecursive(std::string& s, int left, int right, std::vector<std::string>& result) {\n    // Base case: If left == right, we have a fixed permutation\n    if (left == right) {\n        result.push_back(s);\n        return;\n    }\n\n    // Recursive case: Swap each character into the 'left' position\n    for (int i = left; i <= right; ++i) {\n        // 1. Choose: Swap current index with left index\n        std::swap(s[left], s[i]);\n        \n        // 2. Explore: Recurse for the next position\n        permuteRecursive(s, left + 1, right, result);\n        \n        // 3. Un-choose (Backtrack): Swap back to restore original string for next iteration\n        std::swap(s[left], s[i]);\n    }\n}\n\nstd::vector<std::string> getPermutationsRecursive(std::string s) {\n    std::vector<std::string> result;\n    if (!s.empty()) {\n        permuteRecursive(s, 0, s.length() - 1, result);\n    }\n    return result;\n}\n```\n\n---\n\n### Handling Duplicate Characters (Recursive Version)\nIf your input string has duplicate characters (e.g., `\"AAB\"`), the recursive method above produces duplicate permutations. To fix this, use a `std::unordered_set` (or `std::set`) at each recursion level to track which characters have already been placed at the current `left` index.\n\n```cpp\n#include <unordered_set>\n\nvoid permuteUniqueRecursive(std::string& s, int left, int right, std::vector<std::string>& result) {\n    if (left == right) {\n        result.push_back(s);\n        return;\n    }\n\n    // Track characters used at this specific recursion depth (index 'left')\n    std::unordered_set<char> used; \n\n    for (int i = left; i <= right; ++i) {\n        // If we have already placed this character at index 'left', skip it\n        if (used.count(s[i])) continue;\n        \n        used.insert(s[i]); // Mark as used for this position\n        \n        std::swap(s[left], s[i]);\n        permuteUniqueRecursive(s, left + 1, right, result);\n        std::swap(s[left], s[i]); // Backtrack\n    }\n}\n```\n*(Note: `std::next_permutation` in Method 1 handles this automatically without extra code.)*\n\n---\n\n### Complete Runnable Example\n```cpp\n#include <iostream>\n#include <string>\n#include <vector>\n#include <algorithm>\n\n// --- Method 1: STL (Best for production) ---\nstd::vector<std::string> getPermutationsSTL(std::string s) {\n    std::vector<std::string> res;\n    std::sort(s.begin(), s.end());\n    do { res.push_back(s); } while (std::next_permutation(s.begin(), s.end()));\n    return res;\n}\n\n// --- Method 2: Recursive Backtracking (Educational) ---\nvoid backtrack(std::string& s, int l, int r, std::vector<std::string>& res) {\n    if (l == r) { res.push_back(s); return; }\n    for (int i = l; i <= r; ++i) {\n        std::swap(s[l], s[i]);\n        backtrack(s, l + 1, r, res);\n        std::swap(s[l], s[i]);\n    }\n}\nstd::vector<std::string> getPermutationsRec(std::string s) {\n    std::vector<std::string> res;\n    if (!s.empty()) backtrack(s, 0, s.size() - 1, res);\n    return res;\n}\n\nint main() {\n    std::string input = \"ABC\";\n    \n    std::cout << \"Input: \" << input << \"\\n\\n\";\n\n    // Using STL\n    std::cout << \"--- STL Method (Sorted, Unique) ---\\n\";\n    auto perms1 = getPermutationsSTL(input);\n    for (const auto& p : perms1) std::cout << p << ' ';\n    std::cout << \"\\nCount: \" << perms1.size() << \"\\n\\n\";\n\n    // Using Recursion\n    std::cout << \"--- Recursive Method ---\\n\";\n    auto perms2 = getPermutationsRec(input);\n    for (const auto& p : perms2) std::cout << p << ' ';\n    std::cout << \"\\nCount: \" << perms2.size() << \"\\n\";\n\n    // Test with duplicates\n    std::string dupInput = \"AAB\";\n    std::cout << \"\\n--- Duplicate Test: \" << dupInput << \" ---\\n\";\n    std::cout << \"STL (Unique): \";\n    for (auto& p : getPermutationsSTL(dupInput)) std::cout << p << ' ';\n    std::cout << \"\\nRecursive (Has Duplicates): \";\n    for (auto& p : getPermutationsRec(dupInput)) std::cout << p << ' ';\n    std::cout << \"\\n\";\n\n    return 0;\n}\n```\n\n### Complexity Analysis\n\n| Method | Time Complexity | Space Complexity | Notes |\n| :--- | :--- | :--- | :--- |\n| **`std::next_permutation`** | **O(N! * N)** | **O(N! * N)** (to store results) / **O(1)** auxiliary | Generates in **lexicographical order**. Handles duplicates natively. Fastest in practice due to compiler optimizations. |\n| **Recursive Backtracking** | **O(N! * N)** | **O(N! * N)** (results) + **O(N)** (call stack) | Order depends on swap logic (usually not sorted). Easy to modify for specific constraints (e.g., \"generate permutations of length K\"). |\n\n### Which one should you use?\n1.  **Use `std::next_permutation` (Method 1)** for almost all real-world C++ applications. It is standard, optimized, bug-free, and handles duplicates correctly.\n2.  **Use Recursive Backtracking (Method 2)** only for coding interviews (if asked to implement it manually), competitive programming with specific custom constraints, or educational purposes.",
+    "costUsd": 0,
+    "latencyMs": 35362
+  },
+  {
+    "taskId": "code-014",
+    "category": "code",
+    "strategy": "heuristic-router",
+    "modelUsed": "cohere/north-mini-code:free",
+    "response": "Here is an efficient and standard C++ solution to generate all permutations of a string using the **Backtracking** algorithm. This approach is preferred because it avoids creating excessive temporary string objects and runs in $O(N \\times N!)$ time complexity.\n\n```cpp\n#include <iostream>\n#include <vector>\n#include <string>\n#include <algorithm> // Required for std::swap\n\nusing namespace std;\n\n// Function to generate all permutations\nvoid generatePermutations(vector<string>& result, string current, int start) {\n    // Base Case: If the current string length equals the original length,\n    // we have generated a complete permutation.\n    if (start == current.length()) {\n        result.push_back(current);\n        return;\n    }\n\n    // Iterate through the string starting from 'start'\n    for (int i = start; i < current.length(); i++) {\n        // Swap the current character with the start character\n        swap(current[start], current[i]);\n\n        // Recursively generate permutations for the remaining characters\n        generatePermutations(result, current, start + 1);\n\n        // Backtrack: Swap them back to restore the original order \n        // for the next iteration of the loop\n        swap(current[start], current[i]);\n    }\n}\n\n// Wrapper function to initiate the process\nvector<string> permute(string s) {\n    vector<string> result;\n    generatePermutations(result, s, 0);\n    return result;\n}\n\n// Driver code to test the function\nint main() {\n    string input = \"ABC\";\n    \n    vector<string> permutations = permute(input);\n\n    cout << \"All permutations of \\\"\" << input << \"\\\":\" << endl;\n    for (const string& p : permutations) {\n        cout << p << endl;\n    }\n\n    return 0;\n}\n```\n\n### How it Works:\n\n1.  **Parameters:** The helper function `generatePermutations` takes the current state of the string (`current`), a result vector to store outputs, and an integer `start` representing the index we are currently filling.\n2.  **Base Case:** If `start` is equal to the length of the string, we have successfully placed all characters, so we add the string to the result vector.\n3.  **The Loop:** We loop from the `start` index to the end of the string.\n4.  **Swap:** We swap the character at the `start` index with the character at the current loop index `i`. This brings a specific character to the \"current\" position.\n5.  **Recurse:** We call the function recursively with `start + 1`. This effectively fixes the character at position `start` and generates all permutations for the rest of the string.\n6.  **Backtrack:** After the recursive call returns, we swap the characters back. This undoes the change, allowing the loop to pick the next character for that specific position without interference from previous steps.\n\n### Alternative: Using `std::next_permutation`\nIf you are allowed to sort the string first, C++ provides a built-in algorithm that is often more concise:\n\n```cpp\n#include <iostream>\n#include <vector>\n#include <string>\n#include <algorithm>\n\nusing namespace std;\n\nvector<string> getPermutations(string s) {\n    vector<string> result;\n    sort(s.begin(), s.end()); // Start from the smallest lexicographical order\n    result.push_back(s);\n\n    while (next_permutation(s.begin(), s.end())) {\n        result.push_back(s);\n    }\n    return result;\n}\n```",
+    "costUsd": 0,
+    "latencyMs": 99455,
+    "classificationSource": "heuristic"
+  },
+  {
+    "taskId": "code-014",
+    "category": "code",
+    "strategy": "learned-bandit",
+    "modelUsed": "cohere/north-mini-code:free",
+    "response": "Here is an efficient and standard C++ solution to generate all permutations of a string using the **Backtracking** algorithm. This approach is preferred because it avoids creating excessive temporary string objects and runs in $O(N \\times N!)$ time complexity.\n\n```cpp\n#include <iostream>\n#include <vector>\n#include <string>\n#include <algorithm> // Required for std::swap\n\nusing namespace std;\n\n// Function to generate all permutations\nvoid generatePermutations(vector<string>& result, string current, int start) {\n    // Base Case: If the current string length equals the original length,\n    // we have generated a complete permutation.\n    if (start == current.length()) {\n        result.push_back(current);\n        return;\n    }\n\n    // Iterate through the string starting from 'start'\n    for (int i = start; i < current.length(); i++) {\n        // Swap the current character with the start character\n        swap(current[start], current[i]);\n\n        // Recursively generate permutations for the remaining characters\n        generatePermutations(result, current, start + 1);\n\n        // Backtrack: Swap them back to restore the original order \n        // for the next iteration of the loop\n        swap(current[start], current[i]);\n    }\n}\n\n// Wrapper function to initiate the process\nvector<string> permute(string s) {\n    vector<string> result;\n    generatePermutations(result, s, 0);\n    return result;\n}\n\n// Driver code to test the function\nint main() {\n    string input = \"ABC\";\n    \n    vector<string> permutations = permute(input);\n\n    cout << \"All permutations of \\\"\" << input << \"\\\":\" << endl;\n    for (const string& p : permutations) {\n        cout << p << endl;\n    }\n\n    return 0;\n}\n```\n\n### How it Works:\n\n1.  **Parameters:** The helper function `generatePermutations` takes the current state of the string (`current`), a result vector to store outputs, and an integer `start` representing the index we are currently filling.\n2.  **Base Case:** If `start` is equal to the length of the string, we have successfully placed all characters, so we add the string to the result vector.\n3.  **The Loop:** We loop from the `start` index to the end of the string.\n4.  **Swap:** We swap the character at the `start` index with the character at the current loop index `i`. This brings a specific character to the \"current\" position.\n5.  **Recurse:** We call the function recursively with `start + 1`. This effectively fixes the character at position `start` and generates all permutations for the rest of the string.\n6.  **Backtrack:** After the recursive call returns, we swap the characters back. This undoes the change, allowing the loop to pick the next character for that specific position without interference from previous steps.\n\n### Alternative: Using `std::next_permutation`\nIf you are allowed to sort the string first, C++ provides a built-in algorithm that is often more concise:\n\n```cpp\n#include <iostream>\n#include <vector>\n#include <string>\n#include <algorithm>\n\nusing namespace std;\n\nvector<string> getPermutations(string s) {\n    vector<string> result;\n    sort(s.begin(), s.end()); // Start from the smallest lexicographical order\n    result.push_back(s);\n\n    while (next_permutation(s.begin(), s.end())) {\n        result.push_back(s);\n    }\n    return result;\n}\n```",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "code-015",
+    "category": "code",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "Below is a compact, well‑documented implementation that returns **only the length** of the longest common subsequence (LCS) of two sequences (strings, lists, tuples, …).  \nIt uses the classic dynamic‑programming recurrence\n\n```\nLCS(i, j) = 0                                 if i==0 or j==0\nLCS(i, j) = LCS(i‑1, j‑1) + 1                  if a[i‑1] == b[j‑1]\nLCS(i, j) = max(LCS(i‑1, j), LCS(i, j‑1))      otherwise\n```\n\nThe implementation is written in a way that is easy to read, but also includes a small space‑optimised variant that only keeps two rows of the DP table in memory.\n\n```python\nfrom typing import Sequence, Any\n\ndef lcs_length(a: Sequence[Any], b: Sequence[Any]) -> int:\n    \"\"\"\n    Return the length of the longest common subsequence of `a` and `b`.\n\n    Parameters\n    ----------\n    a, b : Sequence[Any]\n        Two sequences (strings, lists, tuples, etc.) whose LCS length is\n        to be computed.  Elements are compared with the ``==`` operator.\n\n    Returns\n    -------\n    int\n        Length of the longest common subsequence.\n\n    Notes\n    -----\n    * Time complexity: O(len(a) * len(b))\n    * Space complexity: O(min(len(a), len(b)))  (the implementation keeps\n      only two rows of the DP table in memory)\n\n    Examples\n    --------\n    >>> lcs_length(\"AGGTAB\", \"GXTXAYB\")\n    4\n    >>> lcs_length([1, 2, 3], [2, 3, 4, 5])\n    2\n    \"\"\"\n    # Ensure we iterate over the shorter sequence in the inner loop\n    # to keep the DP array as small as possible.\n    if len(a) < len(b):\n        a, b = b, a\n\n    # `prev` holds the DP values for the previous row (i-1),\n    # `curr` holds the values for the current row (i).\n    prev = [0] * (len(b) + 1)\n    curr = [0] * (len(b) + 1)\n\n    for i in range(1, len(a) + 1):\n        # Reset the first column for the new row\n        curr[0] = 0\n        ai = a[i - 1]\n        for j in range(1, len(b) + 1):\n            if ai == b[j - 1]:\n                curr[j] = prev[j - 1] + 1\n            else:\n                curr[j] = max(prev[j], curr[j - 1])\n        # Swap references for the next iteration\n        prev, curr = curr, prev\n\n    # After the loop, `prev` holds the last computed row\n    return prev[len(b)]\n\n\n# --------------------------------------------------------------------------- #\n# Quick sanity check (you can run this block to test the function)\n# --------------------------------------------------------------------------- #\nif __name__ == \"__main__\":\n    # Basic string example\n    s1, s2 = \"AGGTAB\", \"GXTXAYB\"\n    print(f\"LCS length of {s1!r} and {s2!r} is {lcs_length(s1, s2)}\")  # 4\n\n    # List example\n    l1, l2 = [1, 2, 3, 4, 5], [2, 4, 6]\n    print(f\"LCS length of {l1} and {l2} is {lcs_length(l1, l2)}\")  # 2\n\n    # Edge cases\n    print(lcs_length(\"\", \"anything\"))  # 0\n    print(lcs_length(\"same\", \"same\"))  # 4\n```\n\n### How it works\n\n1. **Choosing the shorter sequence for the inner loop**  \n   By swapping `a` and `b` if necessary, the DP array `prev`/`curr` is always of size `len(b)+1`, where `b` is the shorter sequence. This keeps memory usage minimal.\n\n2. **Two‑row DP**  \n   We only need the previous row (`prev`) and the current row (`curr`) to compute the next row. After finishing a row, we swap the references so that the next iteration reuses the same two lists.\n\n3. **Recurrence**  \n   * If the current elements match (`a[i-1] == b[j-1]`), we extend the LCS found for the prefixes `a[:i-1]` and `b[:j-1]` by 1.  \n   * Otherwise we take the maximum of the LCS that excludes the current element from either `a` or `b`.\n\n4. **Result**  \n   After processing all rows, the last computed row (`prev`) contains the LCS lengths for all prefixes of `b` with the full `a`. The answer is the last entry `prev[len(b)]`.\n\nFeel free to drop this function into any project that needs LCS length calculations!",
+    "costUsd": 0,
+    "latencyMs": 44881
+  },
+  {
+    "taskId": "code-015",
+    "category": "code",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "Here are two standard ways to solve this in Python using **Dynamic Programming**.\n\n### Approach 1: Standard 2D DP Table (Easy to Understand)\n**Time Complexity:** $O(N \\times M)$  \n**Space Complexity:** $O(N \\times M)$\n\n```python\ndef lcs_length_standard(text1: str, text2: str) -> int:\n    \"\"\"\n    Returns the length of the Longest Common Subsequence (LCS) between text1 and text2.\n    \"\"\"\n    n, m = len(text1), len(text2)\n    \n    # dp[i][j] stores LCS length of text1[:i] and text2[:j]\n    # We use (n+1) x (m+1) to handle empty string base cases (index 0)\n    dp = [[0] * (m + 1) for _ in range(n + 1)]\n\n    for i in range(1, n + 1):\n        for j in range(1, m + 1):\n            if text1[i - 1] == text2[j - 1]:\n                # Characters match: extend previous LCS by 1\n                dp[i][j] = 1 + dp[i - 1][j - 1]\n            else:\n                # Characters don't match: take max of skipping char from text1 or text2\n                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])\n\n    return dp[n][m]\n```\n\n---\n\n### Approach 2: Space Optimized (Best for Large Inputs)\n**Time Complexity:** $O(N \\times M)$  \n**Space Complexity:** $O(\\min(N, M))$\n\nSince `dp[i][j]` only depends on the **current row** and the **previous row**, we don't need the full matrix. We can swap the strings to ensure the DP array uses the length of the shorter string.\n\n```python\ndef lcs_length_optimized(text1: str, text2: str) -> int:\n    \"\"\"\n    Space optimized version using two 1D arrays.\n    \"\"\"\n    # Ensure text1 is the longer string (or equal) to minimize DP array size\n    if len(text1) < len(text2):\n        text1, text2 = text2, text1\n        \n    n, m = len(text1), len(text2)\n    \n    # 'prev' represents dp[i-1][...], 'curr' represents dp[i][...]\n    prev = [0] * (m + 1)\n    curr = [0] * (m + 1)\n\n    for i in range(1, n + 1):\n        for j in range(1, m + 1):\n            if text1[i - 1] == text2[j - 1]:\n                curr[j] = 1 + prev[j - 1]\n            else:\n                curr[j] = max(prev[j], curr[j - 1])\n        \n        # Swap references for next iteration (no need to copy data)\n        prev, curr = curr, prev \n        # Note: 'curr' now holds the old 'prev' data, which will be overwritten in next loop\n\n    # After the last swap, 'prev' holds the final row\n    return prev[m]\n```\n\n---\n\n### Usage Examples\n\n```python\n# Example 1\ns1 = \"ABCBDAB\"\ns2 = \"BDCABC\"\nprint(f\"LCS Length: {lcs_length_optimized(s1, s2)}\") \n# Output: 4 (Possible LCS: \"BCAB\", \"BDAB\", \"BCBA\")\n\n# Example 2\ns1 = \"AGGTAB\"\ns2 = \"GXTXAYB\"\nprint(f\"LCS Length: {lcs_length_optimized(s1, s2)}\") \n# Output: 4 (LCS: \"GTAB\")\n\n# Example 3: No common subsequence\ns1 = \"ABC\"\ns2 = \"DEF\"\nprint(f\"LCS Length: {lcs_length_optimized(s1, s2)}\") \n# Output: 0\n```\n\n---\n\n### How it Works (Logic Recap)\n\n1.  **State Definition:** `dp[i][j]` = Length of LCS for `text1[0...i-1]` and `text2[0...j-1]`.\n2.  **Base Case:** `dp[0][j] = 0` and `dp[i][0] = 0` (Empty string has LCS 0 with anything).\n3.  **Transition:**\n    *   **Match (`text1[i-1] == text2[j-1]`):** We found a common char. Add 1 to the solution without these chars (`dp[i-1][j-1]`).\n    *   **Mismatch:** We must skip a character. Take the best result from skipping `text1`'s char (`dp[i-1][j]`) or skipping `text2`'s char (`dp[i][j-1]`).\n\n### Which one to use?\n*   **Use Approach 1** if you need to **reconstruct the actual LCS string** later (requires backtracking through the full matrix).\n*   **Use Approach 2** for **competitive programming, large strings, or memory-constrained environments** where you only need the **length**.",
+    "costUsd": 0,
+    "latencyMs": 33864
+  },
+  {
+    "taskId": "code-015",
+    "category": "code",
+    "strategy": "heuristic-router",
+    "modelUsed": "cohere/north-mini-code:free",
+    "response": "```python\n\ndef lcs_length(s1: str, s2: str) -> int:\n    \"\"\"Return the length of the longest common subsequence between s1 and s2.\"\"\"\n    m, n = len(s1), len(s2)\n    # dp[i][j] = LCS length for s1[:i] and s2[:j]\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if s1[i - 1] == s2[j - 1]:\n                dp[i][j] = dp[i - 1][j - 1] + 1\n            else:\n                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])\n\n    return dp[m][n]\n\n```",
+    "costUsd": 0,
+    "latencyMs": 22493,
+    "classificationSource": "heuristic"
+  },
+  {
+    "taskId": "code-015",
+    "category": "code",
+    "strategy": "learned-bandit",
+    "modelUsed": "cohere/north-mini-code:free",
+    "response": "```python\n\ndef lcs_length(s1: str, s2: str) -> int:\n    \"\"\"Return the length of the longest common subsequence between s1 and s2.\"\"\"\n    m, n = len(s1), len(s2)\n    # dp[i][j] = LCS length for s1[:i] and s2[:j]\n    dp = [[0] * (n + 1) for _ in range(m + 1)]\n\n    for i in range(1, m + 1):\n        for j in range(1, n + 1):\n            if s1[i - 1] == s2[j - 1]:\n                dp[i][j] = dp[i - 1][j - 1] + 1\n            else:\n                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])\n\n    return dp[m][n]\n\n```",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "reasoning-001",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "The speed is found by dividing distance by time:\n\n\\[\n\\text{Speed} = \\frac{120\\ \\text{km}}{2\\ \\text{h}} = 60\\ \\text{km/h}.\n\\]\n\nSo the train travels at **60 km/h**.",
+    "costUsd": 0,
+    "latencyMs": 5889
+  },
+  {
+    "taskId": "reasoning-001",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "To find the speed, use the formula:\n\n$$ \\text{Speed} = \\frac{\\text{Distance}}{\\text{Time}} $$\n\n**Calculation:**\n$$ \\text{Speed} = \\frac{120 \\text{ km}}{2 \\text{ hours}} = 60 \\text{ km/h} $$\n\n**Answer:** The train's speed is **60 km/h**.",
+    "costUsd": 0,
+    "latencyMs": 3064
+  },
+  {
+    "taskId": "reasoning-001",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "To find the speed, use the formula:\n\n$$ \\text{Speed} = \\frac{\\text{Distance}}{\\text{Time}} $$\n\n**Calculation:**\n$$ \\text{Speed} = \\frac{120 \\text{ km}}{2 \\text{ hours}} = 60 \\text{ km/h} $$\n\n**Answer:** The train's speed is **60 km/h**.",
+    "costUsd": 0,
+    "latencyMs": 0,
+    "classificationSource": "heuristic"
+  },
+  {
+    "taskId": "reasoning-001",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "To find the speed, use the formula:\n\n$$ \\text{Speed} = \\frac{\\text{Distance}}{\\text{Time}} $$\n\n**Calculation:**\n$$ \\text{Speed} = \\frac{120 \\text{ km}}{2 \\text{ hours}} = 60 \\text{ km/h} $$\n\n**Answer:** The train's speed is **60 km/h**.",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "reasoning-002",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "₹800 – 25 % = ₹800 × 0.75 = **₹600**.",
+    "costUsd": 0,
+    "latencyMs": 4837
+  },
+  {
+    "taskId": "reasoning-002",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "The final price is **₹600**.\n\n**Calculation:**\n1.  **Discount amount:** 25% of ₹800 = ₹200\n2.  **Final price:** ₹800 − ₹200 = **₹600**",
+    "costUsd": 0,
+    "latencyMs": 7008
+  },
+  {
+    "taskId": "reasoning-002",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "The final price is **₹600**.\n\n**Calculation:**\n1.  **Discount amount:** 25% of ₹800 = ₹200\n2.  **Final price:** ₹800 − ₹200 = **₹600**",
+    "costUsd": 0,
+    "latencyMs": 0,
+    "classificationSource": "llm-fallback"
+  },
+  {
+    "taskId": "reasoning-002",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "The final price is **₹600**.\n\n**Calculation:**\n1.  **Discount amount:** 25% of ₹800 = ₹200\n2.  **Final price:** ₹800 − ₹200 = **₹600**",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "reasoning-003",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "Since the workers’ efficiency is assumed constant, the amount of work done is proportional to the product of the number of workers and the number of days.\n\nLet \\(W\\) be the total amount of work required for the job.\n\n\\[\nW = (\\text{workers}) \\times (\\text{days}) \\times (\\text{efficiency per worker per day})\n\\]\n\nFor the first scenario:\n\n\\[\nW = 15 \\text{ workers} \\times 12 \\text{ days} \\times e\n\\]\n\nwhere \\(e\\) is the (constant) efficiency per worker per day.\n\nFor 20 workers, let \\(d\\) be the number of days needed:\n\n\\[\nW = 20 \\text{ workers} \\times d \\times e\n\\]\n\nSet the two expressions for \\(W\\) equal:\n\n\\[\n15 \\times 12 \\times e = 20 \\times d \\times e\n\\]\n\nCancel \\(e\\) (since it’s the same in both):\n\n\\[\n15 \\times 12 = 20 \\times d\n\\]\n\n\\[\n180 = 20d \\quad\\Longrightarrow\\quad d = \\frac{180}{20} = 9\n\\]\n\n\\[\n\\boxed{9\\text{ days}}\n\\]",
+    "costUsd": 0,
+    "latencyMs": 20360
+  },
+  {
+    "taskId": "reasoning-003",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "This is an inverse proportion problem: more workers means fewer days.\n\n**Total Work** = Workers × Days\nTotal Work = 15 workers × 12 days = **180 worker-days**\n\n**Days needed for 20 workers** = Total Work ÷ Number of Workers\nDays = 180 ÷ 20 = **9 days**\n\n**Answer: 9 days**",
+    "costUsd": 0,
+    "latencyMs": 9137
+  },
+  {
+    "taskId": "reasoning-003",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "This is an inverse proportion problem: more workers means fewer days.\n\n**Total Work** = Workers × Days\nTotal Work = 15 workers × 12 days = **180 worker-days**\n\n**Days needed for 20 workers** = Total Work ÷ Number of Workers\nDays = 180 ÷ 20 = **9 days**\n\n**Answer: 9 days**",
+    "costUsd": 0,
+    "latencyMs": 0,
+    "classificationSource": "llm-fallback"
+  },
+  {
+    "taskId": "reasoning-003",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "This is an inverse proportion problem: more workers means fewer days.\n\n**Total Work** = Workers × Days\nTotal Work = 15 workers × 12 days = **180 worker-days**\n\n**Days needed for 20 workers** = Total Work ÷ Number of Workers\nDays = 180 ÷ 20 = **9 days**\n\n**Answer: 9 days**",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "reasoning-004",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "18 × 17 = **306**",
+    "costUsd": 0,
+    "latencyMs": 4712
+  },
+  {
+    "taskId": "reasoning-004",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "18 × 17 = **306**",
+    "costUsd": 0,
+    "latencyMs": 1779
+  },
+  {
+    "taskId": "reasoning-004",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "18 × 17 = **306**",
+    "costUsd": 0,
+    "latencyMs": 0,
+    "classificationSource": "llm-fallback"
+  },
+  {
+    "taskId": "reasoning-004",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "18 × 17 = **306**",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "reasoning-005",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "The area of a rectangle is found by multiplying its length by its width.\n\n\\[\n\\text{Area} = \\text{length} \\times \\text{width} = 12 \\times 9 = 108\n\\]\n\nSo, the area is **108 square units**.",
+    "costUsd": 0,
+    "latencyMs": 11261
+  },
+  {
+    "taskId": "reasoning-005",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "The area of a rectangle is calculated by multiplying its length by its width.\n\n$$ \\text{Area} = \\text{length} \\times \\text{width} $$\n$$ \\text{Area} = 12 \\times 9 = 108 $$\n\n**The area is 108 square units.**",
+    "costUsd": 0,
+    "latencyMs": 2812
+  },
+  {
+    "taskId": "reasoning-005",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "The area of a rectangle is calculated by multiplying its length by its width.\n\n$$ \\text{Area} = \\text{length} \\times \\text{width} $$\n$$ \\text{Area} = 12 \\times 9 = 108 $$\n\n**The area is 108 square units.**",
+    "costUsd": 0,
+    "latencyMs": 0,
+    "classificationSource": "llm-fallback"
+  },
+  {
+    "taskId": "reasoning-005",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "The area of a rectangle is calculated by multiplying its length by its width.\n\n$$ \\text{Area} = \\text{length} \\times \\text{width} $$\n$$ \\text{Area} = 12 \\times 9 = 108 $$\n\n**The area is 108 square units.**",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "reasoning-006",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "\\(3x + 5 = 20\\)\n\nSubtract 5 from both sides:\n\n\\[\n3x = 15\n\\]\n\nDivide by 3:\n\n\\[\nx = \\frac{15}{3} = 5\n\\]\n\nSo, \\(x = 5\\).",
+    "costUsd": 0,
+    "latencyMs": 5879
+  },
+  {
+    "taskId": "reasoning-006",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "To find $x$, follow these steps:\n\n1.  **Subtract 5 from both sides:**\n    $$3x = 20 - 5$$\n    $$3x = 15$$\n\n2.  **Divide both sides by 3:**\n    $$x = \\frac{15}{3}$$\n    $$x = 5$$\n\n**Answer:** $x = 5$",
+    "costUsd": 0,
+    "latencyMs": 4624
+  },
+  {
+    "taskId": "reasoning-006",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "To find $x$, follow these steps:\n\n1.  **Subtract 5 from both sides:**\n    $$3x = 20 - 5$$\n    $$3x = 15$$\n\n2.  **Divide both sides by 3:**\n    $$x = \\frac{15}{3}$$\n    $$x = 5$$\n\n**Answer:** $x = 5$",
+    "costUsd": 0,
+    "latencyMs": 0,
+    "classificationSource": "llm-fallback"
+  },
+  {
+    "taskId": "reasoning-006",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "To find $x$, follow these steps:\n\n1.  **Subtract 5 from both sides:**\n    $$3x = 20 - 5$$\n    $$3x = 15$$\n\n2.  **Divide both sides by 3:**\n    $$x = \\frac{15}{3}$$\n    $$x = 5$$\n\n**Answer:** $x = 5$",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "reasoning-007",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "The average is \\( \\displaystyle \\frac{10+20+30+40+50}{5} = \\frac{150}{5} = 30 \\).",
+    "costUsd": 0,
+    "latencyMs": 4046
+  },
+  {
+    "taskId": "reasoning-007",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "The average is **30**.\n\n**Calculation:**\n1.  **Sum:** 10 + 20 + 30 + 40 + 50 = 150\n2.  **Count:** 5 numbers\n3.  **Average:** 150 ÷ 5 = 30",
+    "costUsd": 0,
+    "latencyMs": 60135
+  },
+  {
+    "taskId": "reasoning-007",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "The average is **30**.\n\n**Calculation:**\n1.  **Sum:** 10 + 20 + 30 + 40 + 50 = 150\n2.  **Count:** 5 numbers\n3.  **Average:** 150 ÷ 5 = 30",
+    "costUsd": 0,
+    "latencyMs": 0,
+    "classificationSource": "llm-fallback"
+  },
+  {
+    "taskId": "reasoning-007",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "The average is **30**.\n\n**Calculation:**\n1.  **Sum:** 10 + 20 + 30 + 40 + 50 = 150\n2.  **Count:** 5 numbers\n3.  **Average:** 150 ÷ 5 = 30",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "reasoning-008",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "2.5 hours × 60 minutes/hour = **150 minutes**.",
+    "costUsd": 0,
+    "latencyMs": 5203
+  },
+  {
+    "taskId": "reasoning-008",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "There are **150 minutes** in 2.5 hours.\n\n**Calculation:**\n$$2.5 \\text{ hours} \\times 60 \\text{ minutes/hour} = 150 \\text{ minutes}$$",
+    "costUsd": 0,
+    "latencyMs": 2276
+  },
+  {
+    "taskId": "reasoning-008",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "There are **150 minutes** in 2.5 hours.\n\n**Calculation:**\n$$2.5 \\text{ hours} \\times 60 \\text{ minutes/hour} = 150 \\text{ minutes}$$",
+    "costUsd": 0,
+    "latencyMs": 0,
+    "classificationSource": "llm-fallback"
+  },
+  {
+    "taskId": "reasoning-008",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "There are **150 minutes** in 2.5 hours.\n\n**Calculation:**\n$$2.5 \\text{ hours} \\times 60 \\text{ minutes/hour} = 150 \\text{ minutes}$$",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "reasoning-009",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "**Simple Interest (SI)**  \n\\[\n\\text{SI} = \\frac{P \\times R \\times T}{100}\n\\]\n\nWhere:  \n- \\(P = ₹1000\\) (principal)  \n- \\(R = 10\\%\\) (annual rate)  \n- \\(T = 2\\) years  \n\n\\[\n\\text{SI} = \\frac{1000 \\times 10 \\times 2}{100} = \\frac{20{,}000}{100} = ₹200\n\\]\n\nSo the simple interest earned over 2 years is **₹200**.  \n(The total amount after 2 years would be ₹1000 + ₹200 = ₹1200.)",
+    "costUsd": 0,
+    "latencyMs": 11557
+  },
+  {
+    "taskId": "reasoning-009",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "**Simple Interest = ₹200**\n\n**Calculation:**\n$$ \\text{SI} = \\frac{P \\times R \\times T}{100} = \\frac{1000 \\times 10 \\times 2}{100} = 200 $$\n\n**Total Amount after 2 years = Principal + Interest = ₹1000 + ₹200 = ₹1200**",
+    "costUsd": 0,
+    "latencyMs": 3050
+  },
+  {
+    "taskId": "reasoning-009",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "**Simple Interest = ₹200**\n\n**Calculation:**\n$$ \\text{SI} = \\frac{P \\times R \\times T}{100} = \\frac{1000 \\times 10 \\times 2}{100} = 200 $$\n\n**Total Amount after 2 years = Principal + Interest = ₹1000 + ₹200 = ₹1200**",
+    "costUsd": 0,
+    "latencyMs": 0,
+    "classificationSource": "llm-fallback"
+  },
+  {
+    "taskId": "reasoning-009",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "**Simple Interest = ₹200**\n\n**Calculation:**\n$$ \\text{SI} = \\frac{P \\times R \\times T}{100} = \\frac{1000 \\times 10 \\times 2}{100} = 200 $$\n\n**Total Amount after 2 years = Principal + Interest = ₹1000 + ₹200 = ₹1200**",
+    "costUsd": 0,
+    "latencyMs": 0
+  }
+]

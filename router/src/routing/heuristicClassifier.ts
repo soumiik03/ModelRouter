@@ -1,10 +1,5 @@
 import type { TaskType } from './classify.js';
 
-/**
- * Keyword rules for heuristic classification.
- * Order matters: first match wins. More specific categories come first
- * to avoid "code" eating prompts that mention "python" in an extraction context.
- */
 const KEYWORD_RULES: { taskType: TaskType; keywords: string[] }[] = [
   {
     taskType: 'extraction',
@@ -27,10 +22,6 @@ const KEYWORD_RULES: { taskType: TaskType; keywords: string[] }[] = [
   },
 ];
 
-/**
- * Attempts to classify a prompt using keyword matching alone.
- * Returns the matched TaskType, or null if no rule fires.
- */
 export function heuristicClassify(prompt: string): TaskType | null {
   const lower = prompt.toLowerCase();
 

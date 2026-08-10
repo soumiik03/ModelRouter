@@ -1,9 +1,6 @@
 import { readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 
-// ---------------------------------------------------------------------------
-// Dataset selection — switch with EVAL_DATASET=sample or EVAL_DATASET=full
-// ---------------------------------------------------------------------------
 const datasetMode = process.env.EVAL_DATASET === 'sample' ? 'sample' : 'full';
 const datasetFile = datasetMode === 'sample' ? 'tasks-sample.json' : 'tasks.json';
 const tasks = JSON.parse(readFileSync(path.resolve(__dirname, `datasets/${datasetFile}`), 'utf-8'));
@@ -27,11 +24,8 @@ if (hasEvalRange) {
 }
 console.log('Saving results to ' + outputFile);
 const BASE_URL = process.env.EVAL_BASE_URL || 'http://localhost:3000';
-const DELAY_MS = 500; // stay under free-tier 20 req/min rate limit
+const DELAY_MS = 500; 
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
 type Strategy = 'always-cheap' | 'always-expensive' | 'heuristic-router' | 'learned-bandit';
 
 interface EvalResult {
@@ -46,9 +40,6 @@ interface EvalResult {
   error?: string;
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -74,9 +65,6 @@ async function callRoute(prompt: string, forceModel?: string, options?: CallRout
   return res.json();
 }
 
-// ---------------------------------------------------------------------------
-// Main evaluation loop
-// ---------------------------------------------------------------------------
 async function runEval() {
   const results: EvalResult[] = [];
   const CHEAP_MODEL = 'openai/gpt-oss-20b:free';
@@ -86,7 +74,6 @@ async function runEval() {
   let llmFallbackHits = 0;
 
   for (const task of tasksToRun) {
-    // ---- Baseline A: always cheapest ----
     console.log(`  [CHEAP]     ${task.id}`);
     try {
       const cheap = await callRoute(task.prompt, CHEAP_MODEL);
@@ -106,7 +93,6 @@ async function runEval() {
     }
     await sleep(DELAY_MS);
 
-    // ---- Baseline B: always expensive ----
     console.log(`  [EXPENSIVE] ${task.id}`);
     try {
       const expensive = await callRoute(task.prompt, EXPENSIVE_MODEL);
@@ -126,7 +112,6 @@ async function runEval() {
     }
     await sleep(DELAY_MS);
 
-    // ---- Strategy C: heuristic router ----
     console.log(`  [ROUTER]    ${task.id}`);
     try {
       const routed = await callRoute(task.prompt);
@@ -137,7 +122,6 @@ async function runEval() {
         classificationSource: routed.classificationSource ?? null,
       });
 
-      // Track classification stats
       if (routed.classificationSource === 'heuristic') heuristicHits++;
       else llmFallbackHits++;
     } catch (err) {
@@ -151,7 +135,6 @@ async function runEval() {
     }
     await sleep(DELAY_MS);
 
-    // ---- Strategy D: learned bandit router ----
     console.log(`  [BANDIT]    ${task.id}`);
     try {
       const bandit = await callRoute(task.prompt, undefined, { routingStrategy: 'bandit' });
@@ -174,10 +157,8 @@ async function runEval() {
     console.log(`  [DONE]      ${task.id}`);
   }
 
-  // ---- Write results ----
   writeFileSync(path.resolve(__dirname, 'results', outputFile), JSON.stringify(results, null, 2));
 
-  // ---- Summary ----
   const failures = results.filter((r) => r.error);
   const totalRouted = heuristicHits + llmFallbackHits;
 

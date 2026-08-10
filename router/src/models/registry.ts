@@ -2,10 +2,10 @@ export type QualityTier = 1 | 2 | 3 | 4 | 5;
 export type LatencyBucket = 'fast' | 'medium' | 'slow';
 
 export interface ModelConfig {
-  id: string;              // OpenRouter model ID, used in the API call
-  label: string;           // human-readable name for logs/dashboard
-  costPerMInput: number;   // $ per 1M input tokens
-  costPerMOutput: number;  // $ per 1M output tokens
+  id: string;              
+  label: string;           
+  costPerMInput: number;   
+  costPerMOutput: number;  
   qualityTier: QualityTier;
   latencyBucket: LatencyBucket;
 }

@@ -11,22 +11,17 @@ interface CallResult {
   fallbackFromModel?: string;
 }
 
-// ---------- Retry configuration ----------
-
 const MAX_RETRIES = 3;
 const BASE_DELAY_MS = 1000;
 
-/** Status codes that should never be retried (auth/permission failures). */
 function isNonRetryable(status: number): boolean {
   return status === 401 || status === 403;
 }
 
-/** Status codes that are safe to retry (rate-limit or server errors). */
 function isRetryable(status: number): boolean {
   return status === 429 || (status >= 500 && status < 600);
 }
 
-/** Network-level errors that are safe to retry. */
 function isNetworkError(err: unknown): boolean {
   if (!(err instanceof Error)) return false;
   const code = (err as NodeJS.ErrnoException).code;
@@ -40,8 +35,6 @@ function isNetworkError(err: unknown): boolean {
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
-// ---------- Core API call ----------
 
 async function callModelOnce(modelId: string, prompt: string) {
   const start = Date.now();
@@ -94,8 +87,6 @@ async function callModelOnce(modelId: string, prompt: string) {
   };
 }
 
-// ---------- Retry wrapper ----------
-
 async function callModelWithRetry(modelId: string, prompt: string) {
   let lastError: unknown;
 
@@ -105,7 +96,6 @@ async function callModelWithRetry(modelId: string, prompt: string) {
     } catch (err) {
       lastError = err;
 
-      // Never retry auth failures
       const status = (err as { status?: number }).status;
       if (status !== undefined && isNonRetryable(status)) {
         console.error(`[openrouter] ${status} — not retryable (model=${modelId})`);
@@ -131,11 +121,8 @@ async function callModelWithRetry(modelId: string, prompt: string) {
     }
   }
 
-  // Unreachable, but satisfies the type checker
   throw lastError;
 }
-
-// ---------- Public API ----------
 
 export async function callModel(modelId: string, prompt: string): Promise<CallResult> {
   try {

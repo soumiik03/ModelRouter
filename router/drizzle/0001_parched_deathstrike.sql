@@ -6,7 +6,7 @@ CREATE TABLE "semantic_cache" (
 	"model_used" text NOT NULL,
 	"created_at" timestamp DEFAULT now()
 );
---> statement-breakpoint
+
 CREATE TABLE "user_budgets" (
 	"user_id" varchar(255) PRIMARY KEY NOT NULL,
 	"budget_usd" real NOT NULL,

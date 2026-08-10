@@ -13,11 +13,6 @@ const pool = process.env.DATABASE_URL
   ? new Pool({ connectionString: process.env.DATABASE_URL })
   : null;
 
-// Pulls aggregated stats per model+taskType combo from real request history.
-// Note: qualityScore only exists on rows scored by your eval harness —
-// live production traffic won't have this unless you also score it,
-// so this initially only reflects Chapter 4's eval runs. That's fine —
-// it's your bootstrap dataset.
 export async function getPerformanceStats(): Promise<ModelPerformance[]> {
   if (!pool) {
     return [];
@@ -46,11 +41,9 @@ export async function getPerformanceStats(): Promise<ModelPerformance[]> {
   }));
 }
 
-// simple in-memory cache so you're not hitting Postgres on every single
-// routing decision — refresh every N minutes instead
 let cache: ModelPerformance[] | null = null;
 let cacheTimestamp = 0;
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL_MS = 5 * 60 * 1000; 
 
 export async function getCachedPerformanceStats(): Promise<ModelPerformance[]> {
   const now = Date.now();

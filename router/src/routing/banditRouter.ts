@@ -2,11 +2,11 @@ import type { TaskType } from './classify.js';
 import { modelRegistry, getModelById } from '../models/registry.js';
 import { getCachedPerformanceStats } from './performanceTracker.js';
 import type { ModelPerformance } from './performanceTracker.js';
-import { selectModel as heuristicSelectModel } from './heuristicRouter.js'; // Ch 3 fallback
+import { selectModel as heuristicSelectModel } from './heuristicRouter.js'; 
 import { analyzePrompt } from './promptSignals.js';
 
-const EPSILON = 0.1; // 10% explore, 90% exploit
-const MIN_SAMPLES_TO_TRUST = 5; // don't trust a model's score until it's been tried enough
+const EPSILON = 0.1; 
+const MIN_SAMPLES_TO_TRUST = 5; 
 
 interface RoutingResult {
   modelId: string;
@@ -14,8 +14,6 @@ interface RoutingResult {
 }
 
 function pickBestByScore(candidates: ModelPerformance[]): ModelPerformance {
-  // simple weighted score: prioritize quality, mildly penalize cost/latency
-  // tune these weights based on what you actually care about
   return candidates.reduce((best, current) => {
     const currentScore = current.avgQualityScore - current.avgCostUsd * 100;
     const bestScore = best.avgQualityScore - best.avgCostUsd * 100;
@@ -37,17 +35,13 @@ export async function selectModelBandit(taskType: TaskType, constraints?: { maxC
   const relevantStats = stats.filter(
     (s) => s.taskType === taskType && s.sampleCount >= MIN_SAMPLES_TO_TRUST
   ).filter(s => {
-    // Filter out models that don't satisfy the constraints
     const m = getModelById(s.modelId);
     if (!m) return false;
     if (constraints?.minQuality !== undefined && m.qualityTier < constraints.minQuality) return false;
     if (constraints?.maxCostUsd !== undefined && m.costPerMInput > constraints.maxCostUsd) return false;
-    // Note: We don't filter on latency bucket here, just cost and quality for simplicity
     return true;
   });
 
-  // not enough historical data yet for this task type Ã¢â‚¬â€ fall back to
-  // the Chapter 3 heuristic table until the bandit has something to learn from
   if (relevantStats.length === 0) {
     const fallback = heuristicSelectModel(taskType, constraints, prompt);
     return { modelId: fallback.modelId, reason: `bandit: insufficient data or no models satisfy constraints, using heuristic fallback` };

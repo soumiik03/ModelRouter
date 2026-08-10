@@ -2,53 +2,59 @@
   {
     "strategy": "always-cheap",
     "totalCost": 0,
-    "avgLatencyMs": 46231,
-    "avgQualityScore": "0.50",
-    "failureCount": 0,
+    "avgLatencyMs": 44275,
+    "avgQualityScore": "0.55",
+    "failureCount": 4,
     "heuristicHitRate": "—",
     "llmFallbackRate": "—",
     "mostFrequentModel": "openai/gpt-oss-20b:free",
     "modelBreakdown": {
-      "openai/gpt-oss-20b:free": 10
+      "openai/gpt-oss-20b:free": 56
     }
   },
   {
     "strategy": "always-expensive",
     "totalCost": 0,
-    "avgLatencyMs": 22894,
-    "avgQualityScore": "0.50",
-    "failureCount": 0,
+    "avgLatencyMs": 28821,
+    "avgQualityScore": "0.46",
+    "failureCount": 1,
     "heuristicHitRate": "—",
     "llmFallbackRate": "—",
     "mostFrequentModel": "nvidia/nemotron-3-ultra-550b-a55b:free",
     "modelBreakdown": {
-      "nvidia/nemotron-3-ultra-550b-a55b:free": 10
+      "nvidia/nemotron-3-ultra-550b-a55b:free": 59
     }
   },
   {
     "strategy": "heuristic-router",
     "totalCost": 0,
-    "avgLatencyMs": 39526,
-    "avgQualityScore": "0.44",
-    "failureCount": 1,
-    "heuristicHitRate": "56%",
-    "llmFallbackRate": "44%",
+    "avgLatencyMs": 19682,
+    "avgQualityScore": "0.53",
+    "failureCount": 0,
+    "heuristicHitRate": "55%",
+    "llmFallbackRate": "45%",
     "mostFrequentModel": "nvidia/nemotron-3-ultra-550b-a55b:free",
     "modelBreakdown": {
-      "cohere/north-mini-code:free": 2,
-      "nvidia/nemotron-3-ultra-550b-a55b:free": 4,
-      "nvidia/nemotron-3-super-120b-a12b:free": 3
+      "cohere/north-mini-code:free": 16,
+      "nvidia/nemotron-3-ultra-550b-a55b:free": 21,
+      "openai/gpt-oss-20b:free": 3,
+      "nvidia/nemotron-3-super-120b-a12b:free": 20
     }
   },
   {
     "strategy": "learned-bandit",
     "totalCost": 0,
-    "avgLatencyMs": 0,
-    "avgQualityScore": "0.00",
+    "avgLatencyMs": 1629,
+    "avgQualityScore": "0.53",
     "failureCount": 0,
     "heuristicHitRate": "—",
     "llmFallbackRate": "—",
-    "mostFrequentModel": "—",
-    "modelBreakdown": {}
+    "mostFrequentModel": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "modelBreakdown": {
+      "cohere/north-mini-code:free": 16,
+      "nvidia/nemotron-3-ultra-550b-a55b:free": 20,
+      "openai/gpt-oss-20b:free": 4,
+      "nvidia/nemotron-3-super-120b-a12b:free": 20
+    }
   }
 ]

@@ -6,7 +6,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function formatCurrency(amount: number): string {
-  if (amount < 0.0001) return `$${amount.toFixed(6)}`;
+  if (amount === 0) return '$0.00';
+  if (Math.abs(amount) < 0.01) return `$${amount.toFixed(6)}`;
   if (amount < 0.01) return `$${amount.toFixed(4)}`;
   return `$${amount.toFixed(2)}`;
 }

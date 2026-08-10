@@ -2,6 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Shared visual treatment: sharp engineering-tool surfaces with a restrained accent. */
+@layer utilities {
+  .rounded-sm,
+  .rounded-md,
+  .rounded-lg,
+  .rounded-xl,
+  .rounded-2xl {
+    border-radius: 0 !important;
+  }
+
+  .text-violet-300,
+  .text-violet-400,
+  .text-violet-500,
+  .text-violet-600 {
+    color: #fb923c !important;
+  }
+
+  .bg-violet-500\/10,
+  .bg-violet-500,
+  .bg-violet-600\/30,
+  .bg-violet-950,
+  .bg-violet-950\/80 {
+    background-color: rgba(249, 115, 22, 0.12) !important;
+  }
+
+  .border-violet-500\/30,
+  .border-violet-500\/40,
+  .border-violet-700\/50 {
+    border-color: rgba(249, 115, 22, 0.45) !important;
+  }
+
+  .from-violet-600 {
+    --tw-gradient-from: #f97316 var(--tw-gradient-from-position) !important;
+    --tw-gradient-to: rgb(249 115 22 / 0) var(--tw-gradient-to-position) !important;
+  }
+
+  .to-indigo-600,
+  .to-violet-950\/40 {
+    --tw-gradient-to: #262626 var(--tw-gradient-to-position) !important;
+  }
+
+  [class*="shadow-violet"],
+  .glow-purple {
+    box-shadow: none !important;
+  }
+}
+
 @layer base {
   :root {
     --background: 240 10% 2%;
@@ -9,14 +56,33 @@
   }
 
   body {
-    background-color: #050507;
-    color: #f3f4f6;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: #050505;
+    color: #f5f5f5;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    letter-spacing: -0.01em;
     overflow-x: hidden;
   }
 }
 
-/* Custom scrollbars for dark UI */
+/* Normalize existing page surfaces without changing layout or behavior. */
+[class*="bg-[#050507]"],
+[class*="bg-[#050508]"],
+[class*="bg-[#07080c]"],
+[class*="bg-[#0b0c10]"],
+[class*="bg-[#0e1018]"] {
+  background-color: #0a0a0a !important;
+}
+
+[class*="border-[#"],
+[class*="border-gray-"] {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+[class*="shadow-"] {
+  box-shadow: none !important;
+}
+
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -35,7 +101,7 @@
   background: #2d3045;
 }
 
-/* Glassmorphism & Subtle Glow Utilities */
+
 .glass-panel {
   background: rgba(11, 12, 16, 0.85);
   backdrop-filter: blur(12px);

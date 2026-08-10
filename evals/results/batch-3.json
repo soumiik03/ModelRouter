@@ -1,0 +1,446 @@
+[
+  {
+    "taskId": "reasoning-010",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "2¹⁰ = 1 024.",
+    "costUsd": 0,
+    "latencyMs": 2553
+  },
+  {
+    "taskId": "reasoning-010",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "2^10 = 1,024",
+    "costUsd": 0,
+    "latencyMs": 1583
+  },
+  {
+    "taskId": "reasoning-010",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "2^10 = 1,024",
+    "costUsd": 0,
+    "latencyMs": 0,
+    "classificationSource": "llm-fallback"
+  },
+  {
+    "taskId": "reasoning-010",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "2^10 = 1,024",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "reasoning-011",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "The average speed is\n\n\\[\n\\text{speed}=\\frac{\\text{distance}}{\\text{time}}=\\frac{360\\ \\text{km}}{6\\ \\text{h}}=60\\ \\text{km/h}.\n\\]",
+    "costUsd": 0,
+    "latencyMs": 4171
+  },
+  {
+    "taskId": "reasoning-011",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "**Speed = Distance ÷ Time**\n\n**Calculation:**\n$$ \\frac{360 \\text{ km}}{6 \\text{ hours}} = 60 \\text{ km/h} $$\n\n**Answer: 60 km/h**",
+    "costUsd": 0,
+    "latencyMs": 9642
+  },
+  {
+    "taskId": "reasoning-011",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "**Speed = Distance ÷ Time**\n\n**Calculation:**\n$$ \\frac{360 \\text{ km}}{6 \\text{ hours}} = 60 \\text{ km/h} $$\n\n**Answer: 60 km/h**",
+    "costUsd": 0,
+    "latencyMs": 0,
+    "classificationSource": "heuristic"
+  },
+  {
+    "taskId": "reasoning-011",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "**Speed = Distance ÷ Time**\n\n**Calculation:**\n$$ \\frac{360 \\text{ km}}{6 \\text{ hours}} = 60 \\text{ km/h} $$\n\n**Answer: 60 km/h**",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "reasoning-012",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "Thursday.",
+    "costUsd": 0,
+    "latencyMs": 9582
+  },
+  {
+    "taskId": "reasoning-012",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "**Thursday**\n\nHere is the breakdown:\n1.  7 days later is **Monday** (one full week).\n2.  3 days after that: Tuesday, Wednesday, **Thursday**.\n\nAlternatively: $10 \\div 7 = 1$ week with a remainder of **3 days**. Monday + 3 days = Thursday.",
+    "costUsd": 0,
+    "latencyMs": 2436
+  },
+  {
+    "taskId": "reasoning-012",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "**Thursday**\n\nHere is the breakdown:\n1.  7 days later is **Monday** (one full week).\n2.  3 days after that: Tuesday, Wednesday, **Thursday**.\n\nAlternatively: $10 \\div 7 = 1$ week with a remainder of **3 days**. Monday + 3 days = Thursday.",
+    "costUsd": 0,
+    "latencyMs": 0,
+    "classificationSource": "llm-fallback"
+  },
+  {
+    "taskId": "reasoning-012",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "**Thursday**\n\nHere is the breakdown:\n1.  7 days later is **Monday** (one full week).\n2.  3 days after that: Tuesday, Wednesday, **Thursday**.\n\nAlternatively: $10 \\div 7 = 1$ week with a remainder of **3 days**. Monday + 3 days = Thursday.",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "reasoning-013",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "The least common multiple of 12 and 18 is **36**.",
+    "costUsd": 0,
+    "latencyMs": 4283
+  },
+  {
+    "taskId": "reasoning-013",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "The **LCM of 12 and 18 is 36**.\n\nHere are two ways to find it:\n\n### Method 1: Prime Factorization\n1.  **12** = $2^2 \\times 3$\n2.  **18** = $2 \\times 3^2$\n3.  Take the highest power of each prime factor: $2^2$ and $3^2$.\n4.  Multiply: $4 \\times 9 = \\mathbf{36}$.\n\n### Method 2: Listing Multiples\n*   **Multiples of 12:** 12, 24, **36**, 48, 60...\n*   **Multiples of 18:** 18, **36**, 54, 72...\n*   The first common number is **36**.",
+    "costUsd": 0,
+    "latencyMs": 14865
+  },
+  {
+    "taskId": "reasoning-013",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "The **LCM of 12 and 18 is 36**.\n\nHere are two ways to find it:\n\n### Method 1: Prime Factorization\n1.  **12** = $2^2 \\times 3$\n2.  **18** = $2 \\times 3^2$\n3.  Take the highest power of each prime factor: $2^2$ and $3^2$.\n4.  Multiply: $4 \\times 9 = \\mathbf{36}$.\n\n### Method 2: Listing Multiples\n*   **Multiples of 12:** 12, 24, **36**, 48, 60...\n*   **Multiples of 18:** 18, **36**, 54, 72...\n*   The first common number is **36**.",
+    "costUsd": 0,
+    "latencyMs": 0,
+    "classificationSource": "llm-fallback"
+  },
+  {
+    "taskId": "reasoning-013",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "The **LCM of 12 and 18 is 36**.\n\nHere are two ways to find it:\n\n### Method 1: Prime Factorization\n1.  **12** = $2^2 \\times 3$\n2.  **18** = $2 \\times 3^2$\n3.  Take the highest power of each prime factor: $2^2$ and $3^2$.\n4.  Multiply: $4 \\times 9 = \\mathbf{36}$.\n\n### Method 2: Listing Multiples\n*   **Multiples of 12:** 12, 24, **36**, 48, 60...\n*   **Multiples of 18:** 18, **36**, 54, 72...\n*   The first common number is **36**.",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "reasoning-014",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "The binary representation of decimal 10 is:\n\n```\n1010\n```\n",
+    "costUsd": 0,
+    "latencyMs": 3874
+  },
+  {
+    "taskId": "reasoning-014",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "**1010**\n\n**Breakdown:**\n*   $1 \\times 2^3 = 8$\n*   $0 \\times 2^2 = 0$\n*   $1 \\times 2^1 = 2$\n*   $0 \\times 2^0 = 0$\n*   **Total: $8 + 0 + 2 + 0 = 10$**",
+    "costUsd": 0,
+    "latencyMs": 2725
+  },
+  {
+    "taskId": "reasoning-014",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "The binary representation of decimal 10 is:\n\n```\n1010\n```\n",
+    "costUsd": 0,
+    "latencyMs": 0,
+    "classificationSource": "llm-fallback"
+  },
+  {
+    "taskId": "reasoning-014",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "The binary representation of decimal 10 is:\n\n```\n1010\n```\n",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "reasoning-015",
+    "category": "reasoning",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "₹160.",
+    "costUsd": 0,
+    "latencyMs": 7029
+  },
+  {
+    "taskId": "reasoning-015",
+    "category": "reasoning",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "To find the cost of 8 pens, first determine the cost of 1 pen.\n\n**Step 1: Find the cost of 1 pen.**\n\\[\n\\text{Cost of 1 pen} = \\frac{\\text{Total Cost}}{\\text{Number of pens}} = \\frac{100}{5} = ₹20\n\\]\n\n**Step 2: Find the cost of 8 pens.**\n\\[\n\\text{Cost of 8 pens} = 8 \\times \\text{Cost of 1 pen} = 8 \\times 20 = ₹160\n\\]\n\n**Answer: ₹160**",
+    "costUsd": 0,
+    "latencyMs": 7095
+  },
+  {
+    "taskId": "reasoning-015",
+    "category": "reasoning",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "To find the cost of 8 pens, first determine the cost of 1 pen.\n\n**Step 1: Find the cost of 1 pen.**\n\\[\n\\text{Cost of 1 pen} = \\frac{\\text{Total Cost}}{\\text{Number of pens}} = \\frac{100}{5} = ₹20\n\\]\n\n**Step 2: Find the cost of 8 pens.**\n\\[\n\\text{Cost of 8 pens} = 8 \\times \\text{Cost of 1 pen} = 8 \\times 20 = ₹160\n\\]\n\n**Answer: ₹160**",
+    "costUsd": 0,
+    "latencyMs": 0,
+    "classificationSource": "llm-fallback"
+  },
+  {
+    "taskId": "reasoning-015",
+    "category": "reasoning",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "To find the cost of 8 pens, first determine the cost of 1 pen.\n\n**Step 1: Find the cost of 1 pen.**\n\\[\n\\text{Cost of 1 pen} = \\frac{\\text{Total Cost}}{\\text{Number of pens}} = \\frac{100}{5} = ₹20\n\\]\n\n**Step 2: Find the cost of 8 pens.**\n\\[\n\\text{Cost of 8 pens} = 8 \\times \\text{Cost of 1 pen} = 8 \\times 20 = ₹160\n\\]\n\n**Answer: ₹160**",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "extraction-001",
+    "category": "extraction",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "Kolkata, Delhi, Lucknow",
+    "costUsd": 0,
+    "latencyMs": 4049
+  },
+  {
+    "taskId": "extraction-001",
+    "category": "extraction",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "The cities mentioned are:\n\n1.  **Kolkata**\n2.  **Delhi**\n3.  **Lucknow**",
+    "costUsd": 0,
+    "latencyMs": 2126
+  },
+  {
+    "taskId": "extraction-001",
+    "category": "extraction",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-super-120b-a12b:free",
+    "response": "Kolkata, Delhi, Lucknow",
+    "costUsd": 0,
+    "latencyMs": 2064,
+    "classificationSource": "heuristic"
+  },
+  {
+    "taskId": "extraction-001",
+    "category": "extraction",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-super-120b-a12b:free",
+    "response": "Kolkata, Delhi, Lucknow",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "extraction-002",
+    "category": "extraction",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "**Company names extracted:**\n\n- Google  \n- Fitbit  \n- Microsoft",
+    "costUsd": 0,
+    "latencyMs": 4190
+  },
+  {
+    "taskId": "extraction-002",
+    "category": "extraction",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "Based on the sentence provided, the company names are:\n\n1.  **Google**\n2.  **Fitbit**\n3.  **Microsoft**",
+    "costUsd": 0,
+    "latencyMs": 2079
+  },
+  {
+    "taskId": "extraction-002",
+    "category": "extraction",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-super-120b-a12b:free",
+    "response": "Google, Fitbit, Microsoft",
+    "costUsd": 0,
+    "latencyMs": 2207,
+    "classificationSource": "heuristic"
+  },
+  {
+    "taskId": "extraction-002",
+    "category": "extraction",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-super-120b-a12b:free",
+    "response": "Google, Fitbit, Microsoft",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "extraction-003",
+    "category": "extraction",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "support@test.com  \nadmin@abc.org",
+    "costUsd": 0,
+    "latencyMs": 7036
+  },
+  {
+    "taskId": "extraction-003",
+    "category": "extraction",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "Here are the extracted email addresses:\n\n1. support@test.com\n2. admin@abc.org",
+    "costUsd": 0,
+    "latencyMs": 1891
+  },
+  {
+    "taskId": "extraction-003",
+    "category": "extraction",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-super-120b-a12b:free",
+    "response": "support@test.com, admin@abc.org",
+    "costUsd": 0,
+    "latencyMs": 2179,
+    "classificationSource": "heuristic"
+  },
+  {
+    "taskId": "extraction-003",
+    "category": "extraction",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-super-120b-a12b:free",
+    "response": "support@test.com, admin@abc.org",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "extraction-004",
+    "category": "extraction",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "**Extracted phone numbers:**\n\n- +91-9876543210  \n- 9123456789",
+    "costUsd": 0,
+    "latencyMs": 20259
+  },
+  {
+    "taskId": "extraction-004",
+    "category": "extraction",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "Here are the phone numbers extracted from your text:\n\n1. **+91-9876543210** (International format with country code +91)\n2. **9123456789** (10-digit format, likely an Indian mobile number without the country code prefix)",
+    "costUsd": 0,
+    "latencyMs": 3217
+  },
+  {
+    "taskId": "extraction-004",
+    "category": "extraction",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-super-120b-a12b:free",
+    "response": "+91-9876543210  \n9123456789",
+    "costUsd": 0,
+    "latencyMs": 18641,
+    "classificationSource": "heuristic"
+  },
+  {
+    "taskId": "extraction-004",
+    "category": "extraction",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-super-120b-a12b:free",
+    "response": "+91-9876543210  \n9123456789",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "extraction-005",
+    "category": "extraction",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "**Extracted Dates (ISO 8601 format)**  \n- 2025‑08‑15  \n- 2026‑01‑01",
+    "costUsd": 0,
+    "latencyMs": 8045
+  },
+  {
+    "taskId": "extraction-005",
+    "category": "extraction",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "Here are the dates extracted from your input:\n\n1.  **15 Aug 2025** (August 15, 2025)\n2.  **01/01/2026** (January 1, 2026)",
+    "costUsd": 0,
+    "latencyMs": 1811
+  },
+  {
+    "taskId": "extraction-005",
+    "category": "extraction",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-super-120b-a12b:free",
+    "response": "Extracted dates:\n- `15 Aug 2025`\n- `01/01/2026`",
+    "costUsd": 0,
+    "latencyMs": 3911,
+    "classificationSource": "heuristic"
+  },
+  {
+    "taskId": "extraction-005",
+    "category": "extraction",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-super-120b-a12b:free",
+    "response": "Extracted dates:\n- `15 Aug 2025`\n- `01/01/2026`",
+    "costUsd": 0,
+    "latencyMs": 0
+  },
+  {
+    "taskId": "extraction-006",
+    "category": "extraction",
+    "strategy": "always-cheap",
+    "modelUsed": "openai/gpt-oss-20b:free",
+    "response": "**Extracted Countries**\n\n- India  \n- Japan  \n- Brazil",
+    "costUsd": 0,
+    "latencyMs": 11292
+  },
+  {
+    "taskId": "extraction-006",
+    "category": "extraction",
+    "strategy": "always-expensive",
+    "modelUsed": "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "response": "**India, Japan, Brazil**",
+    "costUsd": 0,
+    "latencyMs": 1238
+  },
+  {
+    "taskId": "extraction-006",
+    "category": "extraction",
+    "strategy": "heuristic-router",
+    "modelUsed": "nvidia/nemotron-3-super-120b-a12b:free",
+    "response": "Based on your request to extract the countries from the given list:\n\n**Extracted Countries:**\n- India\n- Japan\n- Brazil\n\nAll three entries are universally recognized sovereign nations. No further filtering or verification was needed, as each is a clear, unambiguous country name.",
+    "costUsd": 0,
+    "latencyMs": 11394,
+    "classificationSource": "heuristic"
+  },
+  {
+    "taskId": "extraction-006",
+    "category": "extraction",
+    "strategy": "learned-bandit",
+    "modelUsed": "nvidia/nemotron-3-super-120b-a12b:free",
+    "response": "Based on your request to extract the countries from the given list:\n\n**Extracted Countries:**\n- India\n- Japan\n- Brazil\n\nAll three entries are universally recognized sovereign nations. No further filtering or verification was needed, as each is a clear, unambiguous country name.",
+    "costUsd": 0,
+    "latencyMs": 0
+  }
+]

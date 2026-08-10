@@ -1,13 +1,29 @@
 import { readFileSync, writeFileSync } from 'fs';
+import path from 'path';
+import { scoreCode } from './scoring/codeScorer.js';
+import { scoreExactMatch } from './scoring/exactMatchScorer.js';
+import { scoreExtraction } from './scoring/extractionScorer.js';
+
+interface Task {
+  id: string;
+  category: string;
+  prompt: string;
+  expectedType: string;
+  scoringMethod: string;
+  testCases?: { input: string; expectedOutput: string }[];
+  expectedAnswer?: string;
+  expectedKeywords?: string[];
+}
 
 interface EvalResult {
   taskId: string;
   category: string;
   strategy: string;
   modelUsed: string | null;
+  response?: string | null;
   costUsd: number;
   latencyMs: number;
-  qualityScore?: number; // filled in after scoring pass
+  qualityScore?: number | null;
   classificationSource?: string | null;
   error?: string;
 }
@@ -46,8 +62,39 @@ function findMostFrequent(counts: Record<string, number>): string {
   return maxModel;
 }
 
+function computeQualityScore(result: EvalResult, task: Task | undefined): number | null {
+  if (!task || result.error || !result.response) return null;
+
+  switch (task.scoringMethod) {
+    case 'unit-test':
+      return scoreCode(result.response, task.testCases ?? []);
+    case 'exact-match':
+      return scoreExactMatch(result.response, task.expectedAnswer ?? '');
+    case 'keyword-overlap':
+      return scoreExtraction(result.response, task.expectedKeywords ?? []);
+    case 'manual-rubric':
+      return result.qualityScore ?? null;
+    default:
+      return null;
+  }
+}
+
 function generateReport() {
   const raw: EvalResult[] = JSON.parse(readFileSync('evals/results/raw-run.json', 'utf-8'));
+
+  // Load tasks dataset and build lookup map for scoring
+  const datasetMode = process.env.EVAL_DATASET === 'sample' ? 'sample' : 'full';
+  const datasetFile = datasetMode === 'sample' ? 'tasks-sample.json' : 'tasks.json';
+  const tasks: Task[] = JSON.parse(readFileSync(path.resolve(__dirname, `datasets/${datasetFile}`), 'utf-8'));
+  const taskMap = new Map<string, Task>(tasks.map(t => [t.id, t]));
+
+  // Compute quality scores inline (raw-run.json may not have them pre-populated)
+  for (const result of raw) {
+    if (result.qualityScore == null) {
+      result.qualityScore = computeQualityScore(result, taskMap.get(result.taskId));
+    }
+  }
+
   const strategies = ['always-cheap', 'always-expensive', 'heuristic-router', 'learned-bandit'];
 
   const summary: StrategySummary[] = strategies.map((strategy) => {
@@ -63,7 +110,6 @@ function generateReport() {
       ? successes.reduce((sum, r) => sum + (r.qualityScore ?? 0), 0) / successes.length
       : 0;
 
-    // Classification stats (only meaningful for heuristic-router)
     const heuristicHits = rows.filter((r) => r.classificationSource === 'heuristic').length;
     const llmHits = rows.filter((r) => r.classificationSource === 'llm-fallback').length;
     const totalClassified = heuristicHits + llmHits;
@@ -75,7 +121,6 @@ function generateReport() {
       ? `${((llmHits / totalClassified) * 100).toFixed(0)}%`
       : '—';
 
-    // Model frequency
     const modelBreakdown = computeModelBreakdown(successes);
     const mostFrequentModel = findMostFrequent(modelBreakdown);
 

@@ -5,11 +5,13 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
   LayoutDashboard, 
+  GitFork, 
+  Cpu, 
+  Database, 
+  Wallet, 
   BarChart3, 
-  ScrollText, 
   Sliders, 
   Zap, 
-  ShieldCheck, 
   Layers, 
   Server,
   Activity
@@ -24,16 +26,19 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Eval Comparison', href: '/evals', icon: BarChart3, badge: 'Thesis' },
-  { name: 'Request Logs', href: '/requests', icon: ScrollText },
-  { name: 'Router Settings', href: '/settings', icon: Sliders },
+  { name: 'Overview', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Routing', href: '/routing', icon: GitFork },
+  { name: 'Models', href: '/models', icon: Cpu },
+  { name: 'Cache', href: '/cache', icon: Database },
+  { name: 'Budgets', href: '/budgets', icon: Wallet },
+  { name: 'Evaluation', href: '/evals', icon: BarChart3, badge: '60 Tasks' },
+  { name: 'Settings / Status', href: '/settings', icon: Sliders },
 ];
 
-const secondaryItems: NavItem[] = [
-  { name: 'Upstash Redis', href: '#', icon: Zap },
-  { name: 'Postgres DB', href: '#', icon: Layers },
-  { name: 'OpenRouter API', href: '#', icon: Server },
+const infrastructureItems: NavItem[] = [
+  { name: 'Router API', href: '/settings', icon: Server },
+  { name: 'Upstash Redis', href: '/cache', icon: Zap },
+  { name: 'Postgres pgvector', href: '/cache', icon: Layers },
 ];
 
 export default function Sidebar() {
@@ -41,24 +46,19 @@ export default function Sidebar() {
 
   return (
     <aside className="w-64 bg-[#07080c] border-r border-[#161824] flex flex-col justify-between h-screen sticky top-0 z-40 select-none">
-      {/* Brand Header */}
       <div>
         <div className="h-16 px-6 flex items-center gap-3 border-b border-[#161824]">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-violet-900/30 glow-purple">
-            <Zap className="w-5 h-5 fill-white text-white" />
-          </div>
           <div>
             <span className="font-bold text-white tracking-wide text-base block leading-none">
               Model<span className="text-violet-400">Router</span>
             </span>
-            <span className="text-[11px] text-gray-500 font-medium">v1.0 • Chapter 7</span>
+            <span className="text-[11px] text-gray-500 font-medium">Observability Hub</span>
           </div>
         </div>
 
-        {/* Primary Navigation */}
-        <div className="px-3 py-6 space-y-1">
+        <div className="px-3 py-5 space-y-1">
           <div className="px-3 mb-2 text-[10px] font-semibold tracking-wider text-gray-500 uppercase">
-            Overview & Analytics
+            Observability Navigation
           </div>
           {navItems.map((item) => {
             const isActive = pathname === item.href || (pathname === '/' && item.href === '/dashboard');
@@ -69,9 +69,9 @@ export default function Sidebar() {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  'flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group',
+                  'flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-all duration-150 group',
                   isActive
-                    ? 'bg-[#151724] text-white border border-violet-500/30 shadow-md shadow-violet-950/20'
+                    ? 'bg-orange-500/10 text-white border-l-2 border-orange-500 border-y border-r border-white/10'
                     : 'text-gray-400 hover:text-white hover:bg-[#0f111a]'
                 )}
               >
@@ -85,7 +85,7 @@ export default function Sidebar() {
                   <span>{item.name}</span>
                 </div>
                 {item.badge && (
-                  <span className="px-2 py-0.5 text-[10px] font-bold tracking-wide rounded-full bg-violet-950 text-violet-300 border border-violet-700/50">
+                  <span className="px-1.5 py-0.5 text-[9px] font-extrabold tracking-wide rounded bg-violet-950 text-violet-300 border border-violet-700/50">
                     {item.badge}
                   </span>
                 )}
@@ -94,40 +94,38 @@ export default function Sidebar() {
           })}
         </div>
 
-        {/* Secondary Integrations */}
         <div className="px-3 py-2 space-y-1">
           <div className="px-3 mb-2 text-[10px] font-semibold tracking-wider text-gray-500 uppercase">
-            Connected Infrastructure
+            System Infrastructure
           </div>
-          {secondaryItems.map((item) => {
+          {infrastructureItems.map((item) => {
             const Icon = item.icon;
             return (
-              <div
+              <Link
                 key={item.name}
-                className="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-gray-500 cursor-default hover:text-gray-400 hover:bg-[#0b0c12] transition-colors"
+                href={item.href}
+                className="flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-gray-400 hover:text-gray-200 hover:bg-[#0b0c12] transition-colors"
               >
                 <div className="flex items-center gap-2.5">
-                  <Icon className="w-3.5 h-3.5 text-gray-600" />
+                  <Icon className="w-3.5 h-3.5 text-gray-500" />
                   <span>{item.name}</span>
                 </div>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              </div>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              </Link>
             );
           })}
         </div>
       </div>
 
-      {/* Footer Status Pill */}
       <div className="p-4 border-t border-[#161824] bg-[#050508]">
         <div className="flex items-center justify-between p-3 rounded-lg bg-[#0e1018] border border-[#1c1e2e]">
           <div className="flex items-center gap-2.5">
             <div className="relative flex items-center justify-center">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-              <span className="absolute w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping opacity-75" />
             </div>
             <div>
-              <span className="text-xs font-semibold text-gray-200 block leading-tight">Render Status</span>
-              <span className="text-[10px] text-emerald-400 font-medium">All Systems Operational</span>
+              <span className="text-xs font-semibold text-gray-200 block leading-tight">Router Connected</span>
+              <span className="text-[10px] text-emerald-400 font-medium">Healthy</span>
             </div>
           </div>
           <Activity className="w-4 h-4 text-gray-500" />

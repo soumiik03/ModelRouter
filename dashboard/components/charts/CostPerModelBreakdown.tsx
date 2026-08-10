@@ -13,7 +13,6 @@ export default function CostPerModelBreakdown({ data }: ModelBreakdownProps) {
 
   return (
     <div className="flex flex-col md:flex-row items-center justify-between gap-4 h-72">
-      {/* Donut Chart */}
       <div className="w-full md:w-1/2 h-full relative flex items-center justify-center">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -45,14 +44,12 @@ export default function CostPerModelBreakdown({ data }: ModelBreakdownProps) {
             />
           </PieChart>
         </ResponsiveContainer>
-        {/* Center Label */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
           <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">Total Spend</span>
           <span className="text-sm font-extrabold text-white">{formatCurrency(totalCost)}</span>
         </div>
       </div>
 
-      {/* Legend List */}
       <div className="w-full md:w-1/2 space-y-2.5 overflow-y-auto max-h-60 pr-2">
         {data.map((item) => {
           const costPercentage = totalCost > 0 ? Math.round((item.cost / totalCost) * 100) : 0;
