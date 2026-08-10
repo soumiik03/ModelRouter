@@ -1,0 +1,1 @@
+{"version":3,"file":"promptSignals.d.ts","sourceRoot":"","sources":["../../../src/routing/promptSignals.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,aAAa;IAC1B,YAAY,EAAE,MAAM,CAAC;IACrB,eAAe,EAAE,MAAM,CAAC;IACxB,eAAe,EAAE,MAAM,CAAC;IACxB,iBAAiB,EAAE,OAAO,CAAC;CAC9B;AAED,wBAAgB,aAAa,CAAC,MAAM,EAAE,MAAM,GAAG,aAAa,CAiB3D"}

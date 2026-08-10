@@ -12,6 +12,8 @@ app.register(routeRoutes);
 app.register(routeStreamRoutes);
 app.register(analyticsRoutes);
 
+app.get('/health', async () => ({ status: 'ok' }));
+
 const port = Number(process.env.PORT) || 3000;
 const apiKeyLength = process.env.OPENROUTER_API_KEY?.trim().length ?? 0;
 

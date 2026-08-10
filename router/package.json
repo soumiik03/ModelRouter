@@ -6,6 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/src/server.js",
     "eval": "tsx ../evals/run.ts",
     "score": "tsx ../evals/score.ts",
     "report": "tsx ../evals/report.ts",

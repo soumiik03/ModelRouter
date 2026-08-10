@@ -88,7 +88,7 @@ export default function RoutingView({ evalsData, loading }: RoutingViewProps) {
             <span className="text-sm font-bold text-white">Learned Bandit Latency & Quality Optimization</span>
           </div>
           <p className="text-xs text-gray-300 leading-relaxed max-w-3xl">
-            Learned Bandit achieved the lowest observed latency in the benchmark while matching the Heuristic Router's quality score.
+            Learned Bandit achieved the lowest observed latency in the benchmark while matching the Heuristic Router&apos;s quality score.
           </p>
         </div>
         <div className="flex items-center gap-3 font-mono text-xs whitespace-nowrap">
