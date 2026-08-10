@@ -1,140 +1,222 @@
 # ModelRouter
 
-> An intelligent LLM routing and observability platform that classifies incoming prompts, selects the most appropriate model for each request using a benchmarked routing strategy, executes the request through a centralized Router API, and exposes runtime telemetry through a production dashboard.
+ModelRouter is an explainable LLM routing gateway that classifies prompts, selects an appropriate model based on request signals and historical outcomes, executes requests through OpenRouter, and exposes standard-request telemetry through a live observability dashboard.
 
-[![Router](https://img.shields.io/badge/Router-Production-orange)](https://modelrouter-api-m8gg.onrender.com)
-[![Dashboard](https://img.shields.io/badge/Dashboard-Live-orange)](https://modelrouter-dashboard.onrender.com/dashboard)
-[![TypeScript](https://img.shields.io/badge/TypeScript-blue)](https://www.typescriptlang.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-black)](https://nextjs.org/)
-[![Fastify](https://img.shields.io/badge/Fastify-Router-000000)](https://fastify.dev/)
+It is built to answer a specific question:
 
----
+> When a request comes in, why did the system choose this model—and can that decision be inspected afterward?
 
-## Overview
+ModelRouter currently uses transparent heuristics, optional LLM-based classification, and an epsilon-greedy bandit policy. It is not a fully learned neural routing system.
 
-ModelRouter moves LLM model-selection logic out of individual applications and into a dedicated routing layer.
+## Links
 
-Instead of every client independently deciding which model to call, a client sends a prompt to one Router API. The Router classifies the request, selects a model using a benchmarked routing strategy, executes the call, and records what happened — so routing logic can evolve independently of any single application, and every decision stays auditable after the fact.
+- [Live Dashboard](https://modelrouter-dashboard.onrender.com/dashboard)
+- [API Health Check](https://modelrouter-api-m8gg.onrender.com/health)
+- [Repository](https://github.com/soumik03/ModelRouter)
+
+## Screenshots
+
+<img width="1917" height="875" alt="13" src="https://github.com/user-attachments/assets/b557e2f6-4dd7-4622-bee3-c7db3dc19285" />
+<img width="1901" height="870" alt="12" src="https://github.com/user-attachments/assets/0ed86bd8-ca69-433e-808c-c312654da9e5" />
+<img width="1918" height="882" alt="11" src="https://github.com/user-attachments/assets/97b9637d-2015-491d-8b24-a18b8179e88e" />
+
+
+## Table of Contents
+
+- [Highlights](#highlights)
+- [Dashboard](#dashboard)
+- [Architecture](#architecture)
+- [What It Does](#what-it-does)
+- [Features](#features)
+- [API Reference](#api-reference)
+- [Evaluation Results](#evaluation-results)
+- [Local Development](#local-development)
+- [Environment Variables](#environment-variables)
+- [Running Evaluations](#running-evaluations)
+- [Repository Structure](#repository-structure)
+- [Validation](#validation)
+- [Limitations and Roadmap](#limitations-and-roadmap)
+- [Project Status](#project-status)
+- [License](#license)
+- [Author](#author)
+
+## Highlights
+
+- Full standard-request routing pipeline deployed with a Fastify Router and a Next.js observability dashboard.
+- Two inspectable routing strategies: deterministic heuristics and an epsilon-greedy bandit.
+- Hybrid classification using keyword heuristics with an LLM-based fallback when the heuristic classifier lacks confidence.
+- Exact-match caching through Upstash Redis with an in-memory fallback.
+- Semantic caching using `Xenova/all-MiniLM-L6-v2` embeddings and PostgreSQL/pgvector.
+- Retry handling and same-quality-tier fallback when provider execution fails.
+- Per-user budget checks backed by PostgreSQL.
+- Routing metadata including classification source, prompt signals, routing reason, cache status, and fallback status.
+- A checked-in 60-task evaluation snapshot comparing four routing strategies.
+- Streaming support through Server-Sent Events.
+
+The standard request pipeline records routing decisions and runtime telemetry. The streaming endpoint currently uses a separate, more limited execution path and does not yet share the complete standard pipeline.
+
+## Dashboard
+
+The live dashboard provides views for:
+
+- Overview
+- Routing
+- Models
+- Requests
+- Cache
+- Budgets
+- Evaluations
+- Service status
+
+It exposes standard-request information such as:
+
+- Request counts
+- Success and failure rates
+- Latency
+- Selected model
+- Classification source
+- Routing strategy
+- Routing reason
+- Prompt signals
+- Retry and fallback status
+- Cache behavior
+- Budget utilization
+- Recent routing activity
+
+Open the dashboard:
+
+[modelrouter-dashboard.onrender.com/dashboard](https://modelrouter-dashboard.onrender.com/dashboard)
+
+## Architecture
 
 ```text
-             Client
-               │
-               │ POST /v1/route  or  POST /v1/route/stream
-               ▼
-┌─────────────────────────────── ┐
-│          ModelRouter           │
-│  Request Classification        │
-│           ↓                    │
-│  Prompt Signal Analysis        │
-│  (length · complexity · steps) │
-│           ↓                    │
-│  Routing Strategy              │
-│  (Heuristic / Bandit)          │
-│           ↓                    │
-│  Model Selection               │
-│           ↓                    │
-│  Provider Execution            │
-│  (streaming or standard)       │
-│           ↓                    │
-│  Fallback + Telemetry          │
-└────────────┬───────────────────┘
-             ▼
-        Model Provider
+Client
+  │
+  │ POST /v1/route
+  │ POST /v1/route/stream
+  ▼
+Fastify Router
+  │
+  ├── Request validation
+  ├── Task classification
+  ├── Prompt signal analysis
+  ├── Routing strategy
+  ├── Model selection
+  ├── Exact-match cache
+  ├── Semantic cache
+  ├── Provider execution
+  ├── Retry and same-tier fallback
+  └── Telemetry recording
+        │
+        ├── PostgreSQL / pgvector
+        └── Upstash Redis
+                │
+                ▼
+       Next.js Observability Dashboard
 ```
 
-The system records every routing decision and runtime result, and exposes them through a separate observability dashboard.
+## What It Does
 
-### Why?
+Different models trade off capability, latency, cost, availability, and context-window size differently.
 
-Different models trade off latency, capability, availability, and cost differently — and different *requests* need different things even within the same task category. A short bug-fix prompt and a multi-step refactor request may both be "code" tasks, but they don't deserve the same model.
+A one-line bug fix and a multi-step refactoring request may both be classified as coding tasks, but they may not require the same model.
 
-ModelRouter provides a centralized decision layer, informed by prompt content rather than category alone, so routing quality can be measured, benchmarked, and improved over time rather than hardcoded once and left alone.
+ModelRouter acts as a centralized decision layer. It uses request-level signals and historical outcomes to make model selection inspectable and measurable instead of hiding the decision inside individual applications or provider calls.
 
----
+## Features
 
-# Production
+### Task Classification
 
-### Dashboard
-https://modelrouter-dashboard.onrender.com/dashboard
+ModelRouter currently supports five task categories:
 
-### Router API
-https://modelrouter-api-m8gg.onrender.com
+- `code`
+- `reasoning`
+- `creative`
+- `extraction`
+- `chat`
 
-### Health Check
-```http
-GET /health
-```
-Expected:
+Classification first uses keyword-based heuristics. When the heuristic classifier cannot confidently determine the task type, the Router can use an LLM-based classification fallback through OpenRouter.
+
+The classification source is recorded per request:
+
 ```json
-{"status":"ok"}
+{
+  "classificationSource": "heuristic"
+}
 ```
 
-The production deployment has been verified with a real `/v1/route` request, and the resulting event appeared in dashboard telemetry.
+### Prompt Signal Analysis
 
-> The final production smoke test did not rerun the full 60-task benchmark.
+The Router analyzes the following signals before selecting a model:
 
----
-
-# Features
-
-## Intelligent Routing
-
-Incoming prompts are classified before model selection, and routing decisions are informed by more than just task category.
-
-Runtime telemetry records:
-
-- task type
-- prompt signals (length, estimated tokens, complexity score, multi-step detection)
-- selected model
-- routing strategy
-- routing reason
-- latency
-- token usage
-- cost
-- fallback status
-- classification source
-- streaming vs. standard delivery
-
-## Prompt-Based Routing Signals
-
-Task classification alone treats every prompt in a category identically — a one-line bug fix and a multi-file refactor both classify as "code," but they don't warrant the same model.
-
-Before model selection, the Router analyzes each prompt for:
-
-| Signal | What it captures |
+| Signal | Description |
 |---|---|
-| **Prompt length** | Raw character count of the request |
-| **Estimated tokens** | Rough token estimate (~4 characters/token) used as a proxy for request size |
-| **Complexity score** | A 0–1 heuristic score derived from keyword signals (e.g. *refactor*, *architecture*, *optimize*), paragraph structure, and prompt length |
-| **Multi-step detection** | Flags prompts containing numbered steps or sequential instructions (e.g. "first... then...") |
+| Prompt length | Raw character count |
+| Estimated tokens | Approximate input size |
+| Complexity score | Heuristic score based on prompt length, structure, and selected keywords |
+| Multi-step detection | Detects numbered or sequential instructions |
 
-When a prompt's complexity score or estimated size crosses a threshold, the Router escalates to a higher quality-tier model within the same task category — rather than routing every "code" prompt to the same model regardless of how demanding it actually is. Every escalation decision is logged with a human-readable reason (e.g. *"complexity signal (score=0.75, ~420 tokens) escalated to higher-tier model"*), so routing behavior stays auditable rather than opaque.
+Prompts with a complexity score above `0.5` or an estimated size above `300` tokens are escalated to the strongest eligible model.
 
-This is a deliberately rule-based system, not a learned one — it's an explicit design choice favoring predictability and explainability over a black-box scoring model at this stage.
+This is an explainable heuristic layer. It is intentionally not presented as a learned prompt-difficulty model.
 
-## Streaming (SSE)
+### Routing Strategies
 
-The Router supports Server-Sent Events end to end: client → Router → provider → client, in addition to standard request/response.
+#### Heuristic Routing
+
+Heuristic routing is the default strategy.
+
+It uses:
+
+- Task type
+- Prompt length
+- Estimated token count
+- Complexity score
+- Multi-step detection
+- Configured model tiers
+- Supported request constraints
+
+It also acts as the safe fallback when the bandit strategy does not have enough historical data.
+
+#### Epsilon-Greedy Bandit
+
+The epsilon-greedy bandit uses historical routing outcomes to balance exploration and exploitation.
+
+Current configuration:
+
+```text
+epsilon = 0.1
+minimum quality-scored samples = 5
+```
+
+The exploitation score is:
+
+```text
+model score =
+average quality score - (average cost in USD × 100)
+```
+
+Because the current OpenRouter adapter reports `costUsd = 0` for registered models, the current score is effectively driven by average quality.
+
+With probability `0.1`, the Router explores a random eligible model. Otherwise, it selects the model with the highest historical score for the relevant task type.
+
+Enable the bandit globally:
+
+```env
+ROUTING_STRATEGY=bandit
+```
+
+Or enable it for an individual request:
 
 ```http
-POST /v1/route/stream
+x-routing-strategy: bandit
 ```
 
-Rather than waiting for a full model response before replying, the Router opens a streaming connection to the provider and forwards tokens to the client as they arrive — the same interaction pattern used by production chat products, and a meaningfully harder engineering problem than the request/response happy path, since a live stream is proxied through two hops rather than one.
+### Retry and Fallback Handling
 
-Streamed requests are still logged after the stream completes, with accumulated response text, latency, and routing metadata recorded identically to standard requests.
+ModelRouter supports retries for recoverable provider failures and same-quality-tier fallback execution when the selected model fails.
 
-## Routing Strategies
-
-### Heuristic
-A deterministic, classification-and-signal-based routing strategy used for immediate model-selection decisions. Serves as both the baseline strategy and the safe fallback when the learned strategy lacks sufficient data.
-
-### Bandit
-A learning-oriented (epsilon-greedy contextual bandit) strategy that uses accumulated routing history — real outcomes from real requests — to improve model-selection decisions over time. Mostly exploits the historically best-performing model for a given task type, while continuing to explore alternatives some percentage of the time to keep performance data fresh. Falls back to the Heuristic strategy when insufficient historical data exists for a given task type.
-
-## Fallback Handling
-
-The Router records whether a response was produced through a fallback path, so reliability behavior is visible in telemetry rather than hidden:
+Fallback behavior is recorded explicitly:
 
 ```json
 {
@@ -142,632 +224,478 @@ The Router records whether a response was produced through a fallback path, so r
 }
 ```
 
-## Runtime Observability
+This makes reliability behavior visible in the dashboard instead of hiding it inside provider integration code.
 
-The dashboard exposes:
+### Exact-Match Cache
 
-- total requests
-- success/failure rate
-- average latency
-- quality information
-- benchmark quality
-- model request distribution
-- routing failures
-- recent routing activity
-- selected model
-- routing reason
-- request latency
-- cost
+Identical prompts can be served through an exact-match cache backed by Upstash Redis.
 
-## Persistent Infrastructure
+The exact cache currently includes:
 
-- PostgreSQL / pgvector
-- Upstash Redis
-- OpenRouter
+- Upstash Redis storage
+- An in-memory fallback when Redis is unavailable
+- A one-hour TTL
 
----
+A cached response may include:
 
-# Architecture
-
-```mermaid
-flowchart LR
-    Client[Client Application]
-
-    Router[Router API<br/>Node.js + TypeScript + Fastify]
-    Classifier[Request Classification]
-    Signals[Prompt Signal Analysis]
-    Strategy[Routing Strategy<br/>Heuristic / Bandit]
-    Selector[Model Selection]
-    Provider[OpenRouter]
-    Models[LLM Models]
-    Stream[SSE Stream Passthrough]
-
-    Redis[(Upstash Redis)]
-    DB[(PostgreSQL / pgvector)]
-    Dashboard[Next.js<br/>Observability Dashboard]
-
-    Client -->|POST /v1/route| Router
-    Client -->|POST /v1/route/stream| Stream
-    Router --> Classifier
-    Classifier --> Signals
-    Signals --> Strategy
-    Strategy --> Selector
-    Selector --> Provider
-    Stream --> Provider
-    Provider --> Models
-
-    Router --> Redis
-    Router --> DB
-    DB --> Dashboard
-    Redis --> Dashboard
-    Router -->|Runtime telemetry| Dashboard
-```
-
----
-
-# Request Lifecycle
-
-```text
-Client Request
-      │
-      ▼
-Request Validation
-      │
-      ▼
-Prompt Classification
-      │
-      ▼
-Prompt Signal Analysis
-(length · tokens · complexity · multi-step)
-      │
-      ▼
-Routing Strategy
-      │
-      ▼
-Model Selection
-      │
-      ▼
-Provider Execution ──────► Streaming (SSE) or Standard
-      │
-      ├── Success ───────► Response
-      │
-      └── Failure ───────► Fallback
-                               │
-                               ▼
-                            Response
-      │
-      ▼
-Telemetry Recording
-      │
-      ▼
-Dashboard
-```
-
----
-
-# API
-
-## `POST /v1/route`
-
-Production:
-```text
-https://modelrouter-api-m8gg.onrender.com/v1/route
-```
-
-### Headers
-```http
-Content-Type: application/json
-```
-
-No client-side OpenRouter authorization header is required. The deployed Router uses its server-side provider credential.
-
-Optional:
-```http
-x-routing-strategy: bandit
-```
-
-### Request
-```json
-{
-  "prompt": "Explain the difference between TCP and UDP in one sentence."
-}
-```
-
-### Response
-```json
-{
-  "text": "TCP is connection-oriented, while UDP is connectionless...",
-  "tokensIn": 12,
-  "tokensOut": 80,
-  "costUsd": 0,
-  "latencyMs": 1234,
-  "modelUsed": "openai/gpt-oss-20b:free",
-  "wasFallback": false,
-  "classificationSource": "heuristic",
-  "promptSignals": {
-    "promptLength": 62,
-    "estimatedTokens": 16,
-    "complexityScore": 0.0,
-    "isLikelyMultiStep": false
-  }
-}
-```
-
-Exact text, model, latency, token counts, cost, and signal values vary by request.
-
-Cached responses may additionally contain:
 ```json
 {
   "cached": "exact"
 }
 ```
 
----
+### Semantic Cache
 
-## `POST /v1/route/stream`
+ModelRouter also supports semantic caching using:
 
-Production:
-```text
-https://modelrouter-api-m8gg.onrender.com/v1/route/stream
-```
+- `Xenova/all-MiniLM-L6-v2` embeddings
+- PostgreSQL
+- pgvector
 
-Streams the model response as Server-Sent Events instead of waiting for the full response body. Routing (classification, signal analysis, model selection) happens before the stream opens; the client then receives tokens incrementally as the provider generates them.
+The semantic cache can match similar previous prompts instead of requiring an identical prompt.
 
-### Headers
+### Budget Guardrails
+
+Per-user budget checks are implemented when PostgreSQL is configured.
+
+Requests can include a `userId`, and budget-related usage information is exposed through the dashboard.
+
+Production cost accounting is currently pending. Since registered models currently report zero provider cost, budget and cost data should not yet be treated as authoritative billing information.
+
+## API Reference
+
+### Health Check
+
 ```http
-Content-Type: application/json
+GET /health
 ```
 
-### Request
+Example response:
+
 ```json
 {
-  "prompt": "Count from 1 to 10, explaining each number briefly."
+  "status": "ok"
 }
 ```
 
-### Response
-`Content-Type: text/event-stream` — a sequence of `data: {...}` events forwarded live from the provider, terminated when the stream closes. The full response is reconstructed and logged to telemetry after the stream ends, alongside the same routing metadata recorded for standard requests.
+### Standard Routing
 
----
+```http
+POST /v1/route
+Content-Type: application/json
+```
 
-# cURL
+Example request:
+
+```json
+{
+  "prompt": "Explain the difference between TCP and UDP in one sentence.",
+  "constraints": {
+    "minQuality": 3
+  },
+  "userId": "demo-user"
+}
+```
+
+Optional request fields:
+
+- `model`
+- `constraints.maxCostUsd`
+- `constraints.maxLatencyMs`
+- `constraints.minQuality`
+- `userId`
+
+`maxLatencyMs` is currently accepted but is not yet enforced during model selection.
+
+Example response:
+
+```json
+{
+  "text": "TCP is connection-oriented, while UDP is connectionless.",
+  "modelUsed": "openai/gpt-oss-20b:free",
+  "tokensIn": 16,
+  "tokensOut": 42,
+  "costUsd": 0,
+  "latencyMs": 1234,
+  "wasFallback": false,
+  "classificationSource": "heuristic",
+  "promptSignals": {
+    "promptLength": 62,
+    "estimatedTokens": 16,
+    "complexityScore": 0,
+    "isLikelyMultiStep": false
+  }
+}
+```
+
+Actual response text, model, latency, token usage, and routing signals depend on the request and provider response.
+
+The current provider adapter reports `costUsd = 0` for registered models. This value should not be interpreted as complete production billing data.
+
+Example with cURL:
 
 ```bash
-curl -X POST "https://modelrouter-api-m8gg.onrender.com/v1/route" \
+curl -X POST \
+  "https://modelrouter-api-m8gg.onrender.com/v1/route" \
   -H "Content-Type: application/json" \
   -d '{
     "prompt": "Explain the difference between TCP and UDP in one sentence."
   }'
 ```
 
-Streaming:
-```bash
-curl -N -X POST "https://modelrouter-api-m8gg.onrender.com/v1/route/stream" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "prompt": "Count from 1 to 10, explaining each number briefly."
-  }'
-```
+The deployed Router uses its server-side provider credential. Clients do not need to send an OpenRouter authorization header.
 
-# PowerShell
+### Streaming
 
-```powershell
-$body = @{
-    prompt = "Explain the difference between TCP and UDP in one sentence."
-} | ConvertTo-Json
-
-Invoke-RestMethod `
-    -Uri "https://modelrouter-api-m8gg.onrender.com/v1/route" `
-    -Method POST `
-    -ContentType "application/json" `
-    -Body $body
-```
-
-# Postman
-
-```text
-Method: POST
-URL: https://modelrouter-api-m8gg.onrender.com/v1/route
-```
-
-Header:
-```text
+```http
+POST /v1/route/stream
 Content-Type: application/json
+Accept: text/event-stream
 ```
 
-Body → raw → JSON:
+Example request:
+
 ```json
 {
-  "prompt": "Explain the difference between TCP and UDP in one sentence."
+  "prompt": "Count from 1 to 10."
 }
 ```
 
-After sending the request, open the production dashboard and verify the request under **Recorded Routing Activity**.
+Example with cURL:
 
----
-
-# Dashboard
-
-The dashboard is a dedicated observability surface for the Router.
-
-### Overview
-Provides:
-- total requests
-- successful requests
-- failure rate
-- average latency
-- quality scoring availability
-- benchmark quality
-- active model distribution
-- routing failures
-- recent routing activity
-
-### Routing
-Shows how requests are distributed, why a model was selected, and which prompt signals influenced the decision.
-
-### Models
-Provides visibility into active/observed models and request distribution.
-
-### Cache
-Provides visibility into cache-related runtime behavior.
-
-### Budgets
-Provides a dedicated surface for budget-related operational information.
-
-### Evaluation
-Exposes benchmark-related information.
-
-The project contains a **60-task evaluation benchmark** used to evaluate routing behavior across three strategies — always-cheapest, always-frontier, and the Router's own heuristic/bandit strategies — measured on cost, latency, and quality. The benchmark remains separate from normal runtime traffic.
-
-### Settings / Status
-Provides operational status information for the deployed system, including:
-- Router API
-- Upstash Redis
-- PostgreSQL / pgvector
-
----
-
-# Screenshots
-<img width="1917" height="875" alt="13" src="https://github.com/user-attachments/assets/ad72a90c-37e5-4821-9269-506cb6d8469a" />
-<img width="1901" height="870" alt="12" src="https://github.com/user-attachments/assets/1e249fb1-cdfe-4605-9ce3-63ad5d3df50e" />
-<img width="1918" height="882" alt="11" src="https://github.com/user-attachments/assets/6717fe34-d749-429e-b018-487b4a0187ea" />
----
-
-# Technology Stack
-
-| Layer | Technology |
-|---|---|
-| Router | Node.js, TypeScript, Fastify |
-| Dashboard | Next.js, React, TypeScript |
-| Styling | Tailwind CSS |
-| Icons | Lucide React |
-| LLM Provider | OpenRouter |
-| Cache | Upstash Redis |
-| Database | PostgreSQL / pgvector |
-| Deployment | Render |
-| Source Control | GitHub |
-| Validation | TypeScript, ESLint, production builds |
-
----
-
-# Repository Structure
-
-```text
-ModelRouter/
-├── router/
-│   ├── src/
-│   │   ├── routes/
-│   │   │   ├── route.ts           # standard request/response
-│   │   │   └── routeStream.ts     # SSE streaming passthrough
-│   │   ├── routing/
-│   │   │   ├── classify.ts
-│   │   │   ├── promptSignals.ts   # length / complexity / multi-step analysis
-│   │   │   ├── heuristicRouter.ts
-│   │   │   ├── banditRouter.ts
-│   │   │   └── performanceTracker.ts
-│   │   ├── providers/
-│   │   ├── models/
-│   │   ├── cache/
-│   │   ├── budget/
-│   │   ├── db/
-│   │   └── server.ts
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── .env.example
-│
-├── dashboard/
-│   ├── app/
-│   ├── components/
-│   ├── package.json
-│   └── .eslintrc.json
-│
-├── evals/
-│   ├── datasets/
-│   ├── scoring/
-│   ├── run.ts
-│   └── report.ts
-│
-└── README.md
+```bash
+curl -N -X POST \
+  "http://localhost:3000/v1/route/stream" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Count from 1 to 10."
+  }'
 ```
 
----
+The streaming route proxies OpenRouter SSE output.
 
-# Local Development
+If no model is specified, it currently defaults to:
 
-## Prerequisites
-- Node.js
+```text
+openai/gpt-oss-20b:free
+```
+
+The streaming route currently does not perform:
+
+- Standard request classification
+- Exact or semantic cache lookup
+- Budget charging
+- Database telemetry logging
+- Standard routing-strategy selection
+
+These capabilities are planned for a future unified streaming pipeline.
+
+### Error Responses
+
+| Status | Condition | Example |
+|---:|---|---|
+| `400` | Missing prompt or unknown model | `{ "error": "Missing prompt" }` |
+| `422` | No model satisfies the constraints | `{ "error": "No model in the pool satisfies the given constraints: ..." }` |
+| `429` | User budget exceeded | `{ "error": "User demo-user has exceeded their budget ..." }` |
+| `500` | Provider or unexpected execution failure | `{ "error": "OPENROUTER_API_KEY is not configured" }` |
+
+The streaming route returns `400` for an unknown model.
+
+After an SSE response has started, upstream failures are emitted as events, for example:
+
+```text
+data: {"error":"upstream failed"}
+```
+
+### Observability Endpoints
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /v1/analytics` | Runtime metrics, recent logs, and benchmark summary |
+| `GET /v1/evals` | Stored 60-task evaluation results |
+| `GET /v1/cache/stats` | Cache providers and status |
+| `GET /v1/budgets` | User budget and utilization data |
+
+## Evaluation Results
+
+The repository includes an evaluation pipeline for four routing strategies over a 60-task dataset:
+
+- `always-cheap`
+- `always-expensive`
+- `heuristic-router`
+- `learned-bandit`
+
+The pipeline supports:
+
+- Exact-match scoring
+- Keyword-overlap scoring
+- Code unit-test scoring
+- Manual-rubric records
+- Latency measurement
+- Success-rate measurement
+- Cost fields where provider usage data is available
+
+The checked-in snapshot is located at:
+
+```text
+evals/results/summary.json
+```
+
+### Evaluation Snapshot
+
+| Strategy | Quality | Average latency | Cost | Success rate |
+|---|---:|---:|---:|---:|
+| Always cheap | 0.55 | 44,275 ms | $0.00 | 56/60 (93.3%) |
+| Always expensive | 0.46 | 28,821 ms | $0.00 | 59/60 (98.3%) |
+| Heuristic router | 0.53 | 19,682 ms | $0.00 | 60/60 (100%) |
+| Epsilon-greedy bandit | 0.53 | 1,629 ms | $0.00 | 60/60 (100%) |
+
+The heuristic run used its keyword classifier for 55% of requests and the LLM classification fallback for 45% of requests.
+
+### Evaluation Notes
+
+This is one project snapshot, not a statistically conclusive benchmark.
+
+Results depend on:
+
+- Live provider behavior
+- Model availability
+- Network latency
+- Provider throttling
+- Cache state
+- Model configuration
+- Historical bandit data
+- Evaluation scoring behavior
+
+All currently registered models report zero provider cost, so cost comparisons are not meaningful until paid-model pricing and production usage accounting are implemented.
+
+The bandit result may also benefit from previously accumulated routing history. Cache state, request ordering, provider conditions, and routing history were not fully isolated in this snapshot. Future evaluations should control these variables more rigorously.
+
+## Local Development
+
+### Prerequisites
+
+- Node.js 18+
 - npm
-- Git
-- OpenRouter credentials
-- PostgreSQL
-- Upstash Redis
+- An OpenRouter API key
+- PostgreSQL with pgvector
+- Optional Upstash Redis credentials
 
-## Clone
+### Clone the Repository
+
 ```bash
 git clone https://github.com/soumik03/ModelRouter.git
 cd ModelRouter
 ```
 
-## Router
+### Run the Router
+
 ```bash
 cd router
 npm install
-npm run build
-npm run start
+npm run dev
 ```
-The Router uses the runtime `PORT` and binds to `0.0.0.0` for deployment compatibility.
 
-## Dashboard
+The API defaults to:
+
+```text
+http://localhost:3000
+```
+
+### Run the Dashboard
+
+In another terminal:
+
 ```bash
 cd dashboard
 npm install
+npm run dev
+```
+
+The dashboard defaults to:
+
+```text
+http://localhost:3001
+```
+
+### Production Build
+
+```bash
+cd router
 npm run build
 npm start
 ```
-Set:
-```env
-ROUTER_API_URL=http://localhost:<router-port>
+
+In another terminal:
+
+```bash
+cd dashboard
+npm run build
+npm start
 ```
 
----
-
-# Environment Variables
-
-Never commit secrets.
+## Environment Variables
 
 ### Router
+
 ```env
 OPENROUTER_API_KEY=your_openrouter_key
-DATABASE_URL=your_database_url
-UPSTASH_REDIS_REST_URL=your_redis_url
-UPSTASH_REDIS_REST_TOKEN=your_redis_token
+DATABASE_URL=your_postgres_connection_string
+UPSTASH_REDIS_REST_URL=https://your-instance.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your_upstash_token
 PORT=3000
+ROUTING_STRATEGY=heuristic
 ```
 
 ### Dashboard
+
 ```env
-ROUTER_API_URL=http://localhost:<router-port>
+ROUTER_API_URL=http://localhost:3000
 ```
-
-In production, `ROUTER_API_URL` points to the deployed Render Router service.
-
----
-
-# Production Deployment
-
-The application is deployed as two independent Render services.
-
-## Router
-```text
-Root Directory: router
-Build: npm run build
-Start: npm run start
-```
-Required production environment variables:
-```env
-DATABASE_URL=...
-UPSTASH_REDIS_REST_URL=...
-UPSTASH_REDIS_REST_TOKEN=...
-OPENROUTER_API_KEY=...
-```
-
-## Dashboard
-```text
-Root Directory: dashboard
-Build: npm ci && npm run build
-Start: npm start
-```
-Required:
-```env
-ROUTER_API_URL=https://<router-service>.onrender.com
-```
-
-The dashboard production build clears the previous `.next` output before generating a fresh artifact to avoid stale Next.js chunks.
-
----
-
-# Production Verification
-
-The final deployment was verified at multiple levels.
-
-### Router
-- TypeScript compilation — passed
-- Production build — passed
-- Production start — passed
-- `/health` — HTTP 200
-- Real `/v1/route` request — passed
-- Real `/v1/route/stream` request — passed, tokens observed arriving incrementally
-
-### Dashboard
-- TypeScript — passed
-- ESLint — passed
-- Production build — passed
-- Production deployment — live
-- JavaScript assets — loading correctly
-- Dashboard pages — accessible
-
-### Integration
-- Dashboard → Router — healthy
-- Router → Redis — connected
-- Router → PostgreSQL / pgvector — connected
-- Runtime routing events — visible
-- Real production request — reflected in telemetry
 
 ### Evaluation
-- Existing 60-task benchmark preserved
-- Benchmark files unchanged
-- Full benchmark intentionally not rerun during final production verification
 
----
-
-# Engineering Challenges
-
-## Streaming Through a Proxy Layer
-Supporting SSE end to end required forwarding a live upstream stream through the Router rather than buffering the full response before replying — a materially different code path from standard request/response, including handling partial chunks, stream termination, and logging telemetry only after the stream completes rather than at request time.
-
-## Routing on More Than Category
-Task classification alone treats all same-category prompts identically. Prompt-signal analysis (length, estimated tokens, a keyword/structure-based complexity score, and multi-step detection) was added as a deliberately simple, explainable layer on top of classification — favoring transparent heuristics over an opaque scoring model, with every escalation decision logged with a human-readable reason.
-
-## Production Port Handling
-The Router uses the deployment-provided `PORT` and binds to `0.0.0.0`, allowing it to run correctly inside Render.
-
-## Independent Service Deployment
-The Router and Dashboard are independently deployable:
-```text
-Render
-├── Router API
-└── Dashboard
+```env
+EVAL_BASE_URL=http://localhost:3000
+EVAL_DATASET=full
 ```
-The dashboard communicates with the Router using `ROUTER_API_URL`.
 
-## Next.js Production Artifact Consistency
-The dashboard build clears the existing `.next` directory before building:
+Never commit credentials or expose `OPENROUTER_API_KEY` to the browser.
+
+## Running Evaluations
+
+Start the Router first, then run the evaluation commands from the `router` directory:
+
 ```bash
-node -e "require('fs').rmSync('.next', { recursive: true, force: true })" && next build
-```
-This prevents stale static chunks from being served with a newly generated HTML artifact.
-
-## Runtime Observability
-The system records actual routing decisions and runtime results, including which prompt signals influenced a decision, allowing production behavior to be inspected after real requests rather than relying only on static configuration.
-
----
-
-# Design Principles
-
-### Separation of Concerns
-Routing, provider execution, persistence, caching, and observability are separated into clear responsibilities.
-
-### Centralized Model Selection
-Client applications do not need to duplicate routing rules.
-
-### Decisions Informed by Content, Not Just Category
-Task type alone is a coarse signal. Prompt length, complexity, and structure refine model selection within a category rather than treating every request in that category identically.
-
-### Observable Decisions
-Every routing system needs visibility into both the decision and its result. ModelRouter records routing context — classification, signals, strategy, and reason — alongside runtime metrics.
-
-### Provider Abstraction
-The Router provides a boundary between applications and the underlying model provider, whether the response is streamed or returned in full.
-
-### Production-First Validation
-The project is validated through:
-```text
-TypeScript
-   ↓
-Lint
-   ↓
-Production Build
-   ↓
-Production Start
-   ↓
-Health Check
-   ↓
-Real API Request (standard + streaming)
-   ↓
-Dashboard Telemetry
+npm run eval
+npm run report
 ```
 
----
+Run a smaller dataset:
 
-# Security
+```bash
+EVAL_DATASET=sample npm run eval
+```
 
-Secrets are stored in deployment environment variables.
+Run a subset of tasks:
 
-The client does not receive the provider API key.
+```bash
+EVAL_START=0 EVAL_END=10 npm run eval
+```
 
-Never place credentials in:
-- source code
-- README files
-- screenshots
-- frontend-exposed environment variables
-- Git history
-
-Rotate credentials immediately if they are accidentally exposed.
-
----
-
-# Performance Notes
-
-Production latency is workload-dependent.
-
-The Router communicates with external model infrastructure, so model inference latency can dominate end-to-end response time. Streaming reduces perceived latency for the client even when total generation time is unchanged, since output begins arriving before the full response is complete.
-
-Render free instances can also sleep after inactivity, which may introduce cold-start delays.
-
-Therefore, dashboard latency should be interpreted as observed end-to-end runtime behavior under the current deployment and provider configuration.
-
----
-
-# Future Improvements
-
-Potential extensions include:
-- stronger quality scoring
-- cost-aware routing
-- latency-aware routing
-- richer contextual bandit policies
-- provider health scoring
-- model availability detection
-- client authentication/API keys
-- rate limiting
-- distributed tracing
-- alerting
-- historical analytics
-- automated benchmark comparisons
-- configurable routing policies
-- A/B routing mode with live comparative stats across strategies
-
-These are future directions, not claims about the current implementation.
-
----
-
-# Project Status
-
-**Production deployed and verified.**
+## Repository Structure
 
 ```text
-Router API          ✅ Live
-Streaming (SSE)      ✅ Verified
-Prompt Signals       ✅ Verified
-Dashboard            ✅ Live
-Health Check         ✅ Passing
-Real Routing         ✅ Verified
-Runtime Telemetry    ✅ Verified
-Redis                ✅ Connected
-PostgreSQL           ✅ Connected
-Production Build     ✅ Passing
-Lint                 ✅ Passing
-Benchmark            ✅ Preserved
+ModelRouter/
+├── router/
+│   ├── src/
+│   │   ├── routes/          # API, streaming, and analytics
+│   │   ├── routing/         # Classifiers, signals, heuristic, and bandit
+│   │   ├── providers/       # OpenRouter integration
+│   │   ├── cache/           # Exact and semantic caches
+│   │   ├── budget/          # Budget tracking and guardrails
+│   │   └── db/              # Schema and request logging
+│   ├── package.json
+│   └── .env.example
+│
+├── dashboard/               # Next.js observability dashboard
+├── evals/                   # Datasets, scorers, and reports
+├── README.md
+└── LICENSE                  # Not yet declared
 ```
 
----
+## Validation
 
-# Author
+The current project has been checked through:
+
+- TypeScript compilation
+- ESLint
+- Production builds
+- Production startup
+- Health-check requests
+- Standard routing requests
+- Streaming requests
+- Dashboard-to-Router communication
+- Redis connectivity
+- PostgreSQL connectivity
+- Standard-request telemetry recording
+- Dashboard event visibility
+- Checked-in evaluation snapshot
+
+## Limitations and Roadmap
+
+ModelRouter is actively developed and is not yet a fully hardened public production gateway.
+
+Known limitations include:
+
+- Provider cost accounting currently reports zero for registered models.
+- `maxLatencyMs` is accepted but not enforced during model selection.
+- Model metadata and quality tiers are manually configured.
+- The public API has no authentication.
+- The public API has no rate limiting.
+- Prompt and response data may be persisted.
+- Production deployments need retention, redaction, and access-control policies.
+- The streaming route currently bypasses standard routing telemetry, caching, and budget logic.
+- The bandit strategy needs sufficient historical data before it can make useful decisions.
+- Provider health is not yet a first-class routing signal.
+- Render cold starts can affect observed latency.
+- Dashboard screenshots and a demo video are not currently committed.
+- No license has been declared.
+
+Planned improvements include:
+
+- Authentication and client API keys
+- Rate limiting and abuse protection
+- Production-grade cost accounting
+- Unified streaming telemetry
+- Streaming cache and budget integration
+- Provider health scoring
+- Latency-aware routing
+- Cost-aware routing
+- Stronger quality evaluation
+- Improved contextual bandit policies
+- Distributed tracing
+- Alerts and historical analytics
+- Prompt and response redaction
+- Better model capability metadata
+
+Do not use the public deployment for sensitive or high-volume workloads until authentication, rate limiting, data-retention controls, and production cost accounting are implemented.
+
+## Project Status
+
+| Area | Status |
+|---|---|
+| Router API | Implemented and deployed |
+| Heuristic classification | Implemented |
+| LLM classification fallback | Implemented |
+| Heuristic model selection | Implemented |
+| Epsilon-greedy bandit | Implemented |
+| Retry handling | Implemented |
+| Same-tier fallback | Implemented |
+| Exact-match cache | Implemented |
+| Semantic cache | Implemented with PostgreSQL/pgvector |
+| Budget guardrails | Implemented with PostgreSQL |
+| Standard request telemetry | Implemented |
+| Streaming endpoint | Implemented |
+| Dashboard | Implemented and deployed |
+| Evaluation pipeline | Implemented |
+| Evaluation snapshot | Checked in |
+| Production cost accounting | Pending |
+| Authentication | Not implemented |
+| Rate limiting | Not implemented |
+| Unified streaming telemetry | Pending |
+
+## License
+
+No license has been declared yet.
+
+Until a license is added, no permission is granted to reuse, modify, or redistribute this code beyond what copyright law permits. Add a license file before accepting external contributions or distributing ModelRouter for reuse.
+
+## Author
 
 **Soumik Talukder**
 
-GitHub: https://github.com/soumik03
-LinkedIn: https://linkedin.com/in/soumiktalukder
+- [GitHub](https://github.com/soumik03)
+- [LinkedIn](https://linkedin.com/in/soumiktalukder)
 
----
-
-> ModelRouter is an engineering project focused on intelligent LLM routing, model selection, production infrastructure, and observability.
+ModelRouter explores explainable LLM routing, provider abstraction, streaming infrastructure, caching, fallback execution, runtime observability, and model-selection evaluation.
