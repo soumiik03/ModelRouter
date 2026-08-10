@@ -1,1 +1,1 @@
-{"version":1,"functions":{"/api/budgets":{},"/api/evals":{},"/api/analytics":{},"/api/cache":{}}}
+{"version":1,"functions":{"/api/cache":{},"/api/evals":{},"/api/analytics":{},"/api/budgets":{}}}

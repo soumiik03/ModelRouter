@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "next dev -p 3001",
-    "build": "next build",
-    "start": "next start -p 3001",
+    "build": "node -e \"require('fs').rmSync('.next', { recursive: true, force: true })\" && next build",
+    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
